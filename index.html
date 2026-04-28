@@ -1,0 +1,1750 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="theme-color" content="#8BA888">
+  <title>Eloana Velluto</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pinyon+Script&family=Cormorant+Garamond:ital,wght@0,300;1,300;1,400&family=Jost:wght@200;300;400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --musgo-escuro:  #3B4A35;
+      --musgo-medio:   #5C7052;
+      --musgo-claro:   #8BA888;
+      --musgo-suave:   #C4D4BF;
+      --marrom-escuro: #3E2A1E;
+      --marrom-medio:  #6B4226;
+      --marrom-claro:  #9C6B4A;
+      --marrom-suave:  #D4B8A0;
+      --creme:         #FAF7F2;
+      --perola:        #F0EAE0;
+      --linho:         #E2D9CC;
+      --branco:        #FFFFFF;
+      --vermelho:      #B04A30;
+      --verde:         #4A7C59;
+      --header-h:      80px;
+      --lace-h:        36px;
+      --nav-h:         64px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { height: 100%; }
+    body {
+      min-height: 100%;
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      background: var(--creme);
+      color: var(--marrom-escuro);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+    input, button, select, textarea { font-family: 'Jost', sans-serif; }
+    button { cursor: pointer; border: none; background: none; }
+    input, select, textarea { outline: none; border: none; }
+    img { display: block; max-width: 100%; }
+
+    /* HEADER */
+    .app-header {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: var(--header-h);
+      background: var(--musgo-claro);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 100; padding: 0 16px;
+    }
+    .header-monogram {
+      position: absolute; left: 16px;
+      width: 42px; height: 42px; border-radius: 50%;
+      background: var(--marrom-medio);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .header-monogram span {
+      font-family: 'Pinyon Script', cursive;
+      color: var(--branco); font-size: 1.8rem; line-height: 1; padding-top: 4px;
+    }
+    .header-center { text-align: center; }
+    .header-brand { font-family: 'Pinyon Script', cursive; color: var(--branco); font-size: 1.6rem; line-height: 1; }
+    .header-sub {
+      font-family: 'Jost', sans-serif; font-weight: 200;
+      color: rgba(255,255,255,0.72); font-size: 0.65rem;
+      letter-spacing: 0.18em; margin-top: 3px;
+    }
+
+    /* LACE SEPARATOR */
+    .lace-separator {
+      position: fixed; top: var(--header-h); left: 0; right: 0;
+      width: 100%; height: var(--lace-h);
+      z-index: 99; display: block; overflow: visible;
+    }
+
+    /* MAIN */
+    .app-main {
+      padding-top: calc(var(--header-h) + var(--lace-h));
+      padding-bottom: calc(var(--nav-h) + 8px);
+      min-height: 100vh;
+    }
+    .tab-content { display: none; padding: 16px; }
+    .tab-content.active { display: block; }
+
+    /* CARDS */
+    .card {
+      background: var(--branco);
+      border-radius: 12px;
+      border: 1px solid var(--linho);
+      box-shadow: 0 2px 12px rgba(62,42,30,0.08);
+      overflow: hidden;
+      animation: fadeInUp 0.4s ease both;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes slideDown {
+      from { opacity: 0; transform: translateY(-10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes scaleIn {
+      from { opacity: 0; transform: scale(0.92); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+
+    /* INICIO TAB */
+    .saldo-card {
+      background: var(--musgo-escuro) !important;
+      padding: 24px 20px; text-align: center;
+      animation-delay: 0.05s;
+    }
+    .saldo-label {
+      font-weight: 200; font-size: 0.72rem; letter-spacing: 0.12em;
+      text-transform: uppercase; color: rgba(255,255,255,0.65); margin-bottom: 4px;
+    }
+    .saldo-valor {
+      font-family: 'Cormorant Garamond', serif; font-size: 2.2rem;
+      font-weight: 300; color: var(--branco);
+    }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+    .mini-card { padding: 16px; animation-delay: 0.10s; }
+    .mini-label {
+      font-size: 0.68rem; font-weight: 200; letter-spacing: 0.1em;
+      color: var(--marrom-claro); text-transform: uppercase; margin-bottom: 4px;
+    }
+    .mini-valor { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 300; }
+    .mini-receita .mini-valor { color: var(--verde); }
+    .mini-custos .mini-valor  { color: var(--vermelho); }
+    .estoque-info-card { padding: 16px; margin-top: 12px; animation-delay: 0.15s; display: flex; align-items: center; justify-content: space-between; }
+    .estoque-info-label { font-size: 0.72rem; font-weight: 200; color: var(--marrom-claro); letter-spacing: 0.1em; text-transform: uppercase; }
+    .estoque-info-val { font-family: 'Cormorant Garamond', serif; font-size: 1.6rem; font-weight: 300; }
+    .proxima-divida-card { padding: 16px; margin-top: 12px; animation-delay: 0.20s; }
+    .proxima-label { font-size: 0.68rem; font-weight: 200; color: var(--marrom-claro); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+    .proxima-nome { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.1rem; }
+    .proxima-row { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; }
+    .proxima-valor { font-weight: 400; font-size: 0.95rem; }
+    .badge {
+      font-size: 0.62rem; font-weight: 400; padding: 2px 10px;
+      border-radius: 20px; letter-spacing: 0.05em;
+    }
+    .badge-pendente { background: #FFF3E0; color: #C55A00; }
+    .badge-pago     { background: #E8F5E9; color: #2E7D32; }
+    .btn-acao-rapida {
+      width: 100%; background: var(--musgo-claro); color: var(--branco);
+      border-radius: 10px; padding: 14px;
+      font-size: 0.9rem; letter-spacing: 0.06em; margin-top: 12px;
+      transition: background 0.2s;
+      animation: fadeInUp 0.4s ease both; animation-delay: 0.25s;
+    }
+    .btn-acao-rapida:hover { background: var(--musgo-medio); }
+
+    /* ESTOQUE TAB */
+    .produto-card { margin-bottom: 16px; }
+    .produto-card:nth-child(1) { animation-delay: 0.05s; }
+    .produto-card:nth-child(2) { animation-delay: 0.10s; }
+    .produto-card:nth-child(3) { animation-delay: 0.15s; }
+    .produto-card:nth-child(4) { animation-delay: 0.20s; }
+    .produto-card:nth-child(5) { animation-delay: 0.25s; }
+    .produto-foto-wrap {
+      width: 100%; height: 160px; overflow: hidden;
+      border-radius: 12px 12px 0 0; background: var(--perola);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .produto-foto-wrap img { width: 100%; height: 100%; object-fit: cover; }
+    .produto-info { padding: 16px; }
+    .produto-nome { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.2rem; font-weight: 300; }
+    .produto-preco { font-size: 0.82rem; color: var(--marrom-claro); margin-top: 2px; }
+    .tamanhos-lista { margin-top: 12px; display: flex; flex-direction: column; gap: 8px; }
+    .tamanho-row { display: flex; align-items: center; gap: 8px; }
+    .tamanho-tag {
+      font-size: 0.75rem; font-weight: 400; width: 26px; color: var(--marrom-escuro);
+    }
+    .qty-controls { display: flex; align-items: center; gap: 10px; }
+    .qty-btn {
+      width: 28px; height: 28px; border-radius: 50%;
+      border: 1px solid var(--linho); background: var(--creme);
+      color: var(--marrom-medio); font-size: 1rem; line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .qty-btn:hover { background: var(--perola); border-color: var(--marrom-suave); }
+    .qty-num { font-size: 0.9rem; font-weight: 400; min-width: 20px; text-align: center; }
+    .produto-total { margin-top: 8px; font-size: 0.78rem; color: var(--marrom-claro); }
+    .produto-footer {
+      padding: 12px 16px; background: var(--musgo-suave);
+      border-top: 1px solid var(--linho);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .btn-venda-card {
+      font-size: 0.82rem; font-weight: 300; color: var(--musgo-escuro); letter-spacing: 0.05em;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .btn-acoes-card { display: flex; gap: 8px; }
+    .btn-icon {
+      width: 30px; height: 30px; border-radius: 8px;
+      border: 1px solid rgba(62,42,30,0.15); background: var(--branco);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--marrom-claro); transition: background 0.15s;
+    }
+    .btn-icon:hover { background: var(--perola); }
+    .btn-icon.danger:hover { background: #FFF0EE; color: var(--vermelho); }
+    .empty-state { text-align: center; padding: 56px 24px; color: var(--marrom-claro); }
+    .empty-state svg { margin: 0 auto 16px; opacity: 0.35; }
+    .empty-state p { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.1rem; margin-bottom: 4px; }
+    .empty-state small { font-size: 0.8rem; font-weight: 200; }
+
+    /* FAB */
+    .fab {
+      position: fixed; right: 20px; bottom: calc(var(--nav-h) + 16px);
+      width: 56px; height: 56px; border-radius: 50%;
+      background: var(--musgo-escuro); color: var(--branco);
+      font-size: 1.6rem; line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 18px rgba(62,42,30,0.28);
+      z-index: 90; transition: transform 0.2s, background 0.2s;
+    }
+    .fab:hover { transform: scale(1.06); background: var(--musgo-medio); }
+    .fab:active { transform: scale(0.94); }
+    .fab.hidden { display: none; }
+
+    /* FINANCEIRO TAB */
+    .mes-filter {
+      display: flex; overflow-x: auto; gap: 8px;
+      padding-bottom: 4px; scrollbar-width: none; -ms-overflow-style: none;
+    }
+    .mes-filter::-webkit-scrollbar { display: none; }
+    .mes-btn {
+      flex-shrink: 0; padding: 6px 16px; border-radius: 20px;
+      border: 1px solid var(--linho); background: var(--branco);
+      font-size: 0.78rem; font-weight: 300; color: var(--marrom-claro);
+      white-space: nowrap; transition: all 0.2s; cursor: pointer;
+    }
+    .mes-btn.active { background: var(--musgo-escuro); border-color: var(--musgo-escuro); color: var(--branco); }
+    .fin-resumo { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0 0; }
+    .fin-card { padding: 16px; }
+    .fin-label { font-size: 0.68rem; font-weight: 200; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 4px; }
+    .fin-valor { font-family: 'Cormorant Garamond', serif; font-size: 1.3rem; font-weight: 300; }
+    .fin-entradas .fin-label { color: var(--verde); }
+    .fin-entradas .fin-valor { color: var(--verde); }
+    .fin-saidas .fin-label   { color: var(--vermelho); }
+    .fin-saidas .fin-valor   { color: var(--vermelho); }
+    .saldo-periodo { padding: 16px; text-align: center; margin-top: 12px; }
+    .saldo-periodo-label { font-size: 0.72rem; font-weight: 200; color: var(--marrom-claro); letter-spacing: 0.1em; text-transform: uppercase; }
+    .saldo-periodo-valor { font-family: 'Cormorant Garamond', serif; font-size: 1.7rem; font-weight: 300; margin-top: 4px; }
+    .saldo-positivo { color: var(--verde); }
+    .saldo-negativo { color: var(--vermelho); }
+    .btn-saida {
+      width: 100%; border: 1.5px dashed var(--marrom-suave); border-radius: 10px;
+      padding: 12px; background: transparent; color: var(--marrom-medio);
+      font-size: 0.88rem; font-weight: 300; margin: 12px 0;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: background 0.2s; cursor: pointer;
+    }
+    .btn-saida:hover { background: var(--perola); }
+    .lancamento-card { padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start; }
+    .lancamento-linha { width: 3px; border-radius: 4px; align-self: stretch; flex-shrink: 0; margin-top: 2px; }
+    .lancamento-linha.entrada { background: var(--musgo-claro); }
+    .lancamento-linha.saida   { background: #E07060; }
+    .lancamento-body { flex: 1; }
+    .lancamento-badge { display: inline-block; font-size: 0.6rem; padding: 1px 8px; border-radius: 10px; font-weight: 400; letter-spacing: 0.04em; margin-bottom: 3px; }
+    .lancamento-badge.entrada { background: #E8F5E9; color: #2E7D32; }
+    .lancamento-badge.saida   { background: #FFEBEE; color: #C62828; }
+    .lancamento-desc { font-size: 0.88rem; font-weight: 300; }
+    .lancamento-data { font-size: 0.74rem; color: var(--marrom-claro); margin-top: 2px; }
+    .lancamento-val { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; font-weight: 300; flex-shrink: 0; }
+    .lancamento-val.entrada { color: var(--verde); }
+    .lancamento-val.saida   { color: var(--vermelho); }
+    .sem-dados { text-align: center; padding: 32px 16px; color: var(--marrom-claro); font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.05rem; }
+
+    /* DIVIDAS TAB */
+    .divida-card { padding: 16px; margin-bottom: 16px; }
+    .divida-card:nth-child(1) { animation-delay: 0.05s; }
+    .divida-card:nth-child(2) { animation-delay: 0.10s; }
+    .divida-card:nth-child(3) { animation-delay: 0.15s; }
+    .divida-card:nth-child(4) { animation-delay: 0.20s; }
+    .divida-header { display: flex; justify-content: space-between; align-items: flex-start; }
+    .divida-nome { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.2rem; font-weight: 300; }
+    .divida-tipo { font-size: 0.68rem; font-weight: 200; color: var(--marrom-claro); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 2px; }
+    .progress-wrap { margin: 14px 0 8px; }
+    .progress-labels { display: flex; justify-content: space-between; font-size: 0.72rem; color: var(--marrom-claro); margin-bottom: 5px; }
+    .progress-bar { height: 6px; background: var(--linho); border-radius: 4px; overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--musgo-claro); border-radius: 4px; transition: width 0.6s ease; }
+    .divida-valores { display: flex; justify-content: space-between; margin-bottom: 14px; }
+    .div-val { text-align: center; }
+    .div-val-label { font-size: 0.64rem; font-weight: 200; color: var(--marrom-claro); text-transform: uppercase; letter-spacing: 0.08em; }
+    .div-val-num { font-family: 'Cormorant Garamond', serif; font-size: 1rem; font-weight: 300; }
+    .parcelas-section { border-top: 1px solid var(--linho); padding-top: 12px; }
+    .parcela-item { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--perola); }
+    .parcela-item:last-child { border-bottom: none; }
+    .parcela-check {
+      width: 22px; height: 22px; border-radius: 5px;
+      border: 1.5px solid var(--musgo-claro); background: var(--branco);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; flex-shrink: 0; transition: background 0.2s, border-color 0.2s;
+    }
+    .parcela-check.checked { background: var(--musgo-claro); border-color: var(--musgo-claro); }
+    .parcela-check.checked svg { display: block; }
+    .parcela-check svg { display: none; }
+    .parcela-info { flex: 1; }
+    .parcela-nome { font-size: 0.84rem; font-weight: 300; }
+    .parcela-data { font-size: 0.73rem; color: var(--marrom-claro); }
+    .parcela-val { font-family: 'Cormorant Garamond', serif; font-size: 1rem; font-weight: 300; flex-shrink: 0; }
+    .parcela-item.pago .parcela-nome { text-decoration: line-through; color: var(--marrom-suave); }
+    .parcela-item.pago .parcela-val  { color: var(--marrom-suave); }
+    .btn-excluir-divida { font-size: 0.74rem; color: var(--vermelho); font-weight: 300; padding: 4px 8px; border-radius: 6px; transition: background 0.15s; }
+    .btn-excluir-divida:hover { background: #FFF0EE; }
+
+    /* NAVIGATION */
+    .app-nav {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      height: var(--nav-h); background: var(--branco);
+      border-top: 1px solid var(--linho);
+      display: flex; z-index: 100;
+    }
+    .nav-tab {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 3px;
+      color: #aaa; font-size: 0.62rem; font-weight: 300;
+      letter-spacing: 0.05em; position: relative; cursor: pointer;
+      transition: color 0.2s;
+    }
+    .nav-tab.active { color: var(--musgo-medio); }
+    .nav-tab.active::before {
+      content: ''; position: absolute; top: 0; left: 20%; right: 20%;
+      height: 3px; background: var(--musgo-claro); border-radius: 0 0 4px 4px;
+    }
+    .nav-tab svg { width: 22px; height: 22px; }
+
+    /* MODALS */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(62,42,30,0.48);
+      z-index: 200; display: flex; align-items: flex-end;
+      opacity: 0; pointer-events: none; transition: opacity 0.25s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal-sheet {
+      width: 100%; max-height: 92vh;
+      background: var(--branco); border-radius: 20px 20px 0 0;
+      overflow-y: auto; transform: translateY(100%);
+      transition: transform 0.32s cubic-bezier(0.34, 1.2, 0.64, 1);
+    }
+    .modal-overlay.open .modal-sheet { transform: translateY(0); }
+    .modal-handle { width: 40px; height: 4px; background: var(--linho); border-radius: 4px; margin: 12px auto 0; }
+    .modal-hdr { padding: 14px 20px 16px; border-bottom: 1px solid var(--linho); }
+    .modal-title { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.3rem; font-weight: 300; }
+    .modal-body { padding: 20px; }
+    .modal-footer { padding: 16px 20px; border-top: 1px solid var(--linho); display: flex; gap: 12px; }
+
+    /* FORMS */
+    .form-group { margin-bottom: 16px; }
+    .form-label { display: block; font-size: 0.72rem; font-weight: 300; color: var(--marrom-claro); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; }
+    .form-input, .form-select {
+      width: 100%; background: var(--creme); border: 1px solid var(--linho);
+      border-radius: 8px; padding: 10px 12px;
+      font-size: 0.95rem; font-weight: 300; color: var(--marrom-escuro);
+      transition: border-color 0.2s;
+    }
+    .form-input:focus, .form-select:focus { border-color: var(--musgo-claro); }
+    .form-input.err, .form-select.err { border-color: #E07060; }
+    .form-err { font-size: 0.74rem; color: var(--vermelho); margin-top: 4px; display: none; }
+    .form-err.show { display: block; }
+    .form-hint { font-size: 0.74rem; color: var(--marrom-claro); margin-top: 4px; }
+    .chk-group { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 2px; }
+    .chk-item { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+    .chk-item input[type="checkbox"] { width: 17px; height: 17px; accent-color: var(--musgo-claro); cursor: pointer; }
+    .chk-item label { font-size: 0.9rem; cursor: pointer; }
+    .radio-group { display: flex; gap: 20px; margin-top: 2px; }
+    .radio-item { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+    .radio-item input[type="radio"] { accent-color: var(--musgo-claro); cursor: pointer; width: 16px; height: 16px; }
+    .radio-item label { font-size: 0.9rem; cursor: pointer; }
+    .qty-row-form { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+    .qty-size-label { font-size: 0.88rem; width: 30px; font-weight: 400; }
+    .form-input-sm { flex: 1; }
+    .foto-area {
+      border: 1.5px dashed var(--marrom-suave); border-radius: 10px;
+      padding: 20px; text-align: center; cursor: pointer; transition: background 0.2s;
+    }
+    .foto-area:hover { background: var(--perola); }
+    .foto-preview { width: 100%; height: 140px; object-fit: cover; border-radius: 8px; margin-bottom: 10px; }
+    .foto-label { font-size: 0.84rem; color: var(--marrom-claro); }
+
+    /* BUTTONS */
+    .btn-primary {
+      flex: 1; background: var(--musgo-escuro); color: var(--branco);
+      border-radius: 10px; padding: 13px 16px;
+      font-size: 0.9rem; font-weight: 300; letter-spacing: 0.05em;
+      transition: background 0.2s;
+    }
+    .btn-primary:hover { background: var(--musgo-medio); }
+    .btn-secondary {
+      flex: 1; background: var(--perola); color: var(--marrom-medio);
+      border-radius: 10px; padding: 13px 16px;
+      font-size: 0.9rem; font-weight: 300; letter-spacing: 0.05em;
+      transition: background 0.2s;
+    }
+    .btn-secondary:hover { background: var(--linho); }
+
+    /* TOASTS */
+    .toast-container {
+      position: fixed; top: calc(var(--header-h) + var(--lace-h) + 10px);
+      left: 16px; right: 16px; z-index: 400;
+      display: flex; flex-direction: column; gap: 8px; pointer-events: none;
+    }
+    .toast {
+      padding: 12px 16px; border-radius: 10px; font-size: 0.84rem; font-weight: 300;
+      box-shadow: 0 4px 18px rgba(62,42,30,0.18);
+      animation: slideDown 0.3s ease; display: flex; align-items: center; gap: 8px;
+    }
+    .toast-success { background: var(--musgo-escuro); color: var(--branco); }
+    .toast-error   { background: #5C1A0E; color: var(--branco); }
+    .toast-info    { background: var(--marrom-medio); color: var(--branco); }
+
+    /* CONFIRM DIALOG */
+    .confirm-overlay {
+      position: fixed; inset: 0; background: rgba(62,42,30,0.5);
+      z-index: 300; display: flex; align-items: center; justify-content: center;
+      padding: 24px; opacity: 0; pointer-events: none; transition: opacity 0.2s;
+    }
+    .confirm-overlay.open { opacity: 1; pointer-events: all; }
+    .confirm-box {
+      background: var(--branco); border-radius: 16px; padding: 24px;
+      width: 100%; max-width: 320px;
+      box-shadow: 0 8px 32px rgba(62,42,30,0.22);
+      transform: scale(0.9); transition: transform 0.2s;
+    }
+    .confirm-overlay.open .confirm-box { transform: scale(1); }
+    .confirm-title { font-family: 'Cormorant Garamond', serif; font-size: 1.2rem; font-style: italic; margin-bottom: 8px; }
+    .confirm-msg { font-size: 0.88rem; font-weight: 300; color: var(--marrom-claro); margin-bottom: 20px; line-height: 1.5; }
+    .confirm-btns { display: flex; gap: 12px; }
+    .btn-confirm-ok { flex: 1; background: var(--musgo-escuro); color: var(--branco); border-radius: 10px; padding: 12px; font-size: 0.9rem; transition: background 0.2s; }
+    .btn-confirm-ok:hover { background: var(--musgo-medio); }
+    .btn-confirm-cancel { flex: 1; background: var(--perola); color: var(--marrom-medio); border-radius: 10px; padding: 12px; font-size: 0.9rem; transition: background 0.2s; }
+    .btn-confirm-cancel:hover { background: var(--linho); }
+
+    .section-title { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1rem; color: var(--marrom-claro); margin: 16px 0 8px; }
+    .divider { height: 1px; background: var(--linho); margin: 8px 0; }
+    .card + .card { margin-top: 12px; }
+    select option { font-family: 'Jost', sans-serif; }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="app-header">
+  <div class="header-monogram"><span>E</span></div>
+  <div class="header-center">
+    <div class="header-brand">Eloana Velluto</div>
+    <div class="header-sub">moda íntima &amp; dormir</div>
+  </div>
+</header>
+
+<!-- LACE SEPARATOR -->
+<svg class="lace-separator" viewBox="0 0 390 36" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+  <path d="M0,8 Q10,0 20,8 Q30,16 40,8 Q50,0 60,8 Q70,16 80,8 Q90,0 100,8 Q110,16 120,8 Q130,0 140,8 Q150,16 160,8 Q170,0 180,8 Q190,16 200,8 Q210,0 220,8 Q230,16 240,8 Q250,0 260,8 Q270,16 280,8 Q290,0 300,8 Q310,16 320,8 Q330,0 340,8 Q350,16 360,8 Q370,0 380,8 Q385,12 390,9 L390,0 L0,0 Z"
+        fill="#8BA888" fill-opacity="0.18"/>
+  <path d="M0,8 Q10,0 20,8 Q30,16 40,8 Q50,0 60,8 Q70,16 80,8 Q90,0 100,8 Q110,16 120,8 Q130,0 140,8 Q150,16 160,8 Q170,0 180,8 Q190,16 200,8 Q210,0 220,8 Q230,16 240,8 Q250,0 260,8 Q270,16 280,8 Q290,0 300,8 Q310,16 320,8 Q330,0 340,8 Q350,16 360,8 Q370,0 380,8"
+        stroke="#D4B8A0" fill="none" stroke-width="1" stroke-opacity="0.55"/>
+  <g fill="#D4B8A0" stroke="#D4B8A0" fill-opacity="0.4" stroke-opacity="0.4">
+    <line x1="30" y1="14" x2="30" y2="22" stroke-width="0.8"/>
+    <circle cx="30" cy="24.5" r="2.2"/>
+    <line x1="70" y1="14" x2="70" y2="26" stroke-width="0.8"/>
+    <circle cx="70" cy="28.5" r="3"/>
+    <line x1="110" y1="14" x2="110" y2="22" stroke-width="0.8"/>
+    <circle cx="110" cy="24.5" r="2.2"/>
+    <line x1="150" y1="14" x2="150" y2="26" stroke-width="0.8"/>
+    <circle cx="150" cy="28.5" r="3"/>
+    <line x1="190" y1="14" x2="190" y2="22" stroke-width="0.8"/>
+    <circle cx="190" cy="24.5" r="2.2"/>
+    <line x1="230" y1="14" x2="230" y2="26" stroke-width="0.8"/>
+    <circle cx="230" cy="28.5" r="3"/>
+    <line x1="270" y1="14" x2="270" y2="22" stroke-width="0.8"/>
+    <circle cx="270" cy="24.5" r="2.2"/>
+    <line x1="310" y1="14" x2="310" y2="26" stroke-width="0.8"/>
+    <circle cx="310" cy="28.5" r="3"/>
+    <line x1="350" y1="14" x2="350" y2="22" stroke-width="0.8"/>
+    <circle cx="350" cy="24.5" r="2.2"/>
+  </g>
+</svg>
+
+<!-- MAIN CONTENT -->
+<main class="app-main">
+  <div id="tab-inicio" class="tab-content active"><div id="inicio-content"></div></div>
+  <div id="tab-estoque" class="tab-content"><div id="estoque-content"></div></div>
+  <div id="tab-financeiro" class="tab-content"><div id="financeiro-content"></div></div>
+  <div id="tab-dividas" class="tab-content"><div id="dividas-content"></div></div>
+</main>
+
+<!-- FAB -->
+<button class="fab hidden" id="fab-btn" aria-label="Adicionar">
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+  </svg>
+</button>
+
+<!-- BOTTOM NAV -->
+<nav class="app-nav">
+  <div class="nav-tab active" data-tab="inicio">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/><polyline points="9,21 9,12 15,12 15,21"/>
+    </svg>
+    Início
+  </div>
+  <div class="nav-tab" data-tab="estoque">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.57a1 1 0 00.99.84H5v10a2 2 0 002 2h10a2 2 0 002-2V10h1.15a1 1 0 00.99-.84l.58-3.57a2 2 0 00-1.34-2.23z"/>
+    </svg>
+    Estoque
+  </div>
+  <div class="nav-tab" data-tab="financeiro">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+    </svg>
+    Financeiro
+  </div>
+  <div class="nav-tab" data-tab="dividas">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="5" y="2" width="14" height="20" rx="2"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="12" y2="15"/>
+    </svg>
+    Dívidas
+  </div>
+</nav>
+
+<!-- MODAL: PRODUTO -->
+<div class="modal-overlay" id="modal-produto">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr">
+      <div class="modal-title" id="modal-produto-title">Novo Produto</div>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label" for="prod-nome">Nome do produto</label>
+        <input class="form-input" type="text" id="prod-nome" maxlength="80" placeholder="Ex: Calcinha renda">
+        <div class="form-err" id="prod-nome-err">Informe o nome do produto</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="prod-preco">Preço de venda (R$)</label>
+        <input class="form-input" type="number" id="prod-preco" min="0.01" step="0.01" placeholder="0,00">
+        <div class="form-err" id="prod-preco-err">Informe um preço válido</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Tamanhos disponíveis</label>
+        <div class="chk-group">
+          <div class="chk-item"><input type="checkbox" id="tam-P" value="P"><label for="tam-P">P</label></div>
+          <div class="chk-item"><input type="checkbox" id="tam-M" value="M"><label for="tam-M">M</label></div>
+          <div class="chk-item"><input type="checkbox" id="tam-G" value="G"><label for="tam-G">G</label></div>
+          <div class="chk-item"><input type="checkbox" id="tam-GG" value="GG"><label for="tam-GG">GG</label></div>
+        </div>
+        <div class="form-err" id="prod-tam-err">Selecione ao menos um tamanho</div>
+      </div>
+      <div id="prod-qty-group"></div>
+      <div class="form-group">
+        <label class="form-label">Foto do produto</label>
+        <div class="foto-area" id="foto-area" onclick="document.getElementById('prod-foto-input').click()">
+          <input type="file" id="prod-foto-input" accept="image/jpeg,image/png">
+          <img class="foto-preview" id="prod-foto-preview" style="display:none">
+          <div id="foto-placeholder">
+            <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#D4B8A0" stroke-width="1.5" stroke-linecap="round" style="margin:0 auto 8px">
+              <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+              <polyline points="21,15 16,10 5,21"/>
+            </svg>
+            <div class="foto-label">Toque para adicionar foto<br><small style="font-size:0.72rem;color:#B8A090">JPEG ou PNG · máx. 5MB</small></div>
+          </div>
+        </div>
+        <div class="form-err" id="prod-foto-err"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" id="btn-cancel-produto">Cancelar</button>
+      <button class="btn-primary" id="btn-save-produto">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: VENDA -->
+<div class="modal-overlay" id="modal-venda">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr"><div class="modal-title">Registrar Venda</div></div>
+    <div class="modal-body">
+      <div class="form-group" id="venda-prod-group">
+        <label class="form-label" for="venda-produto">Produto</label>
+        <select class="form-select" id="venda-produto"></select>
+        <div class="form-err" id="venda-produto-err">Selecione um produto</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="venda-tamanho">Tamanho</label>
+        <select class="form-select" id="venda-tamanho">
+          <option value="">Selecione um tamanho</option>
+        </select>
+        <div class="form-err" id="venda-tamanho-err">Selecione um tamanho</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="venda-qty">Quantidade</label>
+        <input class="form-input" type="number" id="venda-qty" min="1" value="1">
+        <div class="form-err" id="venda-qty-err">Quantidade inválida</div>
+        <div class="form-hint" id="venda-estoque-hint"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="venda-total">Total da venda</label>
+        <div class="form-input" id="venda-total" style="background:var(--perola);color:var(--musgo-medio);font-family:'Cormorant Garamond',serif;font-size:1.2rem">—</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" id="btn-cancel-venda">Cancelar</button>
+      <button class="btn-primary" id="btn-save-venda">Confirmar Venda</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: SAÍDA FINANCEIRA -->
+<div class="modal-overlay" id="modal-saida">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr"><div class="modal-title">Registrar Saída</div></div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label" for="saida-desc">Descrição</label>
+        <input class="form-input" type="text" id="saida-desc" maxlength="100" placeholder="Ex: Reposição de estoque">
+        <div class="form-err" id="saida-desc-err">Informe a descrição</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="saida-valor">Valor (R$)</label>
+        <input class="form-input" type="number" id="saida-valor" min="0.01" step="0.01" placeholder="0,00">
+        <div class="form-err" id="saida-valor-err">Informe um valor válido</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="saida-data">Data</label>
+        <input class="form-input" type="date" id="saida-data">
+        <div class="form-err" id="saida-data-err">Informe a data</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" id="btn-cancel-saida">Cancelar</button>
+      <button class="btn-primary" id="btn-save-saida">Registrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: DÍVIDA -->
+<div class="modal-overlay" id="modal-divida">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr"><div class="modal-title">Nova Dívida</div></div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label" for="div-nome">Nome da dívida</label>
+        <input class="form-input" type="text" id="div-nome" maxlength="80" placeholder="Ex: Estoque inicial — cartão">
+        <div class="form-err" id="div-nome-err">Informe o nome</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="div-tipo">Tipo</label>
+        <select class="form-select" id="div-tipo">
+          <option value="boleto_parcelado">Boleto parcelado</option>
+          <option value="pix">PIX</option>
+          <option value="credito_parcelado">Crédito parcelado</option>
+          <option value="dinheiro_emprestado">Dinheiro emprestado</option>
+          <option value="outro">Outro</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="div-valor">Valor total (R$)</label>
+        <input class="form-input" type="number" id="div-valor" min="0.01" step="0.01" placeholder="0,00">
+        <div class="form-err" id="div-valor-err">Informe um valor válido</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Forma de pagamento</label>
+        <div class="radio-group">
+          <div class="radio-item"><input type="radio" name="div-forma" id="div-unico" value="unico" checked><label for="div-unico">Valor único</label></div>
+          <div class="radio-item"><input type="radio" name="div-forma" id="div-parcelado" value="parcelado"><label for="div-parcelado">Parcelado</label></div>
+        </div>
+      </div>
+      <div id="div-unico-fields">
+        <div class="form-group">
+          <label class="form-label" for="div-vencimento">Data de vencimento</label>
+          <input class="form-input" type="date" id="div-vencimento">
+          <div class="form-err" id="div-vencimento-err">Informe a data</div>
+        </div>
+      </div>
+      <div id="div-parcelado-fields" style="display:none">
+        <div class="form-group">
+          <label class="form-label" for="div-parcelas">Número de parcelas</label>
+          <input class="form-input" type="number" id="div-parcelas" min="2" max="120" placeholder="Ex: 3">
+          <div class="form-err" id="div-parcelas-err">Informe o número de parcelas</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="div-primeira">Vencimento da 1ª parcela</label>
+          <input class="form-input" type="date" id="div-primeira">
+          <div class="form-err" id="div-primeira-err">Informe a data</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" id="btn-cancel-divida">Cancelar</button>
+      <button class="btn-primary" id="btn-save-divida">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM DIALOG -->
+<div class="confirm-overlay" id="confirm-overlay">
+  <div class="confirm-box">
+    <div class="confirm-title" id="confirm-title">Confirmar ação</div>
+    <div class="confirm-msg" id="confirm-msg">Tem certeza?</div>
+    <div class="confirm-btns">
+      <button class="btn-confirm-cancel" id="btn-confirm-cancel">Cancelar</button>
+      <button class="btn-confirm-ok" id="btn-confirm-ok">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+'use strict';
+
+// ── UTILITIES ──────────────────────────────────────────────────────────────────
+function uid() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+}
+
+function sanitize(str) {
+  const d = document.createElement('div');
+  d.appendChild(document.createTextNode(String(str ?? '')));
+  return d.innerHTML;
+}
+
+function fmt(val) {
+  return 'R$ ' + Number(val || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function fmtDate(iso) {
+  if (!iso) return '';
+  const [y, m, d] = iso.split('-');
+  return `${d}/${m}/${y}`;
+}
+
+function todayISO() {
+  return new Date().toISOString().split('T')[0];
+}
+
+function addDays(isoDate, days) {
+  const d = new Date(isoDate + 'T12:00:00');
+  d.setDate(d.getDate() + days);
+  return d.toISOString().split('T')[0];
+}
+
+const MONTHS_SHORT = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+const TIPOS_DIVIDA = {
+  boleto_parcelado: 'Boleto parcelado',
+  pix: 'PIX',
+  credito_parcelado: 'Crédito parcelado',
+  dinheiro_emprestado: 'Dinheiro emprestado',
+  outro: 'Outro'
+};
+
+// ── STORAGE ────────────────────────────────────────────────────────────────────
+const DB = {
+  data: null,
+
+  init() {
+    const ver = localStorage.getItem('ev_version');
+    if (!ver) {
+      this._createInitial();
+    } else {
+      this._load();
+    }
+  },
+
+  _createInitial() {
+    const debtId = uid();
+    const p1 = uid(), p2 = uid(), p3 = uid();
+    this.data = {
+      ev_version: '1.0',
+      ev_produtos: [],
+      ev_vendas: [],
+      ev_lancamentos: [],
+      ev_dividas: [{
+        id: debtId,
+        nome: 'Estoque inicial — cartão',
+        tipo: 'credito_parcelado',
+        valorTotal: 386.00,
+        parcelado: true,
+        parcelas: [
+          { id: p1, numero: 1, valor: 128.70, vencimento: '2026-05-15', pago: false, dataPagamento: null, lancamentoId: null },
+          { id: p2, numero: 2, valor: 128.70, vencimento: '2026-06-15', pago: false, dataPagamento: null, lancamentoId: null },
+          { id: p3, numero: 3, valor: 128.60, vencimento: '2026-07-15', pago: false, dataPagamento: null, lancamentoId: null }
+        ],
+        createdAt: new Date().toISOString()
+      }]
+    };
+    this._save();
+  },
+
+  _load() {
+    try {
+      this.data = {
+        ev_version:     localStorage.getItem('ev_version') || '1.0',
+        ev_produtos:    JSON.parse(localStorage.getItem('ev_produtos') || '[]'),
+        ev_vendas:      JSON.parse(localStorage.getItem('ev_vendas') || '[]'),
+        ev_lancamentos: JSON.parse(localStorage.getItem('ev_lancamentos') || '[]'),
+        ev_dividas:     JSON.parse(localStorage.getItem('ev_dividas') || '[]')
+      };
+    } catch (e) {
+      this._createInitial();
+    }
+  },
+
+  _save() {
+    try {
+      localStorage.setItem('ev_version',     this.data.ev_version);
+      localStorage.setItem('ev_produtos',    JSON.stringify(this.data.ev_produtos));
+      localStorage.setItem('ev_vendas',      JSON.stringify(this.data.ev_vendas));
+      localStorage.setItem('ev_lancamentos', JSON.stringify(this.data.ev_lancamentos));
+      localStorage.setItem('ev_dividas',     JSON.stringify(this.data.ev_dividas));
+    } catch (e) {
+      if (e.name === 'QuotaExceededError') {
+        toast('Armazenamento cheio. Remova fotos para liberar espaço.', 'error');
+      }
+    }
+  },
+
+  save() { this._save(); }
+};
+
+// ── TOAST ──────────────────────────────────────────────────────────────────────
+function toast(msg, type = 'success', duration = 3200) {
+  const container = document.getElementById('toast-container');
+  const el = document.createElement('div');
+  el.className = `toast toast-${type}`;
+  const icons = { success: '✓', error: '✕', info: 'ℹ' };
+  el.innerHTML = `<span style="font-size:1rem">${icons[type] || '✓'}</span> ${sanitize(msg)}`;
+  container.appendChild(el);
+  setTimeout(() => {
+    el.style.transition = 'opacity 0.3s';
+    el.style.opacity = '0';
+    setTimeout(() => el.remove(), 320);
+  }, duration);
+}
+
+// ── CONFIRM ────────────────────────────────────────────────────────────────────
+let _confirmCallback = null;
+function confirm(title, msg, onOk) {
+  document.getElementById('confirm-title').textContent = title;
+  document.getElementById('confirm-msg').textContent = msg;
+  _confirmCallback = onOk;
+  document.getElementById('confirm-overlay').classList.add('open');
+}
+document.getElementById('btn-confirm-ok').addEventListener('click', () => {
+  document.getElementById('confirm-overlay').classList.remove('open');
+  if (_confirmCallback) { _confirmCallback(); _confirmCallback = null; }
+});
+document.getElementById('btn-confirm-cancel').addEventListener('click', () => {
+  document.getElementById('confirm-overlay').classList.remove('open');
+  _confirmCallback = null;
+});
+
+// ── NAVIGATION ─────────────────────────────────────────────────────────────────
+const App = {
+  tab: 'inicio',
+  finMonth: new Date().getMonth(),
+  finYear: new Date().getFullYear(),
+  editingProductId: null,
+  saleProductId: null,
+};
+
+document.querySelectorAll('.nav-tab').forEach(btn => {
+  btn.addEventListener('click', () => setTab(btn.dataset.tab));
+});
+
+function setTab(name) {
+  App.tab = name;
+  document.querySelectorAll('.nav-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.toggle('active', c.id === `tab-${name}`));
+
+  const fab = document.getElementById('fab-btn');
+  if (name === 'estoque' || name === 'dividas') {
+    fab.classList.remove('hidden');
+    fab.onclick = name === 'estoque' ? openAddProduct : openAddDebt;
+  } else {
+    fab.classList.add('hidden');
+  }
+
+  if (name === 'inicio')      renderInicio();
+  if (name === 'estoque')     renderEstoque();
+  if (name === 'financeiro')  renderFinanceiro();
+  if (name === 'dividas')     renderDividas();
+}
+
+// ── MODAL HELPERS ──────────────────────────────────────────────────────────────
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) closeModal(overlay.id);
+  });
+});
+
+// ── RENDER: INICIO ─────────────────────────────────────────────────────────────
+function renderInicio() {
+  const now = new Date();
+  const m = now.getMonth(), y = now.getFullYear();
+
+  const lancamentos = DB.data.ev_lancamentos;
+  const doMes = lancamentos.filter(l => {
+    const d = new Date(l.data + 'T12:00:00');
+    return d.getMonth() === m && d.getFullYear() === y;
+  });
+
+  const receita = doMes.filter(l => l.tipo === 'entrada').reduce((s, l) => s + l.valor, 0);
+  const custos  = doMes.filter(l => l.tipo === 'saida').reduce((s, l) => s + l.valor, 0);
+  const saldo   = receita - custos;
+
+  const totalPecas = DB.data.ev_produtos.reduce((s, p) => {
+    return s + Object.values(p.tamanhos).reduce((a, b) => a + b, 0);
+  }, 0);
+
+  // Próxima parcela não paga
+  let proxParcela = null;
+  let proxDivida  = null;
+  DB.data.ev_dividas.forEach(div => {
+    const parcelas = div.parcelado ? div.parcelas : (div.parcelas || []);
+    parcelas.forEach(p => {
+      if (!p.pago) {
+        if (!proxParcela || p.vencimento < proxParcela.vencimento) {
+          proxParcela = p;
+          proxDivida  = div;
+        }
+      }
+    });
+  });
+
+  const saldoColor = saldo >= 0 ? 'var(--musgo-suave)' : '#E8B4A0';
+
+  document.getElementById('inicio-content').innerHTML = `
+    <div class="card saldo-card" style="background:var(--musgo-escuro)">
+      <div class="saldo-label">Saldo do mês · ${MONTHS_SHORT[m]}/${y}</div>
+      <div class="saldo-valor">${fmt(saldo)}</div>
+    </div>
+    <div class="grid-2">
+      <div class="card mini-card mini-receita">
+        <div class="mini-label">Receita</div>
+        <div class="mini-valor">${fmt(receita)}</div>
+      </div>
+      <div class="card mini-card mini-custos">
+        <div class="mini-label">Custos</div>
+        <div class="mini-valor">${fmt(custos)}</div>
+      </div>
+    </div>
+    <div class="card estoque-info-card">
+      <div>
+        <div class="estoque-info-label">Total em estoque</div>
+        <div class="estoque-info-val">${totalPecas} peças</div>
+      </div>
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--musgo-claro)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.57a1 1 0 00.99.84H5v10a2 2 0 002 2h10a2 2 0 002-2V10h1.15a1 1 0 00.99-.84l.58-3.57a2 2 0 00-1.34-2.23z"/>
+      </svg>
+    </div>
+    ${proxParcela && proxDivida ? `
+    <div class="card proxima-divida-card">
+      <div class="proxima-label">Próxima parcela</div>
+      <div class="proxima-nome">${sanitize(proxDivida.nome)}</div>
+      <div class="proxima-row">
+        <div>
+          <div class="proxima-valor">${fmt(proxParcela.valor)}</div>
+          <div style="font-size:0.78rem;color:var(--marrom-claro);margin-top:2px">Vence ${fmtDate(proxParcela.vencimento)}</div>
+        </div>
+        <span class="badge badge-${proxParcela.pago ? 'pago' : 'pendente'}">${proxParcela.pago ? 'Pago' : 'Pendente'}</span>
+      </div>
+    </div>` : ''}
+    <button class="btn-acao-rapida" id="btn-quick-venda">
+      + Registrar Venda
+    </button>
+  `;
+
+  document.getElementById('btn-quick-venda')?.addEventListener('click', () => openSaleModal(null));
+}
+
+// ── RENDER: ESTOQUE ────────────────────────────────────────────────────────────
+function renderEstoque() {
+  const produtos = DB.data.ev_produtos;
+  const el = document.getElementById('estoque-content');
+
+  if (!produtos.length) {
+    el.innerHTML = `
+      <div class="empty-state">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.57a1 1 0 00.99.84H5v10a2 2 0 002 2h10a2 2 0 002-2V10h1.15a1 1 0 00.99-.84l.58-3.57a2 2 0 00-1.34-2.23z"/>
+        </svg>
+        <p>Nenhum produto cadastrado</p>
+        <small>Toque em + para adicionar</small>
+      </div>`;
+    return;
+  }
+
+  el.innerHTML = produtos.map((p, i) => {
+    const totalPecas = Object.values(p.tamanhos).reduce((a, b) => a + b, 0);
+    const sizes = Object.keys(p.tamanhos);
+    const tamanhoHTML = sizes.map(s => `
+      <div class="tamanho-row">
+        <span class="tamanho-tag">${sanitize(s)}</span>
+        <div class="qty-controls">
+          <button class="qty-btn" data-pid="${p.id}" data-tam="${s}" data-delta="-1">−</button>
+          <span class="qty-num" id="qty-${p.id}-${s}">${p.tamanhos[s]}</span>
+          <button class="qty-btn" data-pid="${p.id}" data-tam="${s}" data-delta="1">+</button>
+        </div>
+      </div>`).join('');
+
+    const fotoHTML = p.foto
+      ? `<img src="${p.foto}" alt="${sanitize(p.nome)}">`
+      : `<svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#C4A882" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.57a1 1 0 00.99.84H5v10a2 2 0 002 2h10a2 2 0 002-2V10h1.15a1 1 0 00.99-.84l.58-3.57a2 2 0 00-1.34-2.23z"/>
+        </svg>`;
+
+    return `
+      <div class="card produto-card" style="animation-delay:${(i * 0.07 + 0.04).toFixed(2)}s">
+        <div class="produto-foto-wrap">${fotoHTML}</div>
+        <div class="produto-info">
+          <div class="produto-nome">${sanitize(p.nome)}</div>
+          <div class="produto-preco">${fmt(p.preco)} / unidade</div>
+          <div class="tamanhos-lista">${tamanhoHTML}</div>
+          <div class="produto-total">Total: <strong>${totalPecas}</strong> peça${totalPecas !== 1 ? 's' : ''}</div>
+        </div>
+        <div class="produto-footer">
+          <button class="btn-venda-card" data-pid="${p.id}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+            Registrar Venda
+          </button>
+          <div class="btn-acoes-card">
+            <button class="btn-icon" data-edit="${p.id}" title="Editar">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+            </button>
+            <button class="btn-icon danger" data-del="${p.id}" title="Excluir">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3,6 5,6 21,6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+
+  // Qty buttons
+  el.querySelectorAll('.qty-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const pid = btn.dataset.pid, tam = btn.dataset.tam, delta = parseInt(btn.dataset.delta);
+      updateQty(pid, tam, delta);
+    });
+  });
+
+  // Venda buttons
+  el.querySelectorAll('.btn-venda-card').forEach(btn => {
+    btn.addEventListener('click', () => openSaleModal(btn.dataset.pid));
+  });
+
+  // Edit buttons
+  el.querySelectorAll('[data-edit]').forEach(btn => {
+    btn.addEventListener('click', () => openEditProduct(btn.dataset.edit));
+  });
+
+  // Delete buttons
+  el.querySelectorAll('[data-del]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const p = DB.data.ev_produtos.find(x => x.id === btn.dataset.del);
+      if (!p) return;
+      confirm('Excluir produto', `Deseja excluir "${p.nome}"? Esta ação não pode ser desfeita.`, () => {
+        DB.data.ev_produtos = DB.data.ev_produtos.filter(x => x.id !== p.id);
+        DB.save();
+        renderEstoque();
+        toast('Produto excluído');
+      });
+    });
+  });
+}
+
+function updateQty(pid, tam, delta) {
+  const p = DB.data.ev_produtos.find(x => x.id === pid);
+  if (!p) return;
+  const newVal = (p.tamanhos[tam] || 0) + delta;
+  if (newVal < 0) return;
+  p.tamanhos[tam] = newVal;
+  DB.save();
+  const el = document.getElementById(`qty-${pid}-${tam}`);
+  if (el) el.textContent = newVal;
+  // update total
+  const totalPecas = Object.values(p.tamanhos).reduce((a, b) => a + b, 0);
+  // find the produto-total element by traversing up from the qty element
+  const card = el?.closest('.produto-card');
+  if (card) {
+    const totalEl = card.querySelector('.produto-total');
+    if (totalEl) totalEl.innerHTML = `Total: <strong>${totalPecas}</strong> peça${totalPecas !== 1 ? 's' : ''}`;
+  }
+}
+
+// ── RENDER: FINANCEIRO ─────────────────────────────────────────────────────────
+function renderFinanceiro() {
+  const el = document.getElementById('financeiro-content');
+  const now = new Date();
+
+  // Build 13-month list
+  const months = [];
+  for (let i = 12; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    months.push({ y: d.getFullYear(), m: d.getMonth() });
+  }
+
+  const selY = App.finYear, selM = App.finMonth;
+
+  const filtered = DB.data.ev_lancamentos.filter(l => {
+    const d = new Date(l.data + 'T12:00:00');
+    return d.getFullYear() === selY && d.getMonth() === selM;
+  }).sort((a, b) => b.data.localeCompare(a.data));
+
+  const entradas = filtered.filter(l => l.tipo === 'entrada').reduce((s, l) => s + l.valor, 0);
+  const saidas   = filtered.filter(l => l.tipo === 'saida').reduce((s, l) => s + l.valor, 0);
+  const saldo    = entradas - saidas;
+
+  const mesFilterHTML = months.map(({ y, m }) => {
+    const active = y === selY && m === selM ? 'active' : '';
+    return `<button class="mes-btn ${active}" data-m="${m}" data-y="${y}">${MONTHS_SHORT[m]} ${y}</button>`;
+  }).join('');
+
+  const lancamentosHTML = filtered.length
+    ? filtered.map(l => `
+        <div class="card lancamento-card" style="margin-bottom:8px">
+          <div class="lancamento-linha ${l.tipo}"></div>
+          <div class="lancamento-body">
+            <span class="lancamento-badge ${l.tipo}">${l.tipo === 'entrada' ? 'Entrada' : 'Saída'}</span>
+            <div class="lancamento-desc">${sanitize(l.descricao)}</div>
+            <div class="lancamento-data">${fmtDate(l.data)}</div>
+          </div>
+          <div class="lancamento-val ${l.tipo}">${l.tipo === 'saida' ? '−' : '+'}${fmt(l.valor)}</div>
+        </div>`).join('')
+    : `<div class="sem-dados">Nenhum lançamento neste período</div>`;
+
+  el.innerHTML = `
+    <div class="mes-filter">${mesFilterHTML}</div>
+    <div class="fin-resumo">
+      <div class="card fin-card fin-entradas">
+        <div class="fin-label">Entradas</div>
+        <div class="fin-valor">${fmt(entradas)}</div>
+      </div>
+      <div class="card fin-card fin-saidas">
+        <div class="fin-label">Saídas</div>
+        <div class="fin-valor">${fmt(saidas)}</div>
+      </div>
+    </div>
+    <div class="card saldo-periodo">
+      <div class="saldo-periodo-label">Saldo do período</div>
+      <div class="saldo-periodo-valor ${saldo >= 0 ? 'saldo-positivo' : 'saldo-negativo'}">${fmt(saldo)}</div>
+    </div>
+    <button class="btn-saida" id="btn-abrir-saida">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Registrar Saída
+    </button>
+    <div id="lancamentos-lista">${lancamentosHTML}</div>
+  `;
+
+  // Month buttons
+  el.querySelectorAll('.mes-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      App.finMonth = parseInt(btn.dataset.m);
+      App.finYear  = parseInt(btn.dataset.y);
+      renderFinanceiro();
+    });
+  });
+
+  document.getElementById('btn-abrir-saida')?.addEventListener('click', openAddExpense);
+
+  // Auto scroll to active month
+  const activeBtn = el.querySelector('.mes-btn.active');
+  if (activeBtn) setTimeout(() => activeBtn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' }), 100);
+}
+
+// ── RENDER: DIVIDAS ────────────────────────────────────────────────────────────
+function renderDividas() {
+  const el = document.getElementById('dividas-content');
+  const dividas = DB.data.ev_dividas;
+
+  if (!dividas.length) {
+    el.innerHTML = `
+      <div class="empty-state">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="5" y="2" width="14" height="20" rx="2"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/>
+        </svg>
+        <p>Nenhuma dívida cadastrada</p>
+        <small>Toque em + para adicionar</small>
+      </div>`;
+    return;
+  }
+
+  el.innerHTML = dividas.map((div, i) => {
+    const parcelas = div.parcelas || [];
+    const valorPago = parcelas.filter(p => p.pago).reduce((s, p) => s + p.valor, 0);
+    const valorRestante = div.valorTotal - valorPago;
+    const pct = div.valorTotal > 0 ? Math.min(100, (valorPago / div.valorTotal) * 100) : 0;
+
+    const parcelasHTML = parcelas.map(p => `
+      <div class="parcela-item ${p.pago ? 'pago' : ''}">
+        <div class="parcela-check ${p.pago ? 'checked' : ''}" data-did="${div.id}" data-pid="${p.id}">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20,6 9,17 4,12"/>
+          </svg>
+        </div>
+        <div class="parcela-info">
+          <div class="parcela-nome">Parcela ${p.numero}/${parcelas.length}</div>
+          <div class="parcela-data">${p.pago ? `Pago em ${fmtDate(p.dataPagamento)}` : `Vence ${fmtDate(p.vencimento)}`}</div>
+        </div>
+        <div class="parcela-val">${fmt(p.valor)}</div>
+      </div>`).join('');
+
+    return `
+      <div class="card divida-card" style="animation-delay:${(i * 0.07 + 0.04).toFixed(2)}s">
+        <div class="divida-header">
+          <div>
+            <div class="divida-nome">${sanitize(div.nome)}</div>
+            <div class="divida-tipo">${TIPOS_DIVIDA[div.tipo] || div.tipo}</div>
+          </div>
+          <button class="btn-excluir-divida" data-did="${div.id}">Excluir</button>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress-labels">
+            <span>Pago: ${fmt(valorPago)}</span>
+            <span>${Math.round(pct)}%</span>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width:${pct}%"></div>
+          </div>
+        </div>
+        <div class="divida-valores">
+          <div class="div-val">
+            <div class="div-val-label">Total</div>
+            <div class="div-val-num">${fmt(div.valorTotal)}</div>
+          </div>
+          <div class="div-val">
+            <div class="div-val-label">Pago</div>
+            <div class="div-val-num" style="color:var(--verde)">${fmt(valorPago)}</div>
+          </div>
+          <div class="div-val">
+            <div class="div-val-label">Restante</div>
+            <div class="div-val-num" style="color:var(--vermelho)">${fmt(valorRestante)}</div>
+          </div>
+        </div>
+        ${parcelas.length ? `<div class="parcelas-section">${parcelasHTML}</div>` : ''}
+      </div>`;
+  }).join('');
+
+  // Installment checkboxes
+  el.querySelectorAll('.parcela-check:not(.checked)').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const did = btn.dataset.did, pid = btn.dataset.pid;
+      const div = DB.data.ev_dividas.find(d => d.id === did);
+      const parcela = div?.parcelas?.find(p => p.id === pid);
+      if (!parcela || parcela.pago) return;
+      const n = parcela.numero, total = div.parcelas.length;
+      confirm(
+        'Confirmar pagamento',
+        `Marcar Parcela ${n}/${total} de "${div.nome}" como paga?\n\nUm lançamento de saída de ${fmt(parcela.valor)} será criado.`,
+        () => markInstallmentPaid(did, pid)
+      );
+    });
+  });
+
+  // Delete debt buttons
+  el.querySelectorAll('.btn-excluir-divida').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const div = DB.data.ev_dividas.find(d => d.id === btn.dataset.did);
+      if (!div) return;
+      confirm('Excluir dívida', `Deseja excluir "${div.nome}"?`, () => {
+        DB.data.ev_dividas = DB.data.ev_dividas.filter(d => d.id !== div.id);
+        DB.save();
+        renderDividas();
+        toast('Dívida excluída');
+      });
+    });
+  });
+}
+
+// ── PRODUCT ACTIONS ────────────────────────────────────────────────────────────
+let _prodFotoBase64 = null;
+
+function openAddProduct() {
+  App.editingProductId = null;
+  _prodFotoBase64 = null;
+  document.getElementById('modal-produto-title').textContent = 'Novo Produto';
+  document.getElementById('prod-nome').value = '';
+  document.getElementById('prod-preco').value = '';
+  ['P','M','G','GG'].forEach(s => { document.getElementById(`tam-${s}`).checked = false; });
+  document.getElementById('prod-qty-group').innerHTML = '';
+  document.getElementById('prod-foto-preview').style.display = 'none';
+  document.getElementById('foto-placeholder').style.display = 'block';
+  document.getElementById('prod-foto-input').value = '';
+  clearProdErrors();
+  openModal('modal-produto');
+}
+
+function openEditProduct(id) {
+  const p = DB.data.ev_produtos.find(x => x.id === id);
+  if (!p) return;
+  App.editingProductId = id;
+  _prodFotoBase64 = p.foto || null;
+  document.getElementById('modal-produto-title').textContent = 'Editar Produto';
+  document.getElementById('prod-nome').value = p.nome;
+  document.getElementById('prod-preco').value = p.preco;
+
+  const sizes = ['P','M','G','GG'];
+  sizes.forEach(s => {
+    const cb = document.getElementById(`tam-${s}`);
+    cb.checked = s in p.tamanhos;
+  });
+
+  rebuildQtyGroup(p.tamanhos);
+
+  if (p.foto) {
+    document.getElementById('prod-foto-preview').src = p.foto;
+    document.getElementById('prod-foto-preview').style.display = 'block';
+    document.getElementById('foto-placeholder').style.display = 'none';
+  } else {
+    document.getElementById('prod-foto-preview').style.display = 'none';
+    document.getElementById('foto-placeholder').style.display = 'block';
+  }
+
+  clearProdErrors();
+  openModal('modal-produto');
+}
+
+function rebuildQtyGroup(existingTamanhos) {
+  const sizes = ['P','M','G','GG'];
+  const group = document.getElementById('prod-qty-group');
+  group.innerHTML = '';
+  sizes.forEach(s => {
+    const cb = document.getElementById(`tam-${s}`);
+    if (!cb.checked) return;
+    const row = document.createElement('div');
+    row.className = 'qty-row-form';
+    row.id = `qty-row-${s}`;
+    row.innerHTML = `
+      <span class="qty-size-label">${s}</span>
+      <input class="form-input form-input-sm" type="number" id="qty-val-${s}" min="0" value="${existingTamanhos?.[s] ?? 0}" placeholder="Qtd. inicial">
+    `;
+    group.appendChild(row);
+  });
+}
+
+function clearProdErrors() {
+  ['prod-nome-err','prod-preco-err','prod-tam-err','prod-foto-err'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.classList.remove('show'); }
+  });
+  ['prod-nome','prod-preco'].forEach(id => {
+    document.getElementById(id)?.classList.remove('err');
+  });
+}
+
+// Checkbox listeners
+['P','M','G','GG'].forEach(s => {
+  document.getElementById(`tam-${s}`).addEventListener('change', () => {
+    const sizes = ['P','M','G','GG'];
+    const currentTamanhos = {};
+    sizes.forEach(sz => {
+      const el = document.getElementById(`qty-val-${sz}`);
+      if (el) currentTamanhos[sz] = parseInt(el.value) || 0;
+    });
+    rebuildQtyGroup(currentTamanhos);
+  });
+});
+
+document.getElementById('prod-foto-input').addEventListener('change', async e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const result = await validateAndProcessImage(file);
+  if (result.error) {
+    const errEl = document.getElementById('prod-foto-err');
+    errEl.textContent = result.error;
+    errEl.classList.add('show');
+    e.target.value = '';
+    return;
+  }
+  document.getElementById('prod-foto-err').classList.remove('show');
+  _prodFotoBase64 = result.base64;
+  document.getElementById('prod-foto-preview').src = result.base64;
+  document.getElementById('prod-foto-preview').style.display = 'block';
+  document.getElementById('foto-placeholder').style.display = 'none';
+});
+
+async function validateAndProcessImage(file) {
+  if (file.size > 5 * 1024 * 1024) return { error: 'Arquivo muito grande. Máximo 5MB.' };
+  if (!['image/jpeg','image/png'].includes(file.type)) return { error: 'Apenas JPEG e PNG são aceitos.' };
+
+  // Verify real MIME type via magic bytes
+  const buf = await file.slice(0, 4).arrayBuffer();
+  const bytes = new Uint8Array(buf);
+  const isJPEG = bytes[0] === 0xFF && bytes[1] === 0xD8;
+  const isPNG  = bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4E && bytes[3] === 0x47;
+  if (!isJPEG && !isPNG) return { error: 'Arquivo inválido. Apenas JPEG e PNG reais são aceitos.' };
+
+  // Compress via canvas
+  const base64 = await compressImage(file);
+  if (base64.length > 2 * 1024 * 1024) return { error: 'Imagem muito grande após compressão. Tente uma menor.' };
+  return { base64 };
+}
+
+function compressImage(file) {
+  return new Promise(resolve => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      const MAX_W = 800;
+      let { naturalWidth: w, naturalHeight: h } = img;
+      if (w > MAX_W) { h = Math.round(h * MAX_W / w); w = MAX_W; }
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      URL.revokeObjectURL(url);
+      resolve(canvas.toDataURL('image/jpeg', 0.72));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); resolve(null); };
+    img.src = url;
+  });
+}
+
+document.getElementById('btn-cancel-produto').addEventListener('click', () => closeModal('modal-produto'));
+document.getElementById('btn-save-produto').addEventListener('click', saveProduto);
+
+function saveProduto() {
+  let valid = true;
+  const nome   = document.getElementById('prod-nome').value.trim();
+  const preco  = parseFloat(document.getElementById('prod-preco').value);
+  const sizes  = ['P','M','G','GG'].filter(s => document.getElementById(`tam-${s}`).checked);
+
+  if (!nome) {
+    document.getElementById('prod-nome').classList.add('err');
+    document.getElementById('prod-nome-err').classList.add('show');
+    valid = false;
+  }
+  if (!preco || preco <= 0 || isNaN(preco)) {
+    document.getElementById('prod-preco').classList.add('err');
+    document.getElementById('prod-preco-err').classList.add('show');
+    valid = false;
+  }
+  if (!sizes.length) {
+    document.getElementById('prod-tam-err').classList.add('show');
+    valid = false;
+  }
+  if (!valid) return;
+
+  const tamanhos = {};
+  sizes.forEach(s => {
+    const val = parseInt(document.getElementById(`qty-val-${s}`)?.value || '0');
+    tamanhos[s] = Math.max(0, isNaN(val) ? 0 : val);
+  });
+
+  if (App.editingProductId) {
+    const idx = DB.data.ev_produtos.findIndex(p => p.id === App.editingProductId);
+    if (idx > -1) {
+      DB.data.ev_produtos[idx] = {
+        ...DB.data.ev_produtos[idx],
+        nome, preco, tamanhos,
+        foto: _prodFotoBase64
+      };
+    }
+    toast('Produto atualizado');
+  } else {
+    DB.data.ev_produtos.push({ id: uid(), nome, preco, tamanhos, foto: _prodFotoBase64, createdAt: new Date().toISOString() });
+    toast('Produto cadastrado');
+  }
+
+  DB.save();
+  closeModal('modal-produto');
+  renderEstoque();
+}
+
+// ── SALE ACTIONS ───────────────────────────────────────────────────────────────
+function openSaleModal(prodId) {
+  App.saleProductId = prodId;
+  const prodGroup = document.getElementById('venda-prod-group');
+  const prodSelect = document.getElementById('venda-produto');
+  const produtos = DB.data.ev_produtos;
+
+  // Clear errors
+  ['venda-produto-err','venda-tamanho-err','venda-qty-err'].forEach(id => document.getElementById(id).classList.remove('show'));
+  ['venda-produto','venda-tamanho','venda-qty'].forEach(id => document.getElementById(id).classList.remove('err'));
+  document.getElementById('venda-total').textContent = '—';
+  document.getElementById('venda-estoque-hint').textContent = '';
+
+  if (prodId) {
+    prodGroup.style.display = 'none';
+  } else {
+    prodGroup.style.display = 'block';
+    prodSelect.innerHTML = '<option value="">Selecione um produto</option>' +
+      produtos.map(p => `<option value="${p.id}">${sanitize(p.nome)}</option>`).join('');
+  }
+
+  populateSizesForSale(prodId);
+  document.getElementById('venda-qty').value = '1';
+  openModal('modal-venda');
+}
+
+function populateSizesForSale(prodId) {
+  const tamSelect = document.getElementById('venda-tamanho');
+  tamSelect.innerHTML = '<option value="">Selecione um tamanho</option>';
+
+  const p = DB.data.ev_produtos.find(x => x.id === prodId);
+  if (!p) return;
+
+  Object.entries(p.tamanhos).forEach(([tam, qty]) => {
+    if (qty > 0) {
+      const opt = document.createElement('option');
+      opt.value = tam;
+      opt.textContent = `${tam} (${qty} em estoque)`;
+      tamSelect.appendChild(opt);
+    }
+  });
+}
+
+document.getElementById('venda-produto').addEventListener('change', e => {
+  const pid = e.target.value;
+  App.saleProductId = pid;
+  populateSizesForSale(pid);
+  updateVendaTotal();
+});
+
+document.getElementById('venda-tamanho').addEventListener('change', () => {
+  updateVendaTotal();
+  const pid = App.saleProductId;
+  const tam = document.getElementById('venda-tamanho').value;
+  const p = DB.data.ev_produtos.find(x => x.id === pid);
+  if (p && tam) {
+    const stock = p.tamanhos[tam] || 0;
+    document.getElementById('venda-estoque-hint').textContent = `${stock} disponíve${stock !== 1 ? 'is' : 'l'} em estoque`;
+    document.getElementById('venda-qty').max = stock;
+  } else {
+    document.getElementById('venda-estoque-hint').textContent = '';
+  }
+});
+
+document.getElementById('venda-qty').addEventListener('input', updateVendaTotal);
+
+function updateVendaTotal() {
+  const pid = App.saleProductId;
+  const p = DB.data.ev_produtos.find(x => x.id === pid);
+  const qty = parseInt(document.getElementById('venda-qty').value) || 0;
+  if (p && qty > 0) {
+    document.getElementById('venda-total').textContent = fmt(p.preco * qty);
+  } else {
+    document.getElementById('venda-total').textContent = '—';
+  }
+}
+
+document.getElementById('btn-cancel-venda').addEventListener('click', () => closeModal('modal-venda'));
+document.getElementById('btn-save-venda').addEventListener('click', saveVenda);
+
+function saveVenda() {
+  let valid = true;
+  const pid = App.saleProductId || document.getElementById('venda-produto').value;
+  const tam = document.getElementById('venda-tamanho').value;
+  const qty = parseInt(document.getElementById('venda-qty').value);
+
+  if (!pid) {
+    document.getElementById('venda-produto').classList.add('err');
+    document.getElementById('venda-produto-err').classList.add('show');
+    valid = false;
+  }
+  if (!tam) {
+    document.getElementById('venda-tamanho').classList.add('err');
+    document.getElementById('venda-tamanho-err').classList.add('show');
+    valid = false;
+  }
+  if (!valid) return;
+
+  const p = DB.data.ev_produtos.find(x => x.id === pid);
+  if (!p) { toast('Produto não encontrado', 'error'); return; }
+
+  const stock = p.tamanhos[tam] || 0;
+  if (!qty || qty <= 0 || qty > stock) {
+    document.getElementById('venda-qty').classList.add('err');
+    document.getElementById('venda-qty-err').textContent = qty > stock
+      ? `Estoque insuficiente. Disponível: ${stock}`
+      : 'Quantidade inválida';
+    document.getElementById('venda-qty-err').classList.add('show');
+    return;
+  }
+
+  // Deduct stock
+  p.tamanhos[tam] -= qty;
+  const valor = p.preco * qty;
+  const descricao = `${p.nome} · ${tam} · ${qty} un.`;
+
+  // Create sale record
+  const venda = { id: uid(), produtoId: p.id, produtoNome: p.nome, tamanho: tam, quantidade: qty, valorUnitario: p.preco, valorTotal: valor, data: todayISO(), createdAt: new Date().toISOString() };
+  DB.data.ev_vendas.push(venda);
+
+  // Create financial entry
+  DB.data.ev_lancamentos.push({ id: uid(), tipo: 'entrada', descricao, valor, data: todayISO(), origem: 'venda', referenciaId: venda.id, createdAt: new Date().toISOString() });
+
+  DB.save();
+  closeModal('modal-venda');
+  toast(`Venda registrada · ${fmt(valor)}`);
+  renderEstoque();
+  if (App.tab === 'inicio') renderInicio();
+}
+
+// ── EXPENSE ACTIONS ────────────────────────────────────────────────────────────
+function openAddExpense() {
+  document.getElementById('saida-desc').value = '';
+  document.getElementById('saida-valor').value = '';
+  document.getElementById('saida-data').value = todayISO();
+  ['saida-desc-err','saida-valor-err','saida-data-err'].forEach(id => document.getElementById(id).classList.remove('show'));
+  ['saida-desc','saida-valor','saida-data'].forEach(id => document.getElementById(id).classList.remove('err'));
+  openModal('modal-saida');
+}
+
+document.getElementById('btn-cancel-saida').addEventListener('click', () => closeModal('modal-saida'));
+document.getElementById('btn-save-saida').addEventListener('click', saveSaida);
+
+function saveSaida() {
+  const desc  = document.getElementById('saida-desc').value.trim();
+  const valor = parseFloat(document.getElementById('saida-valor').value);
+  const data  = document.getElementById('saida-data').value;
+  let valid = true;
+
+  if (!desc) { document.getElementById('saida-desc').classList.add('err'); document.getElementById('saida-desc-err').classList.add('show'); valid = false; }
+  if (!valor || valor <= 0 || isNaN(valor)) { document.getElementById('saida-valor').classList.add('err'); document.getElementById('saida-valor-err').classList.add('show'); valid = false; }
+  if (!data) { document.getElementById('saida-data').classList.add('err'); document.getElementById('saida-data-err').classList.add('show'); valid = false; }
+  if (!valid) return;
+
+  DB.data.ev_lancamentos.push({ id: uid(), tipo: 'saida', descricao: desc, valor, data, origem: 'manual', referenciaId: null, createdAt: new Date().toISOString() });
+  DB.save();
+  closeModal('modal-saida');
+  toast('Saída registrada');
+  renderFinanceiro();
+  if (App.tab === 'inicio') renderInicio();
+}
+
+// ── DEBT ACTIONS ───────────────────────────────────────────────────────────────
+function openAddDebt() {
+  document.getElementById('div-nome').value = '';
+  document.getElementById('div-tipo').value = 'credito_parcelado';
+  document.getElementById('div-valor').value = '';
+  document.getElementById('div-unico').checked = true;
+  document.getElementById('div-unico-fields').style.display = 'block';
+  document.getElementById('div-parcelado-fields').style.display = 'none';
+  document.getElementById('div-vencimento').value = '';
+  document.getElementById('div-parcelas').value = '';
+  document.getElementById('div-primeira').value = '';
+  ['div-nome-err','div-valor-err','div-vencimento-err','div-parcelas-err','div-primeira-err'].forEach(id => document.getElementById(id).classList.remove('show'));
+  ['div-nome','div-valor','div-vencimento','div-parcelas','div-primeira'].forEach(id => document.getElementById(id)?.classList.remove('err'));
+  openModal('modal-divida');
+}
+
+document.querySelectorAll('input[name="div-forma"]').forEach(radio => {
+  radio.addEventListener('change', () => {
+    const parcelado = document.getElementById('div-parcelado').checked;
+    document.getElementById('div-unico-fields').style.display = parcelado ? 'none' : 'block';
+    document.getElementById('div-parcelado-fields').style.display = parcelado ? 'block' : 'none';
+  });
+});
+
+document.getElementById('btn-cancel-divida').addEventListener('click', () => closeModal('modal-divida'));
+document.getElementById('btn-save-divida').addEventListener('click', saveDivida);
+
+function saveDivida() {
+  const nome       = document.getElementById('div-nome').value.trim();
+  const tipo       = document.getElementById('div-tipo').value;
+  const valorTotal = parseFloat(document.getElementById('div-valor').value);
+  const parcelado  = document.getElementById('div-parcelado').checked;
+  let valid = true;
+
+  if (!nome) { document.getElementById('div-nome').classList.add('err'); document.getElementById('div-nome-err').classList.add('show'); valid = false; }
+  if (!valorTotal || valorTotal <= 0 || isNaN(valorTotal)) { document.getElementById('div-valor').classList.add('err'); document.getElementById('div-valor-err').classList.add('show'); valid = false; }
+
+  let parcelas = [];
+
+  if (parcelado) {
+    const nParcelas = parseInt(document.getElementById('div-parcelas').value);
+    const primeira  = document.getElementById('div-primeira').value;
+    if (!nParcelas || nParcelas < 2) { document.getElementById('div-parcelas').classList.add('err'); document.getElementById('div-parcelas-err').classList.add('show'); valid = false; }
+    if (!primeira) { document.getElementById('div-primeira').classList.add('err'); document.getElementById('div-primeira-err').classList.add('show'); valid = false; }
+    if (valid) {
+      const valParcela = Math.floor((valorTotal / nParcelas) * 100) / 100;
+      const resto = Math.round((valorTotal - valParcela * nParcelas) * 100) / 100;
+      let venc = primeira;
+      for (let i = 1; i <= nParcelas; i++) {
+        const isLast = i === nParcelas;
+        parcelas.push({ id: uid(), numero: i, valor: isLast ? valParcela + resto : valParcela, vencimento: venc, pago: false, dataPagamento: null, lancamentoId: null });
+        if (!isLast) venc = addDays(venc, 30);
+      }
+    }
+  } else {
+    const venc = document.getElementById('div-vencimento').value;
+    if (!venc) { document.getElementById('div-vencimento').classList.add('err'); document.getElementById('div-vencimento-err').classList.add('show'); valid = false; }
+    if (valid) {
+      parcelas.push({ id: uid(), numero: 1, valor: valorTotal, vencimento: venc, pago: false, dataPagamento: null, lancamentoId: null });
+    }
+  }
+
+  if (!valid) return;
+
+  DB.data.ev_dividas.push({ id: uid(), nome, tipo, valorTotal, parcelado, parcelas, createdAt: new Date().toISOString() });
+  DB.save();
+  closeModal('modal-divida');
+  toast('Dívida cadastrada');
+  renderDividas();
+}
+
+function markInstallmentPaid(debtId, parcelaId) {
+  const div = DB.data.ev_dividas.find(d => d.id === debtId);
+  const parcela = div?.parcelas?.find(p => p.id === parcelaId);
+  if (!parcela || parcela.pago) return;
+
+  parcela.pago = true;
+  parcela.dataPagamento = todayISO();
+
+  const descricao = `Parcela ${parcela.numero}/${div.parcelas.length} — ${div.nome}`;
+  const lancId = uid();
+  DB.data.ev_lancamentos.push({ id: lancId, tipo: 'saida', descricao, valor: parcela.valor, data: todayISO(), origem: 'divida', referenciaId: parcelaId, createdAt: new Date().toISOString() });
+  parcela.lancamentoId = lancId;
+
+  DB.save();
+  toast('Parcela marcada como paga');
+  renderDividas();
+  if (App.tab === 'inicio') renderInicio();
+}
+
+// ── INIT ───────────────────────────────────────────────────────────────────────
+DB.init();
+renderInicio();
+renderEstoque();
+renderFinanceiro();
+renderDividas();
+setTab('inicio');
+</script>
+</body>
+</html>
