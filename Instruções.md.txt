@@ -1,0 +1,152 @@
+Perfeito. Prompt completo abaixo.
+
+PROMPT PARA CLAUDE CODE — SISTEMA ELOANA VELLUTO
+Crie uma aplicação web completa de controle de estoque e financeiro para revenda de moda íntima e de dormir feminino. Sistema mobile-first, sem login, acessível por link direto, dados persistidos em localStorage.
+
+IDENTIDADE VISUAL
+Fontes via Google Fonts — importar obrigatoriamente:
+
+Pinyon Script — nome da marca
+Cormorant Garamond — títulos, itálico, peso 300
+Jost — interface e corpo, pesos 200, 300, 400
+
+Paleta de cores — usar exclusivamente via variáveis CSS:
+css:root {
+  --musgo-escuro:  #3B4A35;
+  --musgo-medio:   #5C7052;
+  --musgo-claro:   #8BA888;
+  --musgo-suave:   #C4D4BF;
+  --marrom-escuro: #3E2A1E;
+  --marrom-medio:  #6B4226;
+  --marrom-claro:  #9C6B4A;
+  --marrom-suave:  #D4B8A0;
+  --creme:         #FAF7F2;
+  --perola:        #F0EAE0;
+  --linho:         #E2D9CC;
+  --branco:        #FFFFFF;
+}
+Estética: refinada, feminina, artesanal. Cards com border-radius: 12px, box-shadow: 0 2px 12px rgba(62,42,30,0.08), borda 1px solid var(--linho). Sem gradientes chamativos. Espaçamento generoso.
+Consulte obrigatoriamente antes de implementar qualquer componente visual: cssbuttons.io, mycolor.space, css.glass, haikei.app, colorhunt.co, svgrepo.com, animista.net.
+
+CABEÇALHO FIXO
+Todas as telas têm cabeçalho fixo no topo com fundo var(--musgo-claro). Exibir:
+
+À esquerda: monograma "E" em círculo (fundo var(--marrom-medio), letra branca, fonte Pinyon Script)
+Ao centro: nome "Eloana Velluto" em Pinyon Script, cor branca, tamanho 1.5rem
+Abaixo do nome: subtítulo "moda íntima & dormir" em Jost weight 200, letra-espaçamento amplo, cor rgba branco 0.7
+Ornamento de renda SVG fino abaixo do cabeçalho como separador — arcos orgânicos com pingentes variados, cor var(--marrom-suave), opacidade 0.3
+
+
+NAVEGAÇÃO
+Menu inferior fixo com quatro abas. Ícones SVG inline simples. Aba ativa: ícone e label em var(--musgo-medio), indicador de 3px no topo do menu na cor var(--musgo-claro). Abas inativas: cinza.
+Abas: Início, Estoque, Financeiro, Dívidas.
+
+ABA 1 — INÍCIO
+Cards de resumo:
+
+Saldo do mês em destaque (fundo var(--musgo-escuro), texto branco, valor em Cormorant Garamond 2rem)
+Grid 2 colunas: Receita do mês e Custos do mês
+Total de peças em estoque
+Próxima parcela de dívida com vencimento mais próximo — nome da dívida, valor e data, badge de status (pendente/pago)
+Botão de ação rápida "Registrar Venda" em var(--musgo-claro)
+
+
+ABA 2 — ESTOQUE
+Listagem de produtos em cards. Cada card exibe:
+
+Foto do produto (upload pelo usuário) ou placeholder com ícone de cabide SVG quando sem foto — imagem exibida no topo do card com altura fixa de 160px, object-fit: cover, border-radius: 12px 12px 0 0
+Nome do produto em Cormorant Garamond itálico
+Preço unitário de venda
+Somente os tamanhos cadastrados para aquele produto, cada um com botões + e − para ajuste de quantidade
+Total de peças do produto
+Botão "Registrar Venda" no rodapé do card em fundo var(--musgo-suave)
+
+Botão flutuante "+" no canto inferior direito para cadastrar novo produto.
+Formulário de cadastro de produto (modal ou tela):
+
+Nome do produto
+Preço unitário de venda (R$)
+Seleção de tamanhos disponíveis: checkboxes para P, M, G, GG — o usuário marca quais o produto tem
+Para cada tamanho marcado, campo numérico de quantidade inicial
+Upload de foto: input file com preview imediato, aceita JPEG e PNG, limite de 5MB, armazenar como base64 no localStorage
+Botão Salvar e Cancelar
+
+Formulário de registrar venda (modal):
+
+Produto já preenchido se aberto pelo card
+Seleção de tamanho (apenas os disponíveis daquele produto)
+Quantidade vendida (não pode exceder estoque disponível)
+Confirmar desconta do estoque e lança automaticamente como entrada no financeiro com data atual
+
+
+ABA 3 — FINANCEIRO
+Filtro de mês no topo (scroll horizontal com botões de mês).
+Resumo do período em grid 2 colunas: total de entradas (verde) e total de saídas (vermelho).
+Saldo do período em card separado.
+Botão "Registrar Saída" para lançamento manual (descrição + valor + data).
+Histórico completo de lançamentos em cards:
+
+Entradas: verde, badge "Entrada", descrição automática gerada pela venda (ex: "Calcinha algodão · M · 2 un.")
+Saídas: vermelho, badge "Saída", descrição manual ou automática (parcela de dívida)
+Data de cada lançamento
+
+
+ABA 4 — DÍVIDAS
+Listagem de dívidas cadastradas em cards. Cada card exibe:
+
+Nome da dívida
+Tipo: boleto parcelado, PIX, crédito parcelado, dinheiro emprestado, outro
+Valor total
+Barra de progresso visual: quanto já foi pago vs. quanto falta
+Valor pago e valor restante em destaque
+Lista de parcelas (se parcelado) ou status único (se valor único)
+Cada parcela tem checkbox para marcar como paga — ao marcar, solicitar confirmação e lançar automaticamente como saída no financeiro com descrição "Parcela X/N — [nome da dívida]"
+
+Botão flutuante "+" para cadastrar nova dívida.
+Formulário de cadastro de dívida (modal):
+
+Nome da dívida (ex: "Estoque inicial — cartão")
+Tipo: select com opções boleto parcelado, PIX, crédito parcelado, dinheiro emprestado, outro
+Valor total (R$)
+Opção: valor único ou parcelado
+Se parcelado: número de parcelas + data de vencimento da primeira parcela — o sistema gera automaticamente todas as parcelas subsequentes com intervalo de 30 dias, calculando o valor de cada parcela
+Se valor único: data de vencimento
+Botão Salvar e Cancelar
+
+Dívida inicial pré-cadastrada ao inicializar o sistema pela primeira vez (verificar se localStorage está vazio):
+
+Nome: "Estoque inicial — cartão"
+Tipo: crédito parcelado
+Valor total: R$ 386,00
+Parcelas: 3 x R$ 128,70
+Primeira parcela com vencimento: 15/05/2026
+
+
+PERSISTÊNCIA DE DADOS
+Usar localStorage. Estrutura de dados versionada:
+json{
+  "ev_version": "1.0",
+  "ev_produtos": [],
+  "ev_vendas": [],
+  "ev_lancamentos": [],
+  "ev_dividas": []
+}
+Ao inicializar, verificar ev_version. Se ausente, criar estrutura e cadastrar dívida inicial.
+
+SEGURANÇA E BOAS PRÁTICAS
+Aplicar obrigatoriamente:
+Parte 1: sanitização de todos os inputs antes de salvar, validação de tipos e limites em campos numéricos (sem negativos, sem vazios, quantidade de venda não pode exceder estoque), nenhuma execução de string como código, validação de upload (somente JPEG e PNG, máximo 5MB, verificar MIME type real não apenas extensão), body size limit para base64 no localStorage, estrutura de dados com validação antes de salvar.
+Parte 2: logs sem dados sensíveis, feedback visual claro para erros de validação (sem alert nativo — usar toasts ou mensagens inline estilizadas com a paleta da marca), confirmação antes de qualquer ação destrutiva (excluir produto, excluir dívida), sem stack trace exposto ao usuário.
+
+REQUISITOS TÉCNICOS
+
+HTML, CSS e JavaScript puros em arquivo único index.html
+Mobile-first, viewport 390px como referência, responsivo
+Sem frameworks externos além das fontes do Google Fonts
+Ícones: SVG inline simples, sem biblioteca externa
+Funcional offline após primeiro carregamento
+Animações de entrada nos cards com animation-delay escalonado
+Toasts de confirmação estilizados na paleta da marca para ações de salvar, registrar venda e marcar parcela como paga
+
+
+Ao final da geração, listar os pontos em aberto para versões futuras: backup dos dados, exportação para PDF ou planilha, versão desktop, sincronização entre dispositivos
