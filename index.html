@@ -3,14 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <link rel="manifest" href="manifest.json">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#3E2A1E">
   <title>Eloana Velluto</title>
-  <link rel="icon" type="image/svg+xml" href="icon.svg">
-  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="icon" type="image/png" href="icon.png">
+  <link rel="apple-touch-icon" href="icon.png">
   <meta name="apple-mobile-web-app-title" content="Eloana Velluto">
   <meta name="application-name" content="Eloana Velluto">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -267,16 +265,6 @@
       transition: background 0.2s; cursor: pointer;
     }
     .btn-saida:hover { background: var(--perola); }
-    .btn-acoes-fin { display: flex; gap: 10px; margin: 12px 0; }
-    .btn-acoes-fin .btn-saida, .btn-acoes-fin .btn-entrada { flex: 1; margin: 0; }
-    .btn-entrada {
-      border: 1.5px dashed var(--musgo-claro); border-radius: 10px;
-      padding: 12px; background: transparent; color: var(--musgo-medio);
-      font-size: 0.88rem; font-weight: 300;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
-      transition: background 0.2s; cursor: pointer;
-    }
-    .btn-entrada:hover { background: #f0f5ef; }
     .lancamento-card { padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start; }
     .lancamento-linha { width: 3px; border-radius: 4px; align-self: stretch; flex-shrink: 0; margin-top: 2px; }
     .lancamento-linha.entrada { background: var(--musgo-claro); }
@@ -327,11 +315,8 @@
     .parcela-val { font-family: 'Cormorant Garamond', serif; font-size: 1rem; font-weight: 300; flex-shrink: 0; }
     .parcela-item.pago .parcela-nome { text-decoration: line-through; color: var(--marrom-suave); }
     .parcela-item.pago .parcela-val  { color: var(--marrom-suave); }
-    .divida-acoes { display: flex; gap: 4px; align-items: center; }
     .btn-excluir-divida { font-size: 0.74rem; color: var(--vermelho); font-weight: 300; padding: 4px 8px; border-radius: 6px; transition: background 0.15s; }
     .btn-excluir-divida:hover { background: #FFF0EE; }
-    .btn-editar-divida { font-size: 0.74rem; color: var(--marrom-claro); font-weight: 300; padding: 4px 8px; border-radius: 6px; transition: background 0.15s; }
-    .btn-editar-divida:hover { background: var(--perola); }
 
     /* NAVIGATION */
     .app-nav {
@@ -474,7 +459,7 @@
   <div class="header-monogram"><span>E</span></div>
   <div class="header-center">
     <div class="header-brand">Eloana Velluto</div>
-    <div class="header-sub">Moda Íntima &amp; Pijamas</div>
+    <div class="header-sub">moda íntima &amp; dormir</div>
   </div>
 </header>
 
@@ -666,40 +651,11 @@
   </div>
 </div>
 
-<!-- MODAL: ENTRADA FINANCEIRA -->
-<div class="modal-overlay" id="modal-entrada">
-  <div class="modal-sheet">
-    <div class="modal-handle"></div>
-    <div class="modal-hdr"><div class="modal-title">Registrar Entrada</div></div>
-    <div class="modal-body">
-      <div class="form-group">
-        <label class="form-label" for="entrada-desc">Descrição</label>
-        <input class="form-input" type="text" id="entrada-desc" maxlength="100" placeholder="Ex: Venda avulsa, comissão...">
-        <div class="form-err" id="entrada-desc-err">Informe a descrição</div>
-      </div>
-      <div class="form-group">
-        <label class="form-label" for="entrada-valor">Valor (R$)</label>
-        <input class="form-input" type="number" id="entrada-valor" min="0.01" step="0.01" placeholder="0,00">
-        <div class="form-err" id="entrada-valor-err">Informe um valor válido</div>
-      </div>
-      <div class="form-group">
-        <label class="form-label" for="entrada-data">Data</label>
-        <input class="form-input" type="date" id="entrada-data">
-        <div class="form-err" id="entrada-data-err">Informe a data</div>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-secondary" id="btn-cancel-entrada">Cancelar</button>
-      <button class="btn-primary" id="btn-save-entrada">Registrar</button>
-    </div>
-  </div>
-</div>
-
 <!-- MODAL: DÍVIDA -->
 <div class="modal-overlay" id="modal-divida">
   <div class="modal-sheet">
     <div class="modal-handle"></div>
-    <div class="modal-hdr"><div class="modal-title" id="modal-divida-title">Nova Dívida</div></div>
+    <div class="modal-hdr"><div class="modal-title">Nova Dívida</div></div>
     <div class="modal-body">
       <div class="form-group">
         <label class="form-label" for="div-nome">Nome da dívida</label>
@@ -716,7 +672,6 @@
           <option value="outro">Outro</option>
         </select>
       </div>
-      <div id="div-financial-fields">
       <div class="form-group">
         <label class="form-label" for="div-valor">Valor total (R$)</label>
         <input class="form-input" type="number" id="div-valor" min="0.01" step="0.01" placeholder="0,00">
@@ -748,7 +703,6 @@
           <div class="form-err" id="div-primeira-err">Informe a data</div>
         </div>
       </div>
-      </div><!-- /div-financial-fields -->
     </div>
     <div class="modal-footer">
       <button class="btn-secondary" id="btn-cancel-divida">Cancelar</button>
@@ -922,7 +876,6 @@ const App = {
   finMonth: new Date().getMonth(),
   finYear: new Date().getFullYear(),
   editingProductId: null,
-  editingDebtId: null,
   saleProductId: null,
 };
 
@@ -1164,15 +1117,11 @@ function renderFinanceiro() {
   const el = document.getElementById('financeiro-content');
   const now = new Date();
 
-  // Build months from April 2026 up to current month (no future)
+  // Build 13-month list
   const months = [];
-  const startY = 2026, startM = 3;
-  const nowY = now.getFullYear(), nowM = now.getMonth();
-  let my = startY, mm = startM;
-  while (my < nowY || (my === nowY && mm <= nowM)) {
-    months.push({ y: my, m: mm });
-    mm++;
-    if (mm > 11) { mm = 0; my++; }
+  for (let i = 12; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    months.push({ y: d.getFullYear(), m: d.getMonth() });
   }
 
   const selY = App.finYear, selM = App.finMonth;
@@ -1220,16 +1169,10 @@ function renderFinanceiro() {
       <div class="saldo-periodo-label">Saldo do período</div>
       <div class="saldo-periodo-valor ${saldo >= 0 ? 'saldo-positivo' : 'saldo-negativo'}">${fmt(saldo)}</div>
     </div>
-    <div class="btn-acoes-fin">
-      <button class="btn-entrada" id="btn-abrir-entrada">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Registrar Entrada
-      </button>
-      <button class="btn-saida" id="btn-abrir-saida">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Registrar Saída
-      </button>
-    </div>
+    <button class="btn-saida" id="btn-abrir-saida">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Registrar Saída
+    </button>
     <div id="lancamentos-lista">${lancamentosHTML}</div>
   `;
 
@@ -1242,7 +1185,6 @@ function renderFinanceiro() {
     });
   });
 
-  document.getElementById('btn-abrir-entrada')?.addEventListener('click', openAddIncome);
   document.getElementById('btn-abrir-saida')?.addEventListener('click', openAddExpense);
 
   // Auto scroll to active month
@@ -1294,10 +1236,7 @@ function renderDividas() {
             <div class="divida-nome">${sanitize(div.nome)}</div>
             <div class="divida-tipo">${TIPOS_DIVIDA[div.tipo] || div.tipo}</div>
           </div>
-          <div class="divida-acoes">
-            <button class="btn-editar-divida" data-did="${div.id}">Editar</button>
-            <button class="btn-excluir-divida" data-did="${div.id}">Excluir</button>
-          </div>
+          <button class="btn-excluir-divida" data-did="${div.id}">Excluir</button>
         </div>
         <div class="progress-wrap">
           <div class="progress-labels">
@@ -1340,11 +1279,6 @@ function renderDividas() {
         () => markInstallmentPaid(did, pid)
       );
     });
-  });
-
-  // Edit debt buttons
-  el.querySelectorAll('.btn-editar-divida').forEach(btn => {
-    btn.addEventListener('click', () => openEditDebt(btn.dataset.did));
   });
 
   // Delete debt buttons
@@ -1718,43 +1652,8 @@ function saveSaida() {
   if (App.tab === 'inicio') renderInicio();
 }
 
-// ── INCOME ACTIONS ─────────────────────────────────────────────────────────────
-function openAddIncome() {
-  document.getElementById('entrada-desc').value = '';
-  document.getElementById('entrada-valor').value = '';
-  document.getElementById('entrada-data').value = todayISO();
-  ['entrada-desc-err','entrada-valor-err','entrada-data-err'].forEach(id => document.getElementById(id).classList.remove('show'));
-  ['entrada-desc','entrada-valor','entrada-data'].forEach(id => document.getElementById(id).classList.remove('err'));
-  openModal('modal-entrada');
-}
-
-document.getElementById('btn-cancel-entrada').addEventListener('click', () => closeModal('modal-entrada'));
-document.getElementById('btn-save-entrada').addEventListener('click', saveEntrada);
-
-function saveEntrada() {
-  const desc  = document.getElementById('entrada-desc').value.trim();
-  const valor = parseFloat(document.getElementById('entrada-valor').value);
-  const data  = document.getElementById('entrada-data').value;
-  let valid = true;
-
-  if (!desc) { document.getElementById('entrada-desc').classList.add('err'); document.getElementById('entrada-desc-err').classList.add('show'); valid = false; }
-  if (!valor || valor <= 0 || isNaN(valor)) { document.getElementById('entrada-valor').classList.add('err'); document.getElementById('entrada-valor-err').classList.add('show'); valid = false; }
-  if (!data) { document.getElementById('entrada-data').classList.add('err'); document.getElementById('entrada-data-err').classList.add('show'); valid = false; }
-  if (!valid) return;
-
-  DB.data.ev_lancamentos.push({ id: uid(), tipo: 'entrada', descricao: desc, valor, data, origem: 'manual', referenciaId: null, createdAt: new Date().toISOString() });
-  DB.save();
-  closeModal('modal-entrada');
-  toast('Entrada registrada');
-  renderFinanceiro();
-  if (App.tab === 'inicio') renderInicio();
-}
-
 // ── DEBT ACTIONS ───────────────────────────────────────────────────────────────
 function openAddDebt() {
-  App.editingDebtId = null;
-  document.getElementById('modal-divida-title').textContent = 'Nova Dívida';
-  document.getElementById('div-financial-fields').style.display = 'block';
   document.getElementById('div-nome').value = '';
   document.getElementById('div-tipo').value = 'credito_parcelado';
   document.getElementById('div-valor').value = '';
@@ -1766,19 +1665,6 @@ function openAddDebt() {
   document.getElementById('div-primeira').value = '';
   ['div-nome-err','div-valor-err','div-vencimento-err','div-parcelas-err','div-primeira-err'].forEach(id => document.getElementById(id).classList.remove('show'));
   ['div-nome','div-valor','div-vencimento','div-parcelas','div-primeira'].forEach(id => document.getElementById(id)?.classList.remove('err'));
-  openModal('modal-divida');
-}
-
-function openEditDebt(did) {
-  const div = DB.data.ev_dividas.find(d => d.id === did);
-  if (!div) return;
-  App.editingDebtId = did;
-  document.getElementById('modal-divida-title').textContent = 'Editar Dívida';
-  document.getElementById('div-financial-fields').style.display = 'none';
-  document.getElementById('div-nome').value = div.nome;
-  document.getElementById('div-tipo').value = div.tipo;
-  ['div-nome-err'].forEach(id => document.getElementById(id).classList.remove('show'));
-  document.getElementById('div-nome').classList.remove('err');
   openModal('modal-divida');
 }
 
@@ -1796,25 +1682,11 @@ document.getElementById('btn-save-divida').addEventListener('click', saveDivida)
 function saveDivida() {
   const nome       = document.getElementById('div-nome').value.trim();
   const tipo       = document.getElementById('div-tipo').value;
+  const valorTotal = parseFloat(document.getElementById('div-valor').value);
+  const parcelado  = document.getElementById('div-parcelado').checked;
   let valid = true;
 
   if (!nome) { document.getElementById('div-nome').classList.add('err'); document.getElementById('div-nome-err').classList.add('show'); valid = false; }
-  if (!valid) return;
-
-  // Edit mode: only update nome and tipo
-  if (App.editingDebtId) {
-    const div = DB.data.ev_dividas.find(d => d.id === App.editingDebtId);
-    if (div) { div.nome = nome; div.tipo = tipo; }
-    DB.save();
-    closeModal('modal-divida');
-    toast('Dívida atualizada');
-    renderDividas();
-    return;
-  }
-
-  const valorTotal = parseFloat(document.getElementById('div-valor').value);
-  const parcelado  = document.getElementById('div-parcelado').checked;
-
   if (!valorTotal || valorTotal <= 0 || isNaN(valorTotal)) { document.getElementById('div-valor').classList.add('err'); document.getElementById('div-valor-err').classList.add('show'); valid = false; }
 
   let parcelas = [];
@@ -1877,11 +1749,6 @@ renderEstoque();
 renderFinanceiro();
 renderDividas();
 setTab('inicio');
-</script>
-<script>
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js');
-}
 </script>
 </body>
 </html>
