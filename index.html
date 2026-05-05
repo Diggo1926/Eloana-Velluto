@@ -450,6 +450,48 @@
     .divider { height: 1px; background: var(--linho); margin: 8px 0; }
     .card + .card { margin-top: 12px; }
     select option { font-family: 'Jost', sans-serif; }
+
+    /* TOGGLE TIPO DE VARIAÇÃO */
+    .variacao-toggle { display: flex; gap: 8px; margin-top: 2px; }
+    .variacao-btn {
+      flex: 1; padding: 10px 12px; border-radius: 8px;
+      border: 1.5px solid var(--linho); background: var(--branco);
+      font-size: 0.86rem; font-weight: 300; color: var(--marrom-claro);
+      cursor: pointer; transition: all 0.2s; text-align: center; line-height: 1.3;
+    }
+    .variacao-btn.active {
+      border-color: var(--marrom-medio); background: var(--marrom-medio); color: var(--branco);
+    }
+
+    /* COR NO CARD */
+    .produto-cor { font-size: 0.75rem; color: var(--marrom-claro); margin-top: 2px; font-style: italic; }
+
+    /* BOTÃO EXPORTAR */
+    .btn-exportar {
+      width: 100%; border: 1.5px solid var(--linho); border-radius: 10px;
+      padding: 12px; background: var(--branco); color: var(--marrom-medio);
+      font-size: 0.88rem; font-weight: 300; margin: 8px 0;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: background 0.2s, border-color 0.2s; cursor: pointer;
+    }
+    .btn-exportar:hover { background: var(--perola); border-color: var(--marrom-suave); }
+
+    /* MODAL EXPORTAÇÃO */
+    .export-opcao {
+      display: flex; align-items: center; gap: 14px;
+      padding: 16px; border-radius: 12px; border: 1.5px solid var(--linho);
+      background: var(--creme); cursor: pointer; transition: all 0.2s; margin-bottom: 10px;
+    }
+    .export-opcao:last-child { margin-bottom: 0; }
+    .export-opcao:hover { border-color: var(--marrom-claro); background: var(--perola); }
+    .export-opcao-icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .export-pdf-icon { background: #FFF0EB; }
+    .export-csv-icon { background: #EBF5ED; }
+    .export-opcao-title { font-size: 0.9rem; font-weight: 400; color: var(--marrom-escuro); }
+    .export-opcao-desc { font-size: 0.74rem; font-weight: 200; color: var(--marrom-claro); margin-top: 2px; line-height: 1.4; }
   </style>
 </head>
 <body>
@@ -553,16 +595,33 @@
         <div class="form-err" id="prod-preco-err">Informe um preço válido</div>
       </div>
       <div class="form-group">
-        <label class="form-label">Tamanhos disponíveis</label>
-        <div class="chk-group">
-          <div class="chk-item"><input type="checkbox" id="tam-P" value="P"><label for="tam-P">P</label></div>
-          <div class="chk-item"><input type="checkbox" id="tam-M" value="M"><label for="tam-M">M</label></div>
-          <div class="chk-item"><input type="checkbox" id="tam-G" value="G"><label for="tam-G">G</label></div>
-          <div class="chk-item"><input type="checkbox" id="tam-GG" value="GG"><label for="tam-GG">GG</label></div>
-        </div>
-        <div class="form-err" id="prod-tam-err">Selecione ao menos um tamanho</div>
+        <label class="form-label" for="prod-cor">Cor <span style="font-weight:200;font-size:0.68rem;text-transform:none;letter-spacing:0">(opcional)</span></label>
+        <input class="form-input" type="text" id="prod-cor" maxlength="50" placeholder="Ex: rosa, preto, nude">
       </div>
-      <div id="prod-qty-group"></div>
+      <div class="form-group">
+        <label class="form-label">Tipo de variação</label>
+        <div class="variacao-toggle">
+          <button type="button" class="variacao-btn" id="btn-var-unico">Tamanho único</button>
+          <button type="button" class="variacao-btn active" id="btn-var-tamanho">Por tamanho</button>
+        </div>
+      </div>
+      <div class="form-group" id="prod-qty-unico-group" style="display:none">
+        <label class="form-label" for="prod-qty-unico">Quantidade total</label>
+        <input class="form-input" type="number" id="prod-qty-unico" min="0" value="0" placeholder="0">
+      </div>
+      <div id="prod-tamanhos-group">
+        <div class="form-group">
+          <label class="form-label">Tamanhos disponíveis</label>
+          <div class="chk-group">
+            <div class="chk-item"><input type="checkbox" id="tam-P" value="P"><label for="tam-P">P</label></div>
+            <div class="chk-item"><input type="checkbox" id="tam-M" value="M"><label for="tam-M">M</label></div>
+            <div class="chk-item"><input type="checkbox" id="tam-G" value="G"><label for="tam-G">G</label></div>
+            <div class="chk-item"><input type="checkbox" id="tam-GG" value="GG"><label for="tam-GG">GG</label></div>
+          </div>
+          <div class="form-err" id="prod-tam-err">Selecione ao menos um tamanho</div>
+        </div>
+        <div id="prod-qty-group"></div>
+      </div>
       <div class="form-group">
         <label class="form-label">Foto do produto</label>
         <div class="foto-area" id="foto-area" onclick="document.getElementById('prod-foto-input').click()">
@@ -707,6 +766,43 @@
     <div class="modal-footer">
       <button class="btn-secondary" id="btn-cancel-divida">Cancelar</button>
       <button class="btn-primary" id="btn-save-divida">Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: EXPORTAÇÃO -->
+<div class="modal-overlay" id="modal-export">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr"><div class="modal-title">Exportar dados</div></div>
+    <div class="modal-body">
+      <div class="export-opcao" id="btn-export-pdf">
+        <div class="export-opcao-icon export-pdf-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B04A30" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/>
+            <line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="15" y2="17"/><line x1="9" y1="9" x2="10" y2="9"/>
+          </svg>
+        </div>
+        <div>
+          <div class="export-opcao-title">Exportar PDF</div>
+          <div class="export-opcao-desc">Resumo financeiro, lançamentos do mês e estoque atual em um arquivo PDF</div>
+        </div>
+      </div>
+      <div class="export-opcao" id="btn-export-csv">
+        <div class="export-opcao-icon export-csv-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#4A7C59" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/>
+            <line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="16" y2="17"/><line x1="8" y1="9" x2="10" y2="9"/>
+          </svg>
+        </div>
+        <div>
+          <div class="export-opcao-title">Exportar Planilha (CSV)</div>
+          <div class="export-opcao-desc">Dois arquivos: financeiro do mês e estoque atual — compatível com Excel</div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" id="btn-cancel-export" style="flex:none;padding:13px 28px">Fechar</button>
     </div>
   </div>
 </div>
@@ -877,6 +973,7 @@ const App = {
   finYear: new Date().getFullYear(),
   editingProductId: null,
   saleProductId: null,
+  variacaoTipo: 'tamanho',
 };
 
 document.querySelectorAll('.nav-tab').forEach(btn => {
@@ -1016,17 +1113,33 @@ function renderEstoque() {
   }
 
   el.innerHTML = produtos.map((p, i) => {
+    const vt = p.variacaoTipo || 'tamanho';
     const totalPecas = Object.values(p.tamanhos).reduce((a, b) => a + b, 0);
-    const sizes = Object.keys(p.tamanhos);
-    const tamanhoHTML = sizes.map(s => `
-      <div class="tamanho-row">
-        <span class="tamanho-tag">${sanitize(s)}</span>
-        <div class="qty-controls">
-          <button class="qty-btn" data-pid="${p.id}" data-tam="${s}" data-delta="-1">−</button>
-          <span class="qty-num" id="qty-${p.id}-${s}">${p.tamanhos[s]}</span>
-          <button class="qty-btn" data-pid="${p.id}" data-tam="${s}" data-delta="1">+</button>
-        </div>
-      </div>`).join('');
+    const corHTML = p.cor ? `<div class="produto-cor">Cor: ${sanitize(p.cor)}</div>` : '';
+
+    let tamanhoHTML;
+    if (vt === 'unico') {
+      const qty = p.tamanhos['Único'] || 0;
+      tamanhoHTML = `
+        <div class="tamanho-row">
+          <span class="tamanho-tag">Qtd</span>
+          <div class="qty-controls">
+            <button class="qty-btn" data-pid="${p.id}" data-tam="Único" data-delta="-1">−</button>
+            <span class="qty-num" id="qty-${p.id}-Único">${qty}</span>
+            <button class="qty-btn" data-pid="${p.id}" data-tam="Único" data-delta="1">+</button>
+          </div>
+        </div>`;
+    } else {
+      tamanhoHTML = Object.keys(p.tamanhos).map(s => `
+        <div class="tamanho-row">
+          <span class="tamanho-tag">${sanitize(s)}</span>
+          <div class="qty-controls">
+            <button class="qty-btn" data-pid="${p.id}" data-tam="${s}" data-delta="-1">−</button>
+            <span class="qty-num" id="qty-${p.id}-${s}">${p.tamanhos[s]}</span>
+            <button class="qty-btn" data-pid="${p.id}" data-tam="${s}" data-delta="1">+</button>
+          </div>
+        </div>`).join('');
+    }
 
     const fotoHTML = p.foto
       ? `<img src="${p.foto}" alt="${sanitize(p.nome)}">`
@@ -1039,9 +1152,10 @@ function renderEstoque() {
         <div class="produto-foto-wrap">${fotoHTML}</div>
         <div class="produto-info">
           <div class="produto-nome">${sanitize(p.nome)}</div>
+          ${corHTML}
           <div class="produto-preco">${fmt(p.preco)} / unidade</div>
           <div class="tamanhos-lista">${tamanhoHTML}</div>
-          <div class="produto-total">Total: <strong>${totalPecas}</strong> peça${totalPecas !== 1 ? 's' : ''}</div>
+          ${vt === 'tamanho' ? `<div class="produto-total">Total: <strong>${totalPecas}</strong> peça${totalPecas !== 1 ? 's' : ''}</div>` : ''}
         </div>
         <div class="produto-footer">
           <button class="btn-venda-card" data-pid="${p.id}">
@@ -1169,6 +1283,10 @@ function renderFinanceiro() {
       <div class="saldo-periodo-label">Saldo do período</div>
       <div class="saldo-periodo-valor ${saldo >= 0 ? 'saldo-positivo' : 'saldo-negativo'}">${fmt(saldo)}</div>
     </div>
+    <button class="btn-exportar" id="btn-exportar">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Exportar dados
+    </button>
     <button class="btn-saida" id="btn-abrir-saida">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       Registrar Saída
@@ -1185,6 +1303,7 @@ function renderFinanceiro() {
     });
   });
 
+  document.getElementById('btn-exportar')?.addEventListener('click', () => openModal('modal-export'));
   document.getElementById('btn-abrir-saida')?.addEventListener('click', openAddExpense);
 
   // Auto scroll to active month
@@ -1305,11 +1424,14 @@ function openAddProduct() {
   document.getElementById('modal-produto-title').textContent = 'Novo Produto';
   document.getElementById('prod-nome').value = '';
   document.getElementById('prod-preco').value = '';
+  document.getElementById('prod-cor').value = '';
   ['P','M','G','GG'].forEach(s => { document.getElementById(`tam-${s}`).checked = false; });
   document.getElementById('prod-qty-group').innerHTML = '';
+  document.getElementById('prod-qty-unico').value = '0';
   document.getElementById('prod-foto-preview').style.display = 'none';
   document.getElementById('foto-placeholder').style.display = 'block';
   document.getElementById('prod-foto-input').value = '';
+  setVariacaoTipo('tamanho');
   clearProdErrors();
   openModal('modal-produto');
 }
@@ -1322,14 +1444,20 @@ function openEditProduct(id) {
   document.getElementById('modal-produto-title').textContent = 'Editar Produto';
   document.getElementById('prod-nome').value = p.nome;
   document.getElementById('prod-preco').value = p.preco;
+  document.getElementById('prod-cor').value = p.cor || '';
 
-  const sizes = ['P','M','G','GG'];
-  sizes.forEach(s => {
-    const cb = document.getElementById(`tam-${s}`);
-    cb.checked = s in p.tamanhos;
-  });
+  const vt = p.variacaoTipo || 'tamanho';
+  setVariacaoTipo(vt);
 
-  rebuildQtyGroup(p.tamanhos);
+  if (vt === 'unico') {
+    document.getElementById('prod-qty-unico').value = p.tamanhos['Único'] || 0;
+  } else {
+    const sizes = ['P','M','G','GG'];
+    sizes.forEach(s => {
+      document.getElementById(`tam-${s}`).checked = s in p.tamanhos;
+    });
+    rebuildQtyGroup(p.tamanhos);
+  }
 
   if (p.foto) {
     document.getElementById('prod-foto-preview').src = p.foto;
@@ -1444,9 +1572,13 @@ document.getElementById('btn-save-produto').addEventListener('click', saveProdut
 
 function saveProduto() {
   let valid = true;
-  const nome   = document.getElementById('prod-nome').value.trim();
-  const preco  = parseFloat(document.getElementById('prod-preco').value);
-  const sizes  = ['P','M','G','GG'].filter(s => document.getElementById(`tam-${s}`).checked);
+  const nome         = document.getElementById('prod-nome').value.trim();
+  const preco        = parseFloat(document.getElementById('prod-preco').value);
+  const cor          = document.getElementById('prod-cor').value.trim();
+  const variacaoTipo = App.variacaoTipo || 'tamanho';
+  const sizes        = variacaoTipo === 'tamanho'
+    ? ['P','M','G','GG'].filter(s => document.getElementById(`tam-${s}`).checked)
+    : [];
 
   if (!nome) {
     document.getElementById('prod-nome').classList.add('err');
@@ -1458,30 +1590,35 @@ function saveProduto() {
     document.getElementById('prod-preco-err').classList.add('show');
     valid = false;
   }
-  if (!sizes.length) {
+  if (variacaoTipo === 'tamanho' && !sizes.length) {
     document.getElementById('prod-tam-err').classList.add('show');
     valid = false;
   }
   if (!valid) return;
 
-  const tamanhos = {};
-  sizes.forEach(s => {
-    const val = parseInt(document.getElementById(`qty-val-${s}`)?.value || '0');
-    tamanhos[s] = Math.max(0, isNaN(val) ? 0 : val);
-  });
+  let tamanhos = {};
+  if (variacaoTipo === 'unico') {
+    const qty = parseInt(document.getElementById('prod-qty-unico').value) || 0;
+    tamanhos = { 'Único': Math.max(0, qty) };
+  } else {
+    sizes.forEach(s => {
+      const val = parseInt(document.getElementById(`qty-val-${s}`)?.value || '0');
+      tamanhos[s] = Math.max(0, isNaN(val) ? 0 : val);
+    });
+  }
 
   if (App.editingProductId) {
     const idx = DB.data.ev_produtos.findIndex(p => p.id === App.editingProductId);
     if (idx > -1) {
       DB.data.ev_produtos[idx] = {
         ...DB.data.ev_produtos[idx],
-        nome, preco, tamanhos,
+        nome, preco, cor, variacaoTipo, tamanhos,
         foto: _prodFotoBase64
       };
     }
     toast('Produto atualizado');
   } else {
-    DB.data.ev_produtos.push({ id: uid(), nome, preco, tamanhos, foto: _prodFotoBase64, createdAt: new Date().toISOString() });
+    DB.data.ev_produtos.push({ id: uid(), nome, preco, cor, variacaoTipo, tamanhos, foto: _prodFotoBase64, createdAt: new Date().toISOString() });
     toast('Produto cadastrado');
   }
 
@@ -1523,14 +1660,25 @@ function populateSizesForSale(prodId) {
   const p = DB.data.ev_produtos.find(x => x.id === prodId);
   if (!p) return;
 
+  const vt = p.variacaoTipo || 'tamanho';
   Object.entries(p.tamanhos).forEach(([tam, qty]) => {
     if (qty > 0) {
       const opt = document.createElement('option');
       opt.value = tam;
-      opt.textContent = `${tam} (${qty} em estoque)`;
+      opt.textContent = vt === 'unico'
+        ? `Disponível: ${qty} peça${qty !== 1 ? 's' : ''}`
+        : `${tam} (${qty} em estoque)`;
       tamSelect.appendChild(opt);
     }
   });
+
+  if (vt === 'unico') {
+    const opts = tamSelect.querySelectorAll('option:not([value=""])');
+    if (opts.length === 1) {
+      tamSelect.value = opts[0].value;
+      tamSelect.dispatchEvent(new Event('change'));
+    }
+  }
 }
 
 document.getElementById('venda-produto').addEventListener('change', e => {
@@ -1604,7 +1752,7 @@ function saveVenda() {
   // Deduct stock
   p.tamanhos[tam] -= qty;
   const valor = p.preco * qty;
-  const descricao = `${p.nome} · ${tam} · ${qty} un.`;
+  const descricao = tam === 'Único' ? `${p.nome} · ${qty} un.` : `${p.nome} · ${tam} · ${qty} un.`;
 
   // Create sale record
   const venda = { id: uid(), produtoId: p.id, produtoNome: p.nome, tamanho: tam, quantidade: qty, valorUnitario: p.preco, valorTotal: valor, data: todayISO(), createdAt: new Date().toISOString() };
@@ -1740,6 +1888,181 @@ function markInstallmentPaid(debtId, parcelaId) {
   toast('Parcela marcada como paga');
   renderDividas();
   if (App.tab === 'inicio') renderInicio();
+}
+
+// ── TIPO DE VARIAÇÃO ───────────────────────────────────────────────────────────
+function setVariacaoTipo(tipo) {
+  App.variacaoTipo = tipo || 'tamanho';
+  const isUnico = App.variacaoTipo === 'unico';
+  document.getElementById('btn-var-unico').classList.toggle('active', isUnico);
+  document.getElementById('btn-var-tamanho').classList.toggle('active', !isUnico);
+  document.getElementById('prod-tamanhos-group').style.display = isUnico ? 'none' : 'block';
+  document.getElementById('prod-qty-unico-group').style.display = isUnico ? 'block' : 'none';
+  if (isUnico) document.getElementById('prod-qty-group').innerHTML = '';
+}
+
+document.getElementById('btn-var-unico').addEventListener('click', () => setVariacaoTipo('unico'));
+document.getElementById('btn-var-tamanho').addEventListener('click', () => setVariacaoTipo('tamanho'));
+
+// ── EXPORTAÇÃO ─────────────────────────────────────────────────────────────────
+document.getElementById('btn-cancel-export').addEventListener('click', () => closeModal('modal-export'));
+document.getElementById('btn-export-pdf').addEventListener('click', exportPDF);
+document.getElementById('btn-export-csv').addEventListener('click', exportCSV);
+
+function loadScript(src) {
+  return new Promise((resolve, reject) => {
+    const s = document.createElement('script');
+    s.src = src; s.onload = resolve; s.onerror = reject;
+    document.head.appendChild(s);
+  });
+}
+
+async function exportPDF() {
+  closeModal('modal-export');
+  toast('Gerando PDF...', 'info', 5000);
+  try {
+    if (!window.jspdf) {
+      await loadScript('https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js');
+    }
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+    const selM = App.finMonth, selY = App.finYear;
+    const mesLabel = `${MONTHS_SHORT[selM]}/${selY}`;
+    const filtered = DB.data.ev_lancamentos.filter(l => {
+      const d = new Date(l.data + 'T12:00:00');
+      return d.getFullYear() === selY && d.getMonth() === selM;
+    }).sort((a, b) => b.data.localeCompare(a.data));
+
+    const entradas = filtered.filter(l => l.tipo === 'entrada').reduce((s, l) => s + l.valor, 0);
+    const saidas   = filtered.filter(l => l.tipo === 'saida').reduce((s, l) => s + l.valor, 0);
+    const saldo    = entradas - saidas;
+
+    doc.setFontSize(20); doc.setFont('helvetica', 'bold');
+    doc.text('Eloana Velluto', 105, 18, { align: 'center' });
+    doc.setFontSize(9); doc.setFont('helvetica', 'normal'); doc.setTextColor(120);
+    doc.text('moda intima & dormir', 105, 24, { align: 'center' });
+    doc.setTextColor(0);
+    doc.setDrawColor(210, 185, 165); doc.line(15, 28, 195, 28);
+
+    let y = 36;
+
+    doc.setFontSize(12); doc.setFont('helvetica', 'bold'); doc.setTextColor(62, 42, 30);
+    doc.text('Resumo Financeiro — ' + mesLabel, 15, y); y += 7;
+    doc.setFontSize(10); doc.setFont('helvetica', 'normal'); doc.setTextColor(0);
+    [['Receita', fmt(entradas)], ['Custos', fmt(saidas)], ['Saldo', fmt(saldo)]].forEach(([l, v]) => {
+      doc.text(l + ':', 18, y); doc.text(v, 65, y); y += 6;
+    });
+
+    y += 5; doc.setDrawColor(220); doc.line(15, y, 195, y); y += 8;
+
+    doc.setFontSize(12); doc.setFont('helvetica', 'bold'); doc.setTextColor(62, 42, 30);
+    doc.text('Historico de Lancamentos', 15, y); y += 7;
+
+    if (filtered.length) {
+      doc.setFontSize(8); doc.setFont('helvetica', 'bold'); doc.setTextColor(100);
+      doc.text('Data', 15, y); doc.text('Descricao', 38, y);
+      doc.text('Tipo', 148, y); doc.text('Valor', 170, y);
+      y += 4; doc.setDrawColor(220); doc.line(15, y, 195, y); y += 4;
+      doc.setFont('helvetica', 'normal'); doc.setTextColor(0);
+      filtered.forEach(l => {
+        if (y > 270) { doc.addPage(); y = 20; }
+        doc.text(fmtDate(l.data), 15, y);
+        const desc = l.descricao.length > 60 ? l.descricao.slice(0, 57) + '...' : l.descricao;
+        doc.text(desc, 38, y);
+        doc.text(l.tipo === 'entrada' ? 'Entrada' : 'Saida', 148, y);
+        doc.text(fmt(l.valor), 170, y); y += 6;
+      });
+    } else {
+      doc.setFontSize(9); doc.setFont('helvetica', 'italic'); doc.setTextColor(150);
+      doc.text('Nenhum lancamento neste periodo.', 18, y); doc.setTextColor(0); y += 8;
+    }
+
+    y += 5;
+    if (y > 240) { doc.addPage(); y = 20; }
+    doc.setDrawColor(210, 185, 165); doc.line(15, y, 195, y); y += 8;
+
+    doc.setFontSize(12); doc.setFont('helvetica', 'bold'); doc.setTextColor(62, 42, 30);
+    doc.text('Estoque Atual', 15, y); y += 7;
+
+    const produtos = DB.data.ev_produtos;
+    if (produtos.length) {
+      doc.setFontSize(8); doc.setFont('helvetica', 'bold'); doc.setTextColor(100);
+      doc.text('Produto', 15, y); doc.text('Cor', 82, y);
+      doc.text('Variacao', 115, y); doc.text('Qtd', 178, y);
+      y += 4; doc.setDrawColor(220); doc.line(15, y, 195, y); y += 4;
+      doc.setFont('helvetica', 'normal'); doc.setTextColor(0);
+      produtos.forEach(p => {
+        const vt = p.variacaoTipo || 'tamanho';
+        const nome = p.nome.length > 38 ? p.nome.slice(0, 35) + '...' : p.nome;
+        if (vt === 'unico') {
+          if (y > 275) { doc.addPage(); y = 20; }
+          doc.text(nome, 15, y); doc.text(p.cor || '—', 82, y);
+          doc.text('Unico', 115, y); doc.text(String(p.tamanhos['Único'] || 0), 178, y); y += 6;
+        } else {
+          Object.entries(p.tamanhos).forEach(([tam, qty]) => {
+            if (y > 275) { doc.addPage(); y = 20; }
+            doc.text(nome, 15, y); doc.text(p.cor || '—', 82, y);
+            doc.text(tam, 115, y); doc.text(String(qty), 178, y); y += 6;
+          });
+        }
+      });
+    } else {
+      doc.setFontSize(9); doc.setFont('helvetica', 'italic'); doc.setTextColor(150);
+      doc.text('Nenhum produto cadastrado.', 18, y);
+    }
+
+    doc.setFontSize(7); doc.setFont('helvetica', 'normal'); doc.setTextColor(170);
+    doc.text('Gerado em ' + fmtDate(todayISO()) + ' — Eloana Velluto', 105, 290, { align: 'center' });
+
+    doc.save('Eloana_Velluto_' + MONTHS_SHORT[selM] + '_' + selY + '.pdf');
+    toast('PDF gerado com sucesso!');
+  } catch (e) {
+    toast('Erro ao gerar PDF. Verifique sua conexão.', 'error');
+  }
+}
+
+function exportCSV() {
+  closeModal('modal-export');
+  const selM = App.finMonth, selY = App.finYear;
+  const mesLabel = MONTHS_SHORT[selM] + '_' + selY;
+
+  const filtered = DB.data.ev_lancamentos.filter(l => {
+    const d = new Date(l.data + 'T12:00:00');
+    return d.getFullYear() === selY && d.getMonth() === selM;
+  }).sort((a, b) => b.data.localeCompare(a.data));
+
+  const finRows = [['Data','Descricao','Tipo','Valor']];
+  filtered.forEach(l => {
+    finRows.push([fmtDate(l.data), l.descricao, l.tipo === 'entrada' ? 'Entrada' : 'Saida', l.valor.toFixed(2).replace('.', ',')]);
+  });
+  downloadCSV(finRows, 'financeiro_' + mesLabel + '.csv');
+
+  setTimeout(() => {
+    const estRows = [['Produto','Cor','Variacao','Quantidade']];
+    DB.data.ev_produtos.forEach(p => {
+      const vt = p.variacaoTipo || 'tamanho';
+      if (vt === 'unico') {
+        estRows.push([p.nome, p.cor || '', 'Unico', p.tamanhos['Único'] || 0]);
+      } else {
+        Object.entries(p.tamanhos).forEach(([tam, qty]) => {
+          estRows.push([p.nome, p.cor || '', tam, qty]);
+        });
+      }
+    });
+    downloadCSV(estRows, 'estoque_' + mesLabel + '.csv');
+    toast('Planilhas exportadas!');
+  }, 600);
+}
+
+function downloadCSV(rows, filename) {
+  const bom = '﻿';
+  const csv = bom + rows.map(r => r.map(c => '"' + String(c).replace(/"/g, '""') + '"').join(',')).join('\r\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
 }
 
 // ── INIT ───────────────────────────────────────────────────────────────────────
