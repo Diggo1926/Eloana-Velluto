@@ -33,6 +33,7 @@
       --header-h:      80px;
       --lace-h:        36px;
       --nav-h:         64px;
+      --banner-h:      0px;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -86,9 +87,10 @@
 
     /* MAIN */
     .app-main {
-      padding-top: calc(var(--header-h) + var(--lace-h));
+      padding-top: calc(var(--header-h) + var(--lace-h) + var(--banner-h));
       padding-bottom: calc(var(--nav-h) + 8px);
       min-height: 100vh;
+      transition: padding-top 0.25s;
     }
     .tab-content { display: none; padding: 16px; }
     .tab-content.active { display: block; }
@@ -492,6 +494,138 @@
     .export-csv-icon { background: #EBF5ED; }
     .export-opcao-title { font-size: 0.9rem; font-weight: 400; color: var(--marrom-escuro); }
     .export-opcao-desc { font-size: 0.74rem; font-weight: 200; color: var(--marrom-claro); margin-top: 2px; line-height: 1.4; }
+
+    /* BACKUP BANNER */
+    .backup-banner {
+      display: none; position: fixed;
+      top: calc(var(--header-h) + var(--lace-h)); left: 0; right: 0;
+      background: var(--perola); border-left: 3px solid var(--marrom-claro);
+      padding: 9px 14px; z-index: 97;
+      align-items: center; gap: 10px; flex-wrap: nowrap;
+    }
+    .backup-banner.show { display: flex; }
+    .backup-banner-msg { flex: 1; font-size: 0.76rem; font-weight: 300; color: var(--marrom-escuro); min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .backup-banner-btns { display: flex; gap: 10px; flex-shrink: 0; align-items: center; }
+    .btn-backup-export {
+      font-size: 0.74rem; font-weight: 400; padding: 5px 12px;
+      background: var(--marrom-claro); color: var(--branco);
+      border-radius: 6px; transition: background 0.2s; cursor: pointer; flex-shrink: 0;
+    }
+    .btn-backup-export:hover { background: var(--marrom-medio); }
+    .btn-backup-lembrar {
+      font-size: 0.74rem; font-weight: 300; padding: 0;
+      color: var(--marrom-claro); text-decoration: underline;
+      cursor: pointer; background: none; flex-shrink: 0;
+    }
+    .btn-backup-lembrar:hover { color: var(--marrom-medio); }
+
+    /* VENDA MULTI-STEP */
+    .venda-steps { display: flex; align-items: center; gap: 0; margin-top: 10px; }
+    .venda-step {
+      width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.72rem; font-weight: 400; border: 1.5px solid var(--linho);
+      color: var(--marrom-claro); background: var(--branco);
+      transition: all 0.2s;
+    }
+    .venda-step.active { border-color: var(--marrom-medio); background: var(--marrom-medio); color: var(--branco); }
+    .venda-step.done  { border-color: var(--musgo-claro); background: var(--musgo-claro); color: var(--branco); }
+    .venda-step-line { flex: 1; height: 1px; background: var(--linho); }
+
+    .venda-produtos-lista { display: flex; flex-direction: column; gap: 8px; max-height: 45vh; overflow-y: auto; }
+    .venda-prod-item {
+      padding: 12px 14px; border-radius: 10px; border: 1.5px solid var(--linho);
+      background: var(--creme); cursor: pointer; transition: all 0.15s;
+    }
+    .venda-prod-item:hover { border-color: var(--marrom-suave); background: var(--perola); }
+    .venda-prod-item.selected { border-color: var(--marrom-medio); background: var(--marrom-suave); }
+    .venda-prod-nome { font-size: 0.92rem; font-weight: 300; color: var(--marrom-escuro); }
+    .venda-prod-info { font-size: 0.74rem; color: var(--marrom-claro); margin-top: 3px; }
+
+    .venda-tam-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 8px; margin-top: 4px; }
+    .venda-tam-opcao {
+      padding: 10px 8px; border-radius: 8px; border: 1.5px solid var(--linho);
+      background: var(--creme); cursor: pointer; text-align: center; transition: all 0.15s;
+    }
+    .venda-tam-opcao:hover { border-color: var(--marrom-suave); background: var(--perola); }
+    .venda-tam-opcao.selected { border-color: var(--marrom-medio); background: var(--marrom-suave); }
+
+    .pagto-grid { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+    .pagto-opcao {
+      padding: 11px 14px; border-radius: 8px; border: 1.5px solid var(--linho);
+      background: var(--creme); cursor: pointer; font-size: 0.88rem; font-weight: 300;
+      color: var(--marrom-escuro); transition: all 0.15s;
+    }
+    .pagto-opcao:hover { border-color: var(--marrom-suave); background: var(--perola); }
+    .pagto-opcao.selected { border-color: var(--marrom-medio); background: var(--marrom-suave); font-weight: 400; }
+
+    /* A RECEBER BADGE / LINHA */
+    .lancamento-badge.a_receber  { background: var(--marrom-suave); color: var(--marrom-medio); }
+    .lancamento-badge.recebido   { background: #E8F5E9; color: #2E7D32; }
+    .lancamento-linha.a_receber  { background: var(--marrom-claro); }
+    .btn-marcar-recebido {
+      font-size: 0.7rem; font-weight: 300; padding: 3px 8px; border-radius: 6px;
+      border: 1px solid var(--musgo-claro); color: var(--musgo-medio);
+      margin-top: 4px; cursor: pointer; background: none; transition: background 0.15s;
+    }
+    .btn-marcar-recebido:hover { background: #E8F5E9; }
+
+    /* MOVIMENTAÇÕES */
+    .movimentacoes-toggle {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 16px; cursor: pointer; user-select: none;
+      background: var(--branco); border-radius: 12px; border: 1px solid var(--linho);
+      box-shadow: 0 2px 12px rgba(62,42,30,0.08); margin-top: 16px;
+    }
+    .movimentacoes-toggle-label {
+      font-family: 'Cormorant Garamond', serif; font-style: italic;
+      font-size: 1rem; color: var(--marrom-claro);
+    }
+    .movimentacoes-toggle-icon { color: var(--marrom-claro); font-size: 1rem; transition: transform 0.2s; }
+    .movimentacoes-toggle-icon.open { transform: rotate(180deg); }
+    .movimentacoes-lista {
+      display: none; flex-direction: column; gap: 0; margin-top: 8px;
+      border-radius: 12px; border: 1px solid var(--linho); overflow: hidden;
+      box-shadow: 0 2px 12px rgba(62,42,30,0.08);
+    }
+    .movimentacoes-lista.open { display: flex; }
+    .movimentacao-item {
+      display: flex; align-items: center; gap: 10px; padding: 11px 14px;
+      border-bottom: 1px solid var(--perola); background: var(--branco);
+    }
+    .movimentacao-item:last-child { border-bottom: none; }
+    .movimentacao-prod { font-size: 0.84rem; font-weight: 300; color: var(--marrom-escuro); }
+    .movimentacao-meta { font-size: 0.72rem; color: var(--marrom-claro); margin-top: 2px; }
+    .badge-mov-entrada { background: var(--musgo-claro);  color: var(--branco); }
+    .badge-mov-saida   { background: var(--marrom-claro); color: var(--branco); }
+    .badge-mov-ajuste  { background: var(--linho);        color: var(--marrom-escuro); }
+
+    /* FILTRO MOVIMENTAÇÕES */
+    .mov-filtros { display: flex; gap: 6px; padding: 10px 14px; border-bottom: 1px solid var(--perola); flex-wrap: wrap; }
+    .mov-filtro-btn {
+      padding: 4px 12px; border-radius: 16px; font-size: 0.72rem; font-weight: 300;
+      border: 1px solid var(--linho); background: var(--branco); color: var(--marrom-claro);
+      cursor: pointer; transition: all 0.15s; white-space: nowrap;
+    }
+    .mov-filtro-btn.active { background: var(--marrom-escuro); border-color: var(--marrom-escuro); color: var(--branco); }
+
+    /* CUSTO / MARGEM */
+    .produto-margem { font-size: 0.74rem; color: var(--musgo-medio); margin-top: 3px; font-weight: 300; }
+
+    /* BOTÃO AJUSTE NO CARD */
+    .btn-ajuste-card {
+      font-size: 0.78rem; font-weight: 300; color: var(--marrom-claro); padding: 4px 8px;
+      border-radius: 6px; border: 1px solid var(--linho); background: var(--creme);
+      transition: all 0.15s; cursor: pointer;
+    }
+    .btn-ajuste-card:hover { background: var(--perola); border-color: var(--marrom-suave); color: var(--marrom-escuro); }
+
+    /* INÍCIO: NOVOS MINI CARDS */
+    .mini-recebido .mini-valor { color: var(--verde); }
+    .mini-a-receber .mini-label { color: #B07D00; }
+    .mini-a-receber .mini-valor { color: #B07D00; }
+    .mini-lucro .mini-label { color: var(--musgo-medio); }
+    .mini-lucro .mini-valor { color: var(--musgo-medio); }
   </style>
 </head>
 <body>
@@ -532,6 +666,15 @@
     <circle cx="350" cy="24.5" r="2.2"/>
   </g>
 </svg>
+
+<!-- BACKUP BANNER -->
+<div class="backup-banner" id="backup-banner">
+  <span class="backup-banner-msg" id="backup-msg">Exporte seus dados para não perder nada.</span>
+  <div class="backup-banner-btns">
+    <button class="btn-backup-export" id="btn-backup-export">Exportar agora</button>
+    <button class="btn-backup-lembrar" id="btn-backup-lembrar">Depois</button>
+  </div>
+</div>
 
 <!-- MAIN CONTENT -->
 <main class="app-main">
@@ -595,6 +738,11 @@
         <div class="form-err" id="prod-preco-err">Informe um preço válido</div>
       </div>
       <div class="form-group">
+        <label class="form-label" for="prod-custo">Preço de custo (R$) <span style="font-weight:200;font-size:0.68rem;text-transform:none;letter-spacing:0">(opcional)</span></label>
+        <input class="form-input" type="number" id="prod-custo" min="0" step="0.01" placeholder="0,00">
+        <div class="form-hint">Usado para calcular margem e lucro</div>
+      </div>
+      <div class="form-group">
         <label class="form-label" for="prod-cor">Cor <span style="font-weight:200;font-size:0.68rem;text-transform:none;letter-spacing:0">(opcional)</span></label>
         <input class="form-input" type="text" id="prod-cor" maxlength="50" placeholder="Ex: rosa, preto, nude">
       </div>
@@ -645,38 +793,24 @@
   </div>
 </div>
 
-<!-- MODAL: VENDA -->
+<!-- MODAL: VENDA (multi-step) -->
 <div class="modal-overlay" id="modal-venda">
   <div class="modal-sheet">
     <div class="modal-handle"></div>
-    <div class="modal-hdr"><div class="modal-title">Registrar Venda</div></div>
-    <div class="modal-body">
-      <div class="form-group" id="venda-prod-group">
-        <label class="form-label" for="venda-produto">Produto</label>
-        <select class="form-select" id="venda-produto"></select>
-        <div class="form-err" id="venda-produto-err">Selecione um produto</div>
-      </div>
-      <div class="form-group">
-        <label class="form-label" for="venda-tamanho">Tamanho</label>
-        <select class="form-select" id="venda-tamanho">
-          <option value="">Selecione um tamanho</option>
-        </select>
-        <div class="form-err" id="venda-tamanho-err">Selecione um tamanho</div>
-      </div>
-      <div class="form-group">
-        <label class="form-label" for="venda-qty">Quantidade</label>
-        <input class="form-input" type="number" id="venda-qty" min="1" value="1">
-        <div class="form-err" id="venda-qty-err">Quantidade inválida</div>
-        <div class="form-hint" id="venda-estoque-hint"></div>
-      </div>
-      <div class="form-group">
-        <label class="form-label" for="venda-total">Total da venda</label>
-        <div class="form-input" id="venda-total" style="background:var(--perola);color:var(--musgo-medio);font-family:'Cormorant Garamond',serif;font-size:1.2rem">—</div>
+    <div class="modal-hdr">
+      <div class="modal-title" id="venda-modal-title">Registrar Venda</div>
+      <div class="venda-steps" id="venda-steps-bar">
+        <div class="venda-step active" id="vstep-1">1</div>
+        <div class="venda-step-line"></div>
+        <div class="venda-step" id="vstep-2">2</div>
+        <div class="venda-step-line"></div>
+        <div class="venda-step" id="vstep-3">3</div>
       </div>
     </div>
+    <div class="modal-body" id="venda-step-body"></div>
     <div class="modal-footer">
-      <button class="btn-secondary" id="btn-cancel-venda">Cancelar</button>
-      <button class="btn-primary" id="btn-save-venda">Confirmar Venda</button>
+      <button class="btn-secondary" id="btn-venda-back">Cancelar</button>
+      <button class="btn-primary" id="btn-venda-next">Continuar</button>
     </div>
   </div>
 </div>
@@ -807,6 +941,35 @@
   </div>
 </div>
 
+<!-- MODAL: AJUSTE DE ESTOQUE -->
+<div class="modal-overlay" id="modal-ajuste">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr"><div class="modal-title">Ajustar Estoque</div></div>
+    <div class="modal-body">
+      <div id="ajuste-produto-nome" style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.1rem;margin-bottom:16px;color:var(--marrom-escuro)"></div>
+      <div class="form-group" id="ajuste-tam-group">
+        <label class="form-label">Tamanho</label>
+        <select class="form-select" id="ajuste-tamanho"></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Quantidade <span style="font-weight:200;font-size:0.68rem;text-transform:none;letter-spacing:0">(+ para entrada, − para saída)</span></label>
+        <input class="form-input" type="number" id="ajuste-qty" placeholder="Ex: 5 ou -2">
+        <div class="form-err" id="ajuste-qty-err">Informe uma quantidade válida (diferente de zero)</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Motivo</label>
+        <input class="form-input" type="text" id="ajuste-motivo" maxlength="100" placeholder="Ex: Devolução, perda, correção">
+        <div class="form-err" id="ajuste-motivo-err">Informe o motivo</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" id="btn-cancel-ajuste">Cancelar</button>
+      <button class="btn-primary" id="btn-save-ajuste">Confirmar</button>
+    </div>
+  </div>
+</div>
+
 <!-- CONFIRM DIALOG -->
 <div class="confirm-overlay" id="confirm-overlay">
   <div class="confirm-box">
@@ -882,10 +1045,11 @@ const DB = {
     const debtId = uid();
     const p1 = uid(), p2 = uid(), p3 = uid();
     this.data = {
-      ev_version: '1.0',
+      ev_version: '1.1',
       ev_produtos: [],
       ev_vendas: [],
       ev_lancamentos: [],
+      ev_movimentacoes: [],
       ev_dividas: [{
         id: debtId,
         nome: 'Estoque inicial — cartão',
@@ -906,11 +1070,12 @@ const DB = {
   _load() {
     try {
       this.data = {
-        ev_version:     localStorage.getItem('ev_version') || '1.0',
-        ev_produtos:    JSON.parse(localStorage.getItem('ev_produtos') || '[]'),
-        ev_vendas:      JSON.parse(localStorage.getItem('ev_vendas') || '[]'),
-        ev_lancamentos: JSON.parse(localStorage.getItem('ev_lancamentos') || '[]'),
-        ev_dividas:     JSON.parse(localStorage.getItem('ev_dividas') || '[]')
+        ev_version:       localStorage.getItem('ev_version') || '1.0',
+        ev_produtos:      JSON.parse(localStorage.getItem('ev_produtos') || '[]'),
+        ev_vendas:        JSON.parse(localStorage.getItem('ev_vendas') || '[]'),
+        ev_lancamentos:   JSON.parse(localStorage.getItem('ev_lancamentos') || '[]'),
+        ev_movimentacoes: JSON.parse(localStorage.getItem('ev_movimentacoes') || '[]'),
+        ev_dividas:       JSON.parse(localStorage.getItem('ev_dividas') || '[]')
       };
     } catch (e) {
       this._createInitial();
@@ -919,11 +1084,12 @@ const DB = {
 
   _save() {
     try {
-      localStorage.setItem('ev_version',     this.data.ev_version);
-      localStorage.setItem('ev_produtos',    JSON.stringify(this.data.ev_produtos));
-      localStorage.setItem('ev_vendas',      JSON.stringify(this.data.ev_vendas));
-      localStorage.setItem('ev_lancamentos', JSON.stringify(this.data.ev_lancamentos));
-      localStorage.setItem('ev_dividas',     JSON.stringify(this.data.ev_dividas));
+      localStorage.setItem('ev_version',       this.data.ev_version);
+      localStorage.setItem('ev_produtos',      JSON.stringify(this.data.ev_produtos));
+      localStorage.setItem('ev_vendas',        JSON.stringify(this.data.ev_vendas));
+      localStorage.setItem('ev_lancamentos',   JSON.stringify(this.data.ev_lancamentos));
+      localStorage.setItem('ev_movimentacoes', JSON.stringify(this.data.ev_movimentacoes));
+      localStorage.setItem('ev_dividas',       JSON.stringify(this.data.ev_dividas));
     } catch (e) {
       if (e.name === 'QuotaExceededError') {
         toast('Armazenamento cheio. Remova fotos para liberar espaço.', 'error');
@@ -972,9 +1138,14 @@ const App = {
   finMonth: new Date().getMonth(),
   finYear: new Date().getFullYear(),
   editingProductId: null,
-  saleProductId: null,
   variacaoTipo: 'tamanho',
+  ajusteProductId: null,
+  vendaState: null,
 };
+
+function isRecebido(l) {
+  return !l.status || l.status === 'recebido';
+}
 
 document.querySelectorAll('.nav-tab').forEach(btn => {
   btn.addEventListener('click', () => setTab(btn.dataset.tab));
@@ -1026,45 +1197,64 @@ function renderInicio() {
     return d.getMonth() === m && d.getFullYear() === y;
   });
 
-  const receita = doMes.filter(l => l.tipo === 'entrada').reduce((s, l) => s + l.valor, 0);
-  const custos  = doMes.filter(l => l.tipo === 'saida').reduce((s, l) => s + l.valor, 0);
-  const saldo   = receita - custos;
+  const recebido  = doMes.filter(l => l.tipo === 'entrada' && isRecebido(l)).reduce((s, l) => s + l.valor, 0);
+  const aReceber  = doMes.filter(l => l.tipo === 'entrada' && l.status === 'a_receber').reduce((s, l) => s + l.valor, 0);
+  const custos    = doMes.filter(l => l.tipo === 'saida').reduce((s, l) => s + l.valor, 0);
+  const saldo     = recebido - custos;
+
+  // Lucro estimado: vendas do mês com precoCusto cadastrado
+  const vendasMes = (DB.data.ev_vendas || []).filter(v => {
+    const d = new Date(v.data + 'T12:00:00');
+    return d.getMonth() === m && d.getFullYear() === y;
+  });
+  const lucro = vendasMes.reduce((s, v) => {
+    const p = DB.data.ev_produtos.find(x => x.id === v.produtoId);
+    if (!p || !p.precoCusto || p.precoCusto <= 0) return s;
+    return s + (v.valorUnitario - p.precoCusto) * v.quantidade;
+  }, 0);
+  const temLucro = vendasMes.some(v => {
+    const p = DB.data.ev_produtos.find(x => x.id === v.produtoId);
+    return p && p.precoCusto > 0;
+  });
 
   const totalPecas = DB.data.ev_produtos.reduce((s, p) => {
     return s + Object.values(p.tamanhos).reduce((a, b) => a + b, 0);
   }, 0);
 
-  // Próxima parcela não paga
-  let proxParcela = null;
-  let proxDivida  = null;
+  let proxParcela = null, proxDivida = null;
   DB.data.ev_dividas.forEach(div => {
-    const parcelas = div.parcelado ? div.parcelas : (div.parcelas || []);
-    parcelas.forEach(p => {
-      if (!p.pago) {
-        if (!proxParcela || p.vencimento < proxParcela.vencimento) {
-          proxParcela = p;
-          proxDivida  = div;
-        }
+    (div.parcelas || []).forEach(p => {
+      if (!p.pago && (!proxParcela || p.vencimento < proxParcela.vencimento)) {
+        proxParcela = p; proxDivida = div;
       }
     });
   });
 
-  const saldoColor = saldo >= 0 ? 'var(--musgo-suave)' : '#E8B4A0';
-
   document.getElementById('inicio-content').innerHTML = `
-    <div class="card saldo-card" style="background:var(--musgo-escuro)">
+    <div class="card saldo-card">
       <div class="saldo-label">Saldo do mês · ${MONTHS_SHORT[m]}/${y}</div>
       <div class="saldo-valor">${fmt(saldo)}</div>
     </div>
     <div class="grid-2">
-      <div class="card mini-card mini-receita">
-        <div class="mini-label">Receita</div>
-        <div class="mini-valor">${fmt(receita)}</div>
+      <div class="card mini-card mini-recebido">
+        <div class="mini-label" style="color:var(--verde)">Recebido</div>
+        <div class="mini-valor mini-recebido" style="color:var(--verde)">${fmt(recebido)}</div>
       </div>
+      <div class="card mini-card mini-a-receber">
+        <div class="mini-label">A receber</div>
+        <div class="mini-valor">${fmt(aReceber)}</div>
+      </div>
+    </div>
+    <div class="grid-2" style="margin-top:0">
       <div class="card mini-card mini-custos">
         <div class="mini-label">Custos</div>
         <div class="mini-valor">${fmt(custos)}</div>
       </div>
+      ${temLucro ? `
+      <div class="card mini-card mini-lucro">
+        <div class="mini-label">Lucro est. do mês</div>
+        <div class="mini-valor">${fmt(lucro)}</div>
+      </div>` : '<div></div>'}
     </div>
     <div class="card estoque-info-card">
       <div>
@@ -1147,6 +1337,13 @@ function renderEstoque() {
           <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.57a1 1 0 00.99.84H5v10a2 2 0 002 2h10a2 2 0 002-2V10h1.15a1 1 0 00.99-.84l.58-3.57a2 2 0 00-1.34-2.23z"/>
         </svg>`;
 
+    let margemHTML = '';
+    if (p.precoCusto > 0) {
+      const margem = ((p.preco - p.precoCusto) / p.preco * 100).toFixed(1);
+      const lucroUnit = p.preco - p.precoCusto;
+      margemHTML = `<div class="produto-margem">Margem: ${margem}% · Lucro: ${fmt(lucroUnit)}/un.</div>`;
+    }
+
     return `
       <div class="card produto-card" style="animation-delay:${(i * 0.07 + 0.04).toFixed(2)}s">
         <div class="produto-foto-wrap">${fotoHTML}</div>
@@ -1154,6 +1351,7 @@ function renderEstoque() {
           <div class="produto-nome">${sanitize(p.nome)}</div>
           ${corHTML}
           <div class="produto-preco">${fmt(p.preco)} / unidade</div>
+          ${margemHTML}
           <div class="tamanhos-lista">${tamanhoHTML}</div>
           ${vt === 'tamanho' ? `<div class="produto-total">Total: <strong>${totalPecas}</strong> peça${totalPecas !== 1 ? 's' : ''}</div>` : ''}
         </div>
@@ -1163,6 +1361,7 @@ function renderEstoque() {
             Registrar Venda
           </button>
           <div class="btn-acoes-card">
+            <button class="btn-ajuste-card" data-ajuste="${p.id}" title="Ajustar estoque">Ajustar</button>
             <button class="btn-icon" data-edit="${p.id}" title="Editar">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
             </button>
@@ -1172,7 +1371,21 @@ function renderEstoque() {
           </div>
         </div>
       </div>`;
-  }).join('');
+  }).join('') + `
+  <div class="movimentacoes-toggle" id="mov-toggle">
+    <span class="movimentacoes-toggle-label">Movimentações de estoque</span>
+    <span class="movimentacoes-toggle-icon open" id="mov-toggle-icon">▾</span>
+  </div>
+  <div class="movimentacoes-lista open" id="mov-lista">
+    <div class="mov-filtros" id="mov-filtros">
+      <button class="mov-filtro-btn active" data-filtro="todos">Todos</button>
+      <button class="mov-filtro-btn" data-filtro="entrada">Entradas</button>
+      <button class="mov-filtro-btn" data-filtro="saida">Saídas</button>
+      <button class="mov-filtro-btn" data-filtro="ajuste">Ajustes</button>
+    </div>
+    <div id="mov-items">${renderMovimentacoes()}</div>
+  </div>
+  `;
 
   // Qty buttons
   el.querySelectorAll('.qty-btn').forEach(btn => {
@@ -1185,6 +1398,11 @@ function renderEstoque() {
   // Venda buttons
   el.querySelectorAll('.btn-venda-card').forEach(btn => {
     btn.addEventListener('click', () => openSaleModal(btn.dataset.pid));
+  });
+
+  // Ajuste buttons
+  el.querySelectorAll('[data-ajuste]').forEach(btn => {
+    btn.addEventListener('click', () => openAdjustModal(btn.dataset.ajuste));
   });
 
   // Edit buttons
@@ -1205,6 +1423,27 @@ function renderEstoque() {
       });
     });
   });
+
+  // Movimentações toggle
+  const movToggle = document.getElementById('mov-toggle');
+  const movLista  = document.getElementById('mov-lista');
+  const movIcon   = document.getElementById('mov-toggle-icon');
+  if (movToggle) {
+    movToggle.addEventListener('click', () => {
+      const isOpen = movLista.classList.toggle('open');
+      movIcon.classList.toggle('open', isOpen);
+    });
+  }
+
+  // Filtro de movimentações
+  el.querySelectorAll('.mov-filtro-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      el.querySelectorAll('.mov-filtro-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const movItems = document.getElementById('mov-items');
+      if (movItems) movItems.innerHTML = renderMovimentacoes(btn.dataset.filtro);
+    });
+  });
 }
 
 function updateQty(pid, tam, delta) {
@@ -1213,6 +1452,7 @@ function updateQty(pid, tam, delta) {
   const newVal = (p.tamanhos[tam] || 0) + delta;
   if (newVal < 0) return;
   p.tamanhos[tam] = newVal;
+  logMovimento(pid, tam, delta > 0 ? 'entrada' : 'saida', Math.abs(delta), 'Ajuste rápido pelo card');
   DB.save();
   const el = document.getElementById(`qty-${pid}-${tam}`);
   if (el) el.textContent = newVal;
@@ -1245,9 +1485,10 @@ function renderFinanceiro() {
     return d.getFullYear() === selY && d.getMonth() === selM;
   }).sort((a, b) => b.data.localeCompare(a.data));
 
-  const entradas = filtered.filter(l => l.tipo === 'entrada').reduce((s, l) => s + l.valor, 0);
-  const saidas   = filtered.filter(l => l.tipo === 'saida').reduce((s, l) => s + l.valor, 0);
-  const saldo    = entradas - saidas;
+  const entradas  = filtered.filter(l => l.tipo === 'entrada' && isRecebido(l)).reduce((s, l) => s + l.valor, 0);
+  const aReceber  = filtered.filter(l => l.tipo === 'entrada' && l.status === 'a_receber').reduce((s, l) => s + l.valor, 0);
+  const saidas    = filtered.filter(l => l.tipo === 'saida').reduce((s, l) => s + l.valor, 0);
+  const saldo     = entradas - saidas;
 
   const mesFilterHTML = months.map(({ y, m }) => {
     const active = y === selY && m === selM ? 'active' : '';
@@ -1255,33 +1496,49 @@ function renderFinanceiro() {
   }).join('');
 
   const lancamentosHTML = filtered.length
-    ? filtered.map(l => `
+    ? filtered.map(l => {
+        const isAR = l.status === 'a_receber';
+        const linhaClass = l.tipo === 'entrada' ? (isAR ? 'a_receber' : 'entrada') : 'saida';
+        const badgeClass = l.tipo === 'entrada' ? (isAR ? 'a_receber' : (l.marcadoRecebido ? 'recebido' : 'entrada')) : 'saida';
+        const badgeLabel = l.tipo === 'entrada' ? (isAR ? 'A receber' : (l.marcadoRecebido ? 'Recebido' : 'Entrada')) : 'Saída';
+        const marcarBtn = isAR
+          ? `<button class="btn-marcar-recebido" data-lid="${l.id}">✓ Marcar como recebido</button>`
+          : '';
+        return `
         <div class="card lancamento-card" style="margin-bottom:8px">
-          <div class="lancamento-linha ${l.tipo}"></div>
+          <div class="lancamento-linha ${linhaClass}"></div>
           <div class="lancamento-body">
-            <span class="lancamento-badge ${l.tipo}">${l.tipo === 'entrada' ? 'Entrada' : 'Saída'}</span>
+            <span class="lancamento-badge ${badgeClass}">${badgeLabel}</span>
             <div class="lancamento-desc">${sanitize(l.descricao)}</div>
             <div class="lancamento-data">${fmtDate(l.data)}</div>
+            ${marcarBtn}
           </div>
-          <div class="lancamento-val ${l.tipo}">${l.tipo === 'saida' ? '−' : '+'}${fmt(l.valor)}</div>
-        </div>`).join('')
+          <div class="lancamento-val ${l.tipo === 'saida' ? 'saida' : (isAR ? '' : 'entrada')}" style="${isAR ? 'color:var(--marrom-claro)' : ''}">${l.tipo === 'saida' ? '−' : '+'}${fmt(l.valor)}</div>
+        </div>`;
+      }).join('')
     : `<div class="sem-dados">Nenhum lançamento neste período</div>`;
 
   el.innerHTML = `
     <div class="mes-filter">${mesFilterHTML}</div>
     <div class="fin-resumo">
       <div class="card fin-card fin-entradas">
-        <div class="fin-label">Entradas</div>
+        <div class="fin-label">Recebido</div>
         <div class="fin-valor">${fmt(entradas)}</div>
       </div>
+      <div class="card fin-card" style="padding:16px">
+        <div class="fin-label" style="color:var(--marrom-claro)">A receber</div>
+        <div class="fin-valor" style="color:var(--marrom-claro)">${fmt(aReceber)}</div>
+      </div>
+    </div>
+    <div class="fin-resumo" style="margin-top:0">
       <div class="card fin-card fin-saidas">
         <div class="fin-label">Saídas</div>
         <div class="fin-valor">${fmt(saidas)}</div>
       </div>
-    </div>
-    <div class="card saldo-periodo">
-      <div class="saldo-periodo-label">Saldo do período</div>
-      <div class="saldo-periodo-valor ${saldo >= 0 ? 'saldo-positivo' : 'saldo-negativo'}">${fmt(saldo)}</div>
+      <div class="card fin-card" style="padding:16px">
+        <div class="fin-label" style="color:var(--musgo-medio)">Saldo recebido</div>
+        <div class="fin-valor ${saldo >= 0 ? 'saldo-positivo' : 'saldo-negativo'}" style="font-size:1.1rem">${fmt(saldo)}</div>
+      </div>
     </div>
     <button class="btn-exportar" id="btn-exportar">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -1309,6 +1566,20 @@ function renderFinanceiro() {
   // Auto scroll to active month
   const activeBtn = el.querySelector('.mes-btn.active');
   if (activeBtn) setTimeout(() => activeBtn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' }), 100);
+
+  // Marcar recebido
+  el.querySelectorAll('.btn-marcar-recebido').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const l = DB.data.ev_lancamentos.find(x => x.id === btn.dataset.lid);
+      if (!l || l.status !== 'a_receber') return;
+      l.status = 'recebido';
+      l.marcadoRecebido = true;
+      DB.save();
+      renderFinanceiro();
+      renderInicio();
+      toast('Marcado como recebido');
+    });
+  });
 }
 
 // ── RENDER: DIVIDAS ────────────────────────────────────────────────────────────
@@ -1424,6 +1695,7 @@ function openAddProduct() {
   document.getElementById('modal-produto-title').textContent = 'Novo Produto';
   document.getElementById('prod-nome').value = '';
   document.getElementById('prod-preco').value = '';
+  document.getElementById('prod-custo').value = '';
   document.getElementById('prod-cor').value = '';
   ['P','M','G','GG'].forEach(s => { document.getElementById(`tam-${s}`).checked = false; });
   document.getElementById('prod-qty-group').innerHTML = '';
@@ -1444,6 +1716,7 @@ function openEditProduct(id) {
   document.getElementById('modal-produto-title').textContent = 'Editar Produto';
   document.getElementById('prod-nome').value = p.nome;
   document.getElementById('prod-preco').value = p.preco;
+  document.getElementById('prod-custo').value = p.precoCusto > 0 ? p.precoCusto : '';
   document.getElementById('prod-cor').value = p.cor || '';
 
   const vt = p.variacaoTipo || 'tamanho';
@@ -1575,6 +1848,7 @@ function saveProduto() {
   const nome         = document.getElementById('prod-nome').value.trim();
   const preco        = parseFloat(document.getElementById('prod-preco').value);
   const cor          = document.getElementById('prod-cor').value.trim();
+  const precoCusto   = parseFloat(document.getElementById('prod-custo').value) || 0;
   const variacaoTipo = App.variacaoTipo || 'tamanho';
   const sizes        = variacaoTipo === 'tamanho'
     ? ['P','M','G','GG'].filter(s => document.getElementById(`tam-${s}`).checked)
@@ -1612,13 +1886,17 @@ function saveProduto() {
     if (idx > -1) {
       DB.data.ev_produtos[idx] = {
         ...DB.data.ev_produtos[idx],
-        nome, preco, cor, variacaoTipo, tamanhos,
+        nome, preco, precoCusto, cor, variacaoTipo, tamanhos,
         foto: _prodFotoBase64
       };
     }
     toast('Produto atualizado');
   } else {
-    DB.data.ev_produtos.push({ id: uid(), nome, preco, cor, variacaoTipo, tamanhos, foto: _prodFotoBase64, createdAt: new Date().toISOString() });
+    const novoProd = { id: uid(), nome, preco, precoCusto, cor, variacaoTipo, tamanhos, foto: _prodFotoBase64, createdAt: new Date().toISOString() };
+    DB.data.ev_produtos.push(novoProd);
+    Object.entries(tamanhos).forEach(([tam, qty]) => {
+      if (qty > 0) logMovimento(novoProd.id, tam, 'entrada', qty, 'Cadastro inicial');
+    });
     toast('Produto cadastrado');
   }
 
@@ -1627,145 +1905,463 @@ function saveProduto() {
   renderEstoque();
 }
 
-// ── SALE ACTIONS ───────────────────────────────────────────────────────────────
-function openSaleModal(prodId) {
-  App.saleProductId = prodId;
-  const prodGroup = document.getElementById('venda-prod-group');
-  const prodSelect = document.getElementById('venda-produto');
-  const produtos = DB.data.ev_produtos;
+// ── MOVIMENTAÇÕES ─────────────────────────────────────────────────────────────
 
-  // Clear errors
-  ['venda-produto-err','venda-tamanho-err','venda-qty-err'].forEach(id => document.getElementById(id).classList.remove('show'));
-  ['venda-produto','venda-tamanho','venda-qty'].forEach(id => document.getElementById(id).classList.remove('err'));
-  document.getElementById('venda-total').textContent = '—';
-  document.getElementById('venda-estoque-hint').textContent = '';
-
-  if (prodId) {
-    prodGroup.style.display = 'none';
-  } else {
-    prodGroup.style.display = 'block';
-    prodSelect.innerHTML = '<option value="">Selecione um produto</option>' +
-      produtos.map(p => `<option value="${p.id}">${sanitize(p.nome)}</option>`).join('');
-  }
-
-  populateSizesForSale(prodId);
-  document.getElementById('venda-qty').value = '1';
-  openModal('modal-venda');
+function logMovimento(produtoId, tamanho, tipo, quantidade, motivo) {
+  const p = DB.data.ev_produtos.find(x => x.id === produtoId);
+  DB.data.ev_movimentacoes.push({
+    id: uid(),
+    produtoId,
+    produtoNome: p?.nome || '?',
+    cor: p?.cor || '',
+    tamanho: tamanho || '',
+    tipo,
+    quantidade,
+    motivo: motivo || '',
+    dataHora: new Date().toISOString()
+  });
 }
 
-function populateSizesForSale(prodId) {
-  const tamSelect = document.getElementById('venda-tamanho');
-  tamSelect.innerHTML = '<option value="">Selecione um tamanho</option>';
+function renderMovimentacoes(filtro) {
+  let movs = [...(DB.data.ev_movimentacoes || [])].reverse();
+  if (filtro && filtro !== 'todos') movs = movs.filter(m => m.tipo === filtro);
+  if (!movs.length) {
+    return '<div style="padding:12px 14px;font-size:0.84rem;color:var(--marrom-claro);font-style:italic">Nenhuma movimentação registrada</div>';
+  }
+  const pad = n => String(n).padStart(2, '0');
+  return movs.map(m => {
+    const bc = m.tipo === 'entrada' ? 'badge badge-mov-entrada' : m.tipo === 'saida' ? 'badge badge-mov-saida' : 'badge badge-mov-ajuste';
+    const tl = m.tipo === 'entrada' ? 'Entrada' : m.tipo === 'saida' ? 'Saída' : 'Ajuste';
+    const dt = new Date(m.dataHora);
+    const ds = `${pad(dt.getDate())}/${pad(dt.getMonth()+1)}/${dt.getFullYear()} ${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
+    const cor = m.cor ? ` · ${sanitize(m.cor)}` : '';
+    const tam = m.tamanho && m.tamanho !== 'Único' ? ` · ${sanitize(m.tamanho)}` : '';
+    const sinal = m.tipo === 'saida' ? '−' : '+';
+    return `
+      <div class="movimentacao-item">
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">
+            <span class="${bc}">${tl}</span>
+            <span style="font-size:0.72rem;color:var(--marrom-claro)">${ds}</span>
+          </div>
+          <div class="movimentacao-prod">${sanitize(m.produtoNome)}${cor}${tam}</div>
+          <div class="movimentacao-meta">${sanitize(m.motivo)} · ${sinal}${Math.abs(m.quantidade)} un.</div>
+        </div>
+      </div>`;
+  }).join('');
+}
 
+// ── AJUSTE DE ESTOQUE ─────────────────────────────────────────────────────────
+
+function openAdjustModal(prodId) {
   const p = DB.data.ev_produtos.find(x => x.id === prodId);
   if (!p) return;
+  App.ajusteProductId = prodId;
 
-  const vt = p.variacaoTipo || 'tamanho';
-  Object.entries(p.tamanhos).forEach(([tam, qty]) => {
-    if (qty > 0) {
-      const opt = document.createElement('option');
-      opt.value = tam;
-      opt.textContent = vt === 'unico'
-        ? `Disponível: ${qty} peça${qty !== 1 ? 's' : ''}`
-        : `${tam} (${qty} em estoque)`;
-      tamSelect.appendChild(opt);
-    }
-  });
+  const corLabel = p.cor ? ` · ${p.cor}` : '';
+  document.getElementById('ajuste-produto-nome').textContent = p.nome + corLabel;
 
-  if (vt === 'unico') {
-    const opts = tamSelect.querySelectorAll('option:not([value=""])');
-    if (opts.length === 1) {
-      tamSelect.value = opts[0].value;
-      tamSelect.dispatchEvent(new Event('change'));
-    }
+  const tamGroup  = document.getElementById('ajuste-tam-group');
+  const tamSelect = document.getElementById('ajuste-tamanho');
+
+  if ((p.variacaoTipo || 'tamanho') === 'unico') {
+    tamGroup.style.display = 'none';
+    tamSelect.innerHTML = '<option value="Único">Único</option>';
+  } else {
+    tamGroup.style.display = 'block';
+    tamSelect.innerHTML = Object.entries(p.tamanhos).map(([s, q]) =>
+      `<option value="${s}">${s} (${q} em estoque)</option>`
+    ).join('');
   }
+
+  document.getElementById('ajuste-qty').value = '';
+  document.getElementById('ajuste-motivo').value = '';
+  ['ajuste-qty-err','ajuste-motivo-err'].forEach(id => document.getElementById(id).classList.remove('show'));
+  document.getElementById('ajuste-qty').classList.remove('err');
+  openModal('modal-ajuste');
 }
 
-document.getElementById('venda-produto').addEventListener('change', e => {
-  const pid = e.target.value;
-  App.saleProductId = pid;
-  populateSizesForSale(pid);
-  updateVendaTotal();
-});
+document.getElementById('btn-cancel-ajuste').addEventListener('click', () => closeModal('modal-ajuste'));
 
-document.getElementById('venda-tamanho').addEventListener('change', () => {
-  updateVendaTotal();
-  const pid = App.saleProductId;
-  const tam = document.getElementById('venda-tamanho').value;
-  const p = DB.data.ev_produtos.find(x => x.id === pid);
-  if (p && tam) {
-    const stock = p.tamanhos[tam] || 0;
-    document.getElementById('venda-estoque-hint').textContent = `${stock} disponíve${stock !== 1 ? 'is' : 'l'} em estoque`;
-    document.getElementById('venda-qty').max = stock;
-  } else {
-    document.getElementById('venda-estoque-hint').textContent = '';
-  }
-});
+document.getElementById('btn-save-ajuste').addEventListener('click', () => {
+  const pid    = App.ajusteProductId;
+  const p      = DB.data.ev_produtos.find(x => x.id === pid);
+  if (!p) return;
 
-document.getElementById('venda-qty').addEventListener('input', updateVendaTotal);
+  const tam    = document.getElementById('ajuste-tamanho').value || 'Único';
+  const qty    = parseInt(document.getElementById('ajuste-qty').value);
+  const motivo = document.getElementById('ajuste-motivo').value.trim();
+  let valid    = true;
 
-function updateVendaTotal() {
-  const pid = App.saleProductId;
-  const p = DB.data.ev_produtos.find(x => x.id === pid);
-  const qty = parseInt(document.getElementById('venda-qty').value) || 0;
-  if (p && qty > 0) {
-    document.getElementById('venda-total').textContent = fmt(p.preco * qty);
-  } else {
-    document.getElementById('venda-total').textContent = '—';
-  }
-}
-
-document.getElementById('btn-cancel-venda').addEventListener('click', () => closeModal('modal-venda'));
-document.getElementById('btn-save-venda').addEventListener('click', saveVenda);
-
-function saveVenda() {
-  let valid = true;
-  const pid = App.saleProductId || document.getElementById('venda-produto').value;
-  const tam = document.getElementById('venda-tamanho').value;
-  const qty = parseInt(document.getElementById('venda-qty').value);
-
-  if (!pid) {
-    document.getElementById('venda-produto').classList.add('err');
-    document.getElementById('venda-produto-err').classList.add('show');
+  if (!qty || qty === 0) {
+    document.getElementById('ajuste-qty').classList.add('err');
+    document.getElementById('ajuste-qty-err').classList.add('show');
     valid = false;
   }
-  if (!tam) {
-    document.getElementById('venda-tamanho').classList.add('err');
-    document.getElementById('venda-tamanho-err').classList.add('show');
+  if (!motivo) {
+    document.getElementById('ajuste-motivo-err').classList.add('show');
     valid = false;
   }
   if (!valid) return;
 
-  const p = DB.data.ev_produtos.find(x => x.id === pid);
-  if (!p) { toast('Produto não encontrado', 'error'); return; }
-
-  const stock = p.tamanhos[tam] || 0;
-  if (!qty || qty <= 0 || qty > stock) {
-    document.getElementById('venda-qty').classList.add('err');
-    document.getElementById('venda-qty-err').textContent = qty > stock
-      ? `Estoque insuficiente. Disponível: ${stock}`
-      : 'Quantidade inválida';
-    document.getElementById('venda-qty-err').classList.add('show');
+  const novoQty = (p.tamanhos[tam] || 0) + qty;
+  if (novoQty < 0) {
+    document.getElementById('ajuste-qty').classList.add('err');
+    const errEl = document.getElementById('ajuste-qty-err');
+    errEl.textContent = `Estoque insuficiente. Disponível: ${p.tamanhos[tam] || 0}`;
+    errEl.classList.add('show');
     return;
   }
 
-  // Deduct stock
-  p.tamanhos[tam] -= qty;
-  const valor = p.preco * qty;
-  const descricao = tam === 'Único' ? `${p.nome} · ${qty} un.` : `${p.nome} · ${tam} · ${qty} un.`;
+  p.tamanhos[tam] = novoQty;
+  logMovimento(pid, tam, 'ajuste', qty, motivo);
+  DB.save();
+  closeModal('modal-ajuste');
+  toast('Estoque ajustado');
+  renderEstoque();
+  if (App.tab === 'inicio') renderInicio();
+});
 
-  // Create sale record
-  const venda = { id: uid(), produtoId: p.id, produtoNome: p.nome, tamanho: tam, quantidade: qty, valorUnitario: p.preco, valorTotal: valor, data: todayISO(), createdAt: new Date().toISOString() };
-  DB.data.ev_vendas.push(venda);
+// ── SALE ACTIONS (multi-step) ─────────────────────────────────────────────────
 
-  // Create financial entry
-  DB.data.ev_lancamentos.push({ id: uid(), tipo: 'entrada', descricao, valor, data: todayISO(), origem: 'venda', referenciaId: venda.id, createdAt: new Date().toISOString() });
+function openSaleModal(preSelectedProdId) {
+  App.vendaState = {
+    step: 1,
+    produto: null,
+    tamanho: null,
+    quantidade: 1,
+    valorUnitario: 0,
+    pagamento: null,
+    numParcelas: 1,
+    dataPrimeiraParcela: '',
+    nomeCliente: ''
+  };
+
+  if (preSelectedProdId) {
+    const p = DB.data.ev_produtos.find(x => x.id === preSelectedProdId);
+    if (p) {
+      App.vendaState.produto = p;
+      if ((p.variacaoTipo || 'tamanho') === 'unico') App.vendaState.tamanho = 'Único';
+    }
+  }
+
+  renderVendaStep();
+  openModal('modal-venda');
+}
+
+function renderVendaStep() {
+  const state = App.vendaState;
+  if (!state) return;
+  const step = state.step;
+
+  [1,2,3].forEach(n => {
+    const el = document.getElementById(`vstep-${n}`);
+    if (el) el.className = 'venda-step' + (n < step ? ' done' : n === step ? ' active' : '');
+  });
+
+  const backBtn = document.getElementById('btn-venda-back');
+  const nextBtn = document.getElementById('btn-venda-next');
+  if (backBtn) backBtn.textContent = step === 1 ? 'Cancelar' : 'Voltar';
+  if (nextBtn) nextBtn.textContent = step === 3 ? 'Confirmar venda' : 'Continuar';
+
+  const body = document.getElementById('venda-step-body');
+  if (!body) return;
+
+  if      (step === 1) renderVendaStep1(body, state);
+  else if (step === 2) renderVendaStep2(body, state);
+  else if (step === 3) renderVendaStep3(body, state);
+}
+
+function renderVendaStep1(body, state) {
+  const produtos = DB.data.ev_produtos;
+  if (!produtos.length) {
+    body.innerHTML = '<div class="sem-dados">Nenhum produto cadastrado no estoque.</div>';
+    return;
+  }
+
+  body.innerHTML = `
+    <label class="form-label" style="display:block;margin-bottom:8px">Produto</label>
+    <div class="venda-produtos-lista" id="venda-prod-lista">
+      ${produtos.map(p => {
+        const total = Object.values(p.tamanhos).reduce((a,b)=>a+b,0);
+        const cor   = p.cor ? ` · ${sanitize(p.cor)}` : '';
+        const sel   = state.produto?.id === p.id ? ' selected' : '';
+        return `<div class="venda-prod-item${sel}" data-pid="${p.id}">
+          <div class="venda-prod-nome">${sanitize(p.nome)}${cor}</div>
+          <div class="venda-prod-info">${fmt(p.preco)} · ${total} em estoque</div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div id="venda-tam-section" style="display:none;margin-top:14px">
+      <label class="form-label" style="display:block;margin-bottom:8px">Tamanho</label>
+      <div class="venda-tam-grid" id="venda-tam-grid"></div>
+    </div>`;
+
+  if (state.produto) {
+    const vt = state.produto.variacaoTipo || 'tamanho';
+    if (vt !== 'unico') renderTamanhoGrid(state.produto, state);
+  }
+
+  body.querySelectorAll('.venda-prod-item').forEach(item => {
+    item.addEventListener('click', () => {
+      body.querySelectorAll('.venda-prod-item').forEach(i => i.classList.remove('selected'));
+      item.classList.add('selected');
+      const p  = DB.data.ev_produtos.find(x => x.id === item.dataset.pid);
+      state.produto  = p;
+      state.tamanho  = null;
+      const section  = document.getElementById('venda-tam-section');
+      const vt = p?.variacaoTipo || 'tamanho';
+      if (vt === 'unico') {
+        state.tamanho = 'Único';
+        if (section) section.style.display = 'none';
+      } else {
+        renderTamanhoGrid(p, state);
+      }
+    });
+  });
+}
+
+function renderTamanhoGrid(p, state) {
+  const section = document.getElementById('venda-tam-section');
+  const grid    = document.getElementById('venda-tam-grid');
+  if (!grid || !section) return;
+
+  const disponiveis = Object.entries(p.tamanhos).filter(([,q]) => q > 0);
+  if (!disponiveis.length) {
+    grid.innerHTML = '<div style="font-size:0.84rem;color:var(--vermelho);padding:4px 0">Produto sem estoque disponível</div>';
+    section.style.display = 'block';
+    return;
+  }
+
+  grid.innerHTML = disponiveis.map(([tam, qty]) =>
+    `<div class="venda-tam-opcao${state.tamanho === tam ? ' selected' : ''}" data-tam="${tam}">
+      <div style="font-weight:400;font-size:0.9rem">${sanitize(tam)}</div>
+      <div style="font-size:0.72rem;color:var(--marrom-claro);margin-top:3px">${qty} un.</div>
+    </div>`
+  ).join('');
+
+  grid.querySelectorAll('.venda-tam-opcao').forEach(opt => {
+    opt.addEventListener('click', () => {
+      grid.querySelectorAll('.venda-tam-opcao').forEach(o => o.classList.remove('selected'));
+      opt.classList.add('selected');
+      state.tamanho = opt.dataset.tam;
+    });
+  });
+
+  section.style.display = 'block';
+}
+
+function renderVendaStep2(body, state) {
+  const p      = state.produto;
+  const vt     = p.variacaoTipo || 'tamanho';
+  const stock  = p.tamanhos[state.tamanho] || 0;
+  const tamLbl = (vt === 'unico' || state.tamanho === 'Único') ? '' : ` · ${state.tamanho}`;
+  const corLbl = p.cor ? ` · ${sanitize(p.cor)}` : '';
+  const prIni  = state.valorUnitario > 0 ? state.valorUnitario : p.preco;
+
+  body.innerHTML = `
+    <div style="font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.05rem;color:var(--marrom-escuro);margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--linho)">
+      ${sanitize(p.nome)}${corLbl}${tamLbl}
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="vs-qty">Quantidade</label>
+      <input class="form-input" type="number" id="vs-qty" min="1" max="${stock}" value="${Math.min(state.quantidade||1,stock)}" inputmode="numeric">
+      <div class="form-hint">${stock} disponível${stock!==1?'is':''} em estoque</div>
+      <div class="form-err" id="vs-qty-err"></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="vs-preco">Preço unitário (R$)</label>
+      <input class="form-input" type="number" id="vs-preco" min="0.01" step="0.01" value="${prIni}" inputmode="decimal">
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-top:1px solid var(--linho)">
+      <span style="font-size:0.75rem;font-weight:300;color:var(--marrom-claro);text-transform:uppercase;letter-spacing:0.08em">Total</span>
+      <span style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:300;color:var(--musgo-medio)" id="vs-total">—</span>
+    </div>`;
+
+  const qtyEl   = document.getElementById('vs-qty');
+  const precoEl = document.getElementById('vs-preco');
+  const totalEl = document.getElementById('vs-total');
+  const errEl   = document.getElementById('vs-qty-err');
+
+  function updTot() {
+    const q = parseInt(qtyEl.value)||0, v = parseFloat(precoEl.value)||0;
+    totalEl.textContent = (q>0&&v>0) ? fmt(q*v) : '—';
+  }
+  qtyEl.addEventListener('input', () => {
+    const q = parseInt(qtyEl.value)||0;
+    if (q > stock) { errEl.textContent=`Estoque insuficiente. Disponível: ${stock}`; errEl.classList.add('show'); qtyEl.classList.add('err'); }
+    else { errEl.classList.remove('show'); qtyEl.classList.remove('err'); }
+    updTot();
+  });
+  precoEl.addEventListener('input', updTot);
+  updTot();
+}
+
+function renderVendaStep3(body, state) {
+  const opcoes = [
+    { id:'dinheiro', label:'Dinheiro' },
+    { id:'pix',      label:'PIX' },
+    { id:'debito',   label:'Cartão de Débito' },
+    { id:'credito',  label:'Cartão de Crédito' },
+    { id:'fiado',    label:'Fiado' }
+  ];
+
+  body.innerHTML = `
+    <label class="form-label" style="display:block;margin-bottom:8px">Forma de pagamento</label>
+    <div class="pagto-grid">
+      ${opcoes.map(o=>`
+        <div class="pagto-opcao${state.pagamento===o.id?' selected':''}" data-pagto="${o.id}">
+          ${sanitize(o.label)}
+        </div>`).join('')}
+    </div>
+    <div id="vs-credito-fields" style="display:${state.pagamento==='credito'?'block':'none'};margin-top:12px">
+      <div class="form-group">
+        <label class="form-label" for="vs-parcelas">Número de parcelas</label>
+        <select class="form-select" id="vs-parcelas">
+          ${[1,2,3,4,5,6,7,8,9,10,11,12].map(n=>`<option value="${n}"${state.numParcelas===n?' selected':''}>${n}x</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="vs-data-parcela">Data do 1º recebimento</label>
+        <input class="form-input" type="date" id="vs-data-parcela" value="${state.dataPrimeiraParcela||todayISO()}">
+      </div>
+    </div>
+    <div id="vs-fiado-fields" style="display:${state.pagamento==='fiado'?'block':'none'};margin-top:12px">
+      <div class="form-group">
+        <label class="form-label" for="vs-cliente">Nome do cliente</label>
+        <input class="form-input" type="text" id="vs-cliente" value="${sanitize(state.nomeCliente||'')}" maxlength="80" placeholder="Ex: Maria Silva">
+      </div>
+    </div>
+    <div class="form-err" id="vs-pagto-err" style="margin-top:8px"></div>`;
+
+  body.querySelectorAll('.pagto-opcao').forEach(opt => {
+    opt.addEventListener('click', () => {
+      body.querySelectorAll('.pagto-opcao').forEach(o => o.classList.remove('selected'));
+      opt.classList.add('selected');
+      state.pagamento = opt.dataset.pagto;
+      document.getElementById('vs-credito-fields').style.display = state.pagamento==='credito'?'block':'none';
+      document.getElementById('vs-fiado-fields').style.display   = state.pagamento==='fiado'  ?'block':'none';
+    });
+  });
+}
+
+document.getElementById('btn-venda-back').addEventListener('click', () => {
+  const state = App.vendaState;
+  if (!state || state.step === 1) { closeModal('modal-venda'); return; }
+  state.step--;
+  renderVendaStep();
+});
+
+document.getElementById('btn-venda-next').addEventListener('click', () => {
+  const state = App.vendaState;
+  if (!state) return;
+
+  if (state.step === 1) {
+    if (!state.produto) { toast('Selecione um produto', 'error'); return; }
+    const vt = state.produto.variacaoTipo || 'tamanho';
+    if (vt !== 'unico' && !state.tamanho) { toast('Selecione um tamanho', 'error'); return; }
+    const stock = state.produto.tamanhos[state.tamanho] || 0;
+    if (stock === 0) { toast('Produto sem estoque disponível', 'error'); return; }
+    state.valorUnitario = state.produto.preco;
+    state.step = 2;
+    renderVendaStep();
+
+  } else if (state.step === 2) {
+    const qty   = parseInt(document.getElementById('vs-qty')?.value) || 0;
+    const preco = parseFloat(document.getElementById('vs-preco')?.value) || 0;
+    const stock = state.produto.tamanhos[state.tamanho] || 0;
+    const errEl = document.getElementById('vs-qty-err');
+
+    if (qty < 1) { if(errEl){errEl.textContent='Informe a quantidade';errEl.classList.add('show');} return; }
+    if (qty > stock) { if(errEl){errEl.textContent=`Estoque insuficiente. Disponível: ${stock}`;errEl.classList.add('show');} return; }
+    if (preco <= 0) { toast('Informe um preço válido', 'error'); return; }
+
+    state.quantidade    = qty;
+    state.valorUnitario = preco;
+    state.step = 3;
+    renderVendaStep();
+
+  } else if (state.step === 3) {
+    if (state.pagamento === 'credito') {
+      state.numParcelas         = parseInt(document.getElementById('vs-parcelas')?.value) || 1;
+      state.dataPrimeiraParcela = document.getElementById('vs-data-parcela')?.value || todayISO();
+    }
+    if (state.pagamento === 'fiado') {
+      state.nomeCliente = (document.getElementById('vs-cliente')?.value || '').trim();
+    }
+    if (!state.pagamento) {
+      const errEl = document.getElementById('vs-pagto-err');
+      if (errEl) { errEl.textContent='Selecione a forma de pagamento'; errEl.classList.add('show'); } return;
+    }
+    confirmVenda();
+  }
+});
+
+function confirmVenda() {
+  const state = App.vendaState;
+  const p     = state.produto;
+
+  p.tamanhos[state.tamanho] = Math.max(0, (p.tamanhos[state.tamanho]||0) - state.quantidade);
+  logMovimento(p.id, state.tamanho, 'saida', state.quantidade,
+    `Venda · ${state.pagamento==='credito'?`Crédito ${state.numParcelas}x`:state.pagamento}`);
+
+  const tamLbl  = state.tamanho === 'Único' ? '' : ` · ${state.tamanho}`;
+  const corLbl  = p.cor ? ` · ${p.cor}` : '';
+  const baseDesc = `Venda — ${p.nome}${corLbl}${tamLbl}`;
+  const valorTotal = state.valorUnitario * state.quantidade;
+  const vendaId = uid();
+
+  DB.data.ev_vendas.push({
+    id: vendaId, produtoId: p.id, produtoNome: p.nome,
+    tamanho: state.tamanho, quantidade: state.quantidade,
+    valorUnitario: state.valorUnitario, valorTotal,
+    pagamento: state.pagamento, numParcelas: state.numParcelas,
+    nomeCliente: state.nomeCliente,
+    data: todayISO(), createdAt: new Date().toISOString()
+  });
+
+  const pagto = state.pagamento;
+  if (pagto === 'dinheiro' || pagto === 'pix' || pagto === 'debito') {
+    DB.data.ev_lancamentos.push({
+      id: uid(), tipo: 'entrada', descricao: baseDesc,
+      valor: valorTotal, data: todayISO(),
+      status: 'recebido', origem: 'venda', referenciaId: vendaId,
+      createdAt: new Date().toISOString()
+    });
+  } else if (pagto === 'credito') {
+    const n  = Math.max(1, state.numParcelas);
+    const vp = Math.floor((valorTotal / n) * 100) / 100;
+    const resto = Math.round((valorTotal - vp * n) * 100) / 100;
+    let dt = state.dataPrimeiraParcela || todayISO();
+    for (let i = 1; i <= n; i++) {
+      DB.data.ev_lancamentos.push({
+        id: uid(), tipo: 'entrada',
+        descricao: n > 1 ? `${baseDesc} (${i}/${n})` : baseDesc,
+        valor: i === n ? vp + resto : vp,
+        data: dt, status: 'a_receber', origem: 'venda', referenciaId: vendaId,
+        createdAt: new Date().toISOString()
+      });
+      if (i < n) dt = addDays(dt, 30);
+    }
+  } else if (pagto === 'fiado') {
+    const desc = state.nomeCliente
+      ? `${baseDesc} · Fiado: ${state.nomeCliente}`
+      : `${baseDesc} · Fiado`;
+    DB.data.ev_lancamentos.push({
+      id: uid(), tipo: 'entrada', descricao: desc,
+      valor: valorTotal, data: todayISO(),
+      status: 'a_receber', origem: 'venda', referenciaId: vendaId,
+      createdAt: new Date().toISOString()
+    });
+  }
 
   DB.save();
   closeModal('modal-venda');
-  toast(`Venda registrada · ${fmt(valor)}`);
-  renderEstoque();
-  if (App.tab === 'inicio') renderInicio();
+  toast(`Venda registrada · ${fmt(valorTotal)}`);
+
+  if (App.tab === 'estoque')    renderEstoque();
+  if (App.tab === 'inicio')     renderInicio();
+  if (App.tab === 'financeiro') renderFinanceiro();
 }
 
 // ── EXPENSE ACTIONS ────────────────────────────────────────────────────────────
@@ -2012,6 +2608,40 @@ async function exportPDF() {
       doc.text('Nenhum produto cadastrado.', 18, y);
     }
 
+    // Seção movimentações do período
+    y += 5;
+    if (y > 240) { doc.addPage(); y = 20; }
+    doc.setDrawColor(210, 185, 165); doc.line(15, y, 195, y); y += 8;
+    doc.setFontSize(12); doc.setFont('helvetica', 'bold'); doc.setTextColor(62, 42, 30);
+    doc.text('Movimentacoes do Periodo', 15, y); y += 7;
+
+    const movsPeriodo = (DB.data.ev_movimentacoes || []).filter(m => {
+      const dt = new Date(m.dataHora);
+      return dt.getFullYear() === selY && dt.getMonth() === selM;
+    });
+
+    if (movsPeriodo.length) {
+      doc.setFontSize(8); doc.setFont('helvetica', 'bold'); doc.setTextColor(100);
+      doc.text('Data/Hora', 15, y); doc.text('Produto', 50, y);
+      doc.text('Tam', 118, y); doc.text('Tipo', 138, y); doc.text('Qtd', 175, y);
+      y += 4; doc.setDrawColor(220); doc.line(15, y, 195, y); y += 4;
+      doc.setFont('helvetica', 'normal'); doc.setTextColor(0);
+      const padP = n => String(n).padStart(2, '0');
+      movsPeriodo.forEach(m => {
+        if (y > 275) { doc.addPage(); y = 20; }
+        const dt = new Date(m.dataHora);
+        const ds = `${padP(dt.getDate())}/${padP(dt.getMonth()+1)} ${padP(dt.getHours())}:${padP(dt.getMinutes())}`;
+        const nome = (m.produtoNome||'').length > 36 ? (m.produtoNome||'').slice(0,33)+'...' : (m.produtoNome||'');
+        const tipo = m.tipo === 'entrada' ? 'Entrada' : m.tipo === 'saida' ? 'Saida' : 'Ajuste';
+        const qtd = (m.tipo === 'saida' ? '-' : '+') + Math.abs(m.quantidade);
+        doc.text(ds, 15, y); doc.text(nome, 50, y);
+        doc.text(m.tamanho||'', 118, y); doc.text(tipo, 138, y); doc.text(qtd, 175, y); y += 6;
+      });
+    } else {
+      doc.setFontSize(9); doc.setFont('helvetica', 'italic'); doc.setTextColor(150);
+      doc.text('Nenhuma movimentacao neste periodo.', 18, y); y += 8;
+    }
+
     doc.setFontSize(7); doc.setFont('helvetica', 'normal'); doc.setTextColor(170);
     doc.text('Gerado em ' + fmtDate(todayISO()) + ' — Eloana Velluto', 105, 290, { align: 'center' });
 
@@ -2051,8 +2681,22 @@ function exportCSV() {
       }
     });
     downloadCSV(estRows, 'estoque_' + mesLabel + '.csv');
-    toast('Planilhas exportadas!');
   }, 600);
+
+  setTimeout(() => {
+    const padM = n => String(n).padStart(2, '0');
+    const movRows = [['Data','Hora','Produto','Cor','Tamanho','Tipo','Quantidade','Motivo']];
+    (DB.data.ev_movimentacoes || []).forEach(m => {
+      const dt = new Date(m.dataHora);
+      const data = `${padM(dt.getDate())}/${padM(dt.getMonth()+1)}/${dt.getFullYear()}`;
+      const hora = `${padM(dt.getHours())}:${padM(dt.getMinutes())}`;
+      const tipoLabel = m.tipo === 'entrada' ? 'Entrada' : m.tipo === 'saida' ? 'Saída' : 'Ajuste';
+      const qtd = m.tipo === 'saida' ? -Math.abs(m.quantidade) : Math.abs(m.quantidade);
+      movRows.push([data, hora, m.produtoNome || '', m.cor || '', m.tamanho || '', tipoLabel, qtd, m.motivo || '']);
+    });
+    downloadCSV(movRows, 'movimentacoes_' + mesLabel + '.csv');
+    toast('Planilhas exportadas!');
+  }, 1200);
 }
 
 function downloadCSV(rows, filename) {
@@ -2065,6 +2709,48 @@ function downloadCSV(rows, filename) {
   URL.revokeObjectURL(url);
 }
 
+// ── BACKUP BANNER ─────────────────────────────────────────────────────────────
+function checkBackupBanner() {
+  const banner  = document.getElementById('backup-banner');
+  const msg     = document.getElementById('backup-msg');
+  const lastStr = localStorage.getItem('ev_ultimo_lembrete_backup');
+
+  let show = false;
+  if (!lastStr) {
+    msg.textContent = 'Você ainda não fez backup dos seus dados. Exporte agora para não perder nada.';
+    show = true;
+  } else {
+    const days = Math.floor((Date.now() - new Date(lastStr).getTime()) / 86400000);
+    if (days >= 7) {
+      msg.textContent = `Seu último backup foi há ${days} dia${days !== 1 ? 's' : ''}. Exporte seus dados para não perder nada.`;
+      show = true;
+    }
+  }
+
+  if (show) {
+    banner.classList.add('show');
+    requestAnimationFrame(() => {
+      document.documentElement.style.setProperty('--banner-h', banner.offsetHeight + 'px');
+    });
+  }
+}
+
+function hideBackupBanner() {
+  document.getElementById('backup-banner').classList.remove('show');
+  document.documentElement.style.setProperty('--banner-h', '0px');
+}
+
+document.getElementById('btn-backup-export').addEventListener('click', () => {
+  localStorage.setItem('ev_ultimo_lembrete_backup', new Date().toISOString());
+  hideBackupBanner();
+  openModal('modal-export');
+});
+
+document.getElementById('btn-backup-lembrar').addEventListener('click', () => {
+  localStorage.setItem('ev_ultimo_lembrete_backup', new Date().toISOString());
+  hideBackupBanner();
+});
+
 // ── INIT ───────────────────────────────────────────────────────────────────────
 DB.init();
 renderInicio();
@@ -2072,6 +2758,7 @@ renderEstoque();
 renderFinanceiro();
 renderDividas();
 setTab('inicio');
+checkBackupBanner();
 </script>
 </body>
 </html>
