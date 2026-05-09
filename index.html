@@ -785,6 +785,33 @@
     .btn-catalogo-header { position: absolute; right: 14px; background: rgba(255,255,255,0.13); border: 1px solid rgba(255,255,255,0.22); border-radius: 8px; padding: 6px 10px; color: var(--branco); display: flex; align-items: center; gap: 5px; font-size: 0.68rem; font-weight: 300; cursor: pointer; transition: background 0.2s; letter-spacing: 0.04em; }
     .btn-catalogo-header:hover { background: rgba(255,255,255,0.24); }
     .btn-catalogo-header svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+    /* REGISTRAR ENTRADA */
+    .btn-entrada {
+      width: 100%; border: 1.5px solid var(--musgo-claro); border-radius: 10px;
+      padding: 12px; background: var(--musgo-escuro); color: var(--branco);
+      font-size: 0.88rem; font-weight: 300; margin: 12px 0 6px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: background 0.2s; cursor: pointer;
+    }
+    .btn-entrada:hover { background: var(--musgo-medio); }
+
+    /* BOTÃO EDITAR DÍVIDA */
+    .btn-editar-divida { font-size: 0.74rem; color: var(--musgo-medio); font-weight: 300; padding: 4px 8px; border-radius: 6px; transition: background 0.15s; }
+    .btn-editar-divida:hover { background: #E8F5E9; }
+
+    /* CATÁLOGO — MELHORIAS */
+    .catalogo-subtitle { font-family: 'Jost', sans-serif; font-weight: 200; font-size: 0.62rem; letter-spacing: 0.18em; color: rgba(255,255,255,0.6); margin-top: 2px; text-transform: uppercase; }
+    .cat-card { background: var(--branco); border-radius: 14px; border: 1px solid var(--linho); overflow: hidden; box-shadow: 0 2px 12px rgba(62,42,30,0.08); }
+    .cat-foto { width: 100%; aspect-ratio: 1/1; object-fit: cover; display: block; }
+    .cat-foto-placeholder { width: 100%; aspect-ratio: 1/1; background: linear-gradient(135deg, var(--perola), var(--marrom-suave)); display: flex; align-items: center; justify-content: center; }
+    .cat-foto-placeholder span { font-family: 'Pinyon Script', cursive; font-size: 2.4rem; color: var(--marrom-claro); opacity: 0.7; }
+    .cat-info { padding: 10px 12px 14px; }
+    .cat-nome { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1rem; font-weight: 300; line-height: 1.2; color: var(--marrom-escuro); }
+    .cat-cor { font-size: 0.7rem; color: var(--marrom-claro); margin-top: 2px; font-style: italic; }
+    .cat-tam { font-size: 0.7rem; color: var(--marrom-claro); margin-top: 4px; letter-spacing: 0.04em; }
+    .cat-preco { font-family: 'Cormorant Garamond', serif; font-weight: 400; font-size: 1rem; color: var(--marrom-escuro); margin-top: 6px; }
+    .catalogo-empty { grid-column: 1/-1; text-align: center; padding: 56px 24px; color: var(--marrom-claro); font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.1rem; }
   </style>
 </head>
 <body>
@@ -808,7 +835,10 @@
 <!-- MODO CATÁLOGO -->
 <div class="catalogo-overlay" id="catalogo-overlay">
   <div class="catalogo-topbar">
-    <div class="catalogo-marca">Eloana Velluto</div>
+    <div>
+      <div class="catalogo-marca">Eloana Velluto</div>
+      <div class="catalogo-subtitle">moda íntima &amp; dormir</div>
+    </div>
     <button class="btn-sair-catalogo" id="btn-sair-catalogo">← Sair</button>
   </div>
   <div class="catalogo-grid" id="catalogo-grid"></div>
@@ -871,7 +901,6 @@
   <div id="tab-estoque" class="tab-content"><div id="estoque-content"></div></div>
   <div id="tab-financeiro" class="tab-content"><div id="financeiro-content"></div></div>
   <div id="tab-dividas" class="tab-content"><div id="dividas-content"></div></div>
-  <div id="tab-clientes" class="tab-content"><div id="clientes-content"></div></div>
 </main>
 
 <!-- FAB -->
@@ -907,11 +936,11 @@
     </svg>
     Dívidas
   </div>
-  <div class="nav-tab" data-tab="clientes">
+  <div class="nav-tab" id="nav-backup" onclick="exportBackupJSON()">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
+      <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/>
     </svg>
-    Clientes
+    Backup
   </div>
 </nav>
 
@@ -1055,7 +1084,7 @@
 <div class="modal-overlay" id="modal-divida">
   <div class="modal-sheet">
     <div class="modal-handle"></div>
-    <div class="modal-hdr"><div class="modal-title">Nova Dívida</div></div>
+    <div class="modal-hdr"><div class="modal-title" id="modal-divida-title">Nova Dívida</div></div>
     <div class="modal-body">
       <div class="form-group">
         <label class="form-label" for="div-nome">Nome da dívida</label>
@@ -1237,6 +1266,35 @@
   </div>
 </div>
 
+<!-- MODAL: ENTRADA FINANCEIRA -->
+<div class="modal-overlay" id="modal-entrada">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-hdr"><div class="modal-title">Registrar Entrada</div></div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label" for="entrada-desc">Descrição</label>
+        <input class="form-input" type="text" id="entrada-desc" maxlength="100" placeholder="Ex: Renda extra, recebimento">
+        <div class="form-err" id="entrada-desc-err">Informe a descrição</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="entrada-valor">Valor (R$)</label>
+        <input class="form-input" type="number" id="entrada-valor" min="0.01" step="0.01" placeholder="0,00">
+        <div class="form-err" id="entrada-valor-err">Informe um valor válido</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="entrada-data">Data</label>
+        <input class="form-input" type="date" id="entrada-data">
+        <div class="form-err" id="entrada-data-err">Informe a data</div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" id="btn-cancel-entrada">Cancelar</button>
+      <button class="btn-primary" id="btn-save-entrada">Registrar</button>
+    </div>
+  </div>
+</div>
+
 <!-- CONFIRM DIALOG -->
 <div class="confirm-overlay" id="confirm-overlay">
   <div class="confirm-box">
@@ -1315,6 +1373,8 @@ const DB = {
 
   init() {
     const ver = localStorage.getItem('ev_version');
+    // PASSO 0: verificar produtos antes de qualquer alteração
+    console.log('[EV] ev_produtos preservados:', JSON.parse(localStorage.getItem('ev_produtos') || '[]'));
     if (!ver) {
       this._createInitial();
     } else {
@@ -1425,6 +1485,7 @@ const App = {
   finMonth: new Date().getMonth(),
   finYear: new Date().getFullYear(),
   editingProductId: null,
+  editingDebtId: null,
   variacaoTipo: 'tamanho',
   ajusteProductId: null,
   vendaState: null,
@@ -1439,21 +1500,20 @@ document.querySelectorAll('.nav-tab').forEach(btn => {
 });
 
 function setTab(name) {
+  if (!name) return;
   App.tab = name;
   document.querySelectorAll('.nav-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
   document.querySelectorAll('.tab-content').forEach(c => c.classList.toggle('active', c.id === `tab-${name}`));
 
   const fab = document.getElementById('fab-btn');
   if (name === 'estoque')   { fab.classList.remove('hidden'); fab.onclick = openAddProduct; }
-  else if (name === 'dividas')  { fab.classList.remove('hidden'); fab.onclick = openAddDebt; }
-  else if (name === 'clientes') { fab.classList.remove('hidden'); fab.onclick = openAddCliente; }
+  else if (name === 'dividas') { fab.classList.remove('hidden'); fab.onclick = openAddDebt; }
   else { fab.classList.add('hidden'); }
 
   if (name === 'inicio')      renderInicio();
   if (name === 'estoque')     renderEstoque();
   if (name === 'financeiro')  renderFinanceiro();
   if (name === 'dividas')     renderDividas();
-  if (name === 'clientes')    renderClientes();
 }
 
 // ── MODAL HELPERS ──────────────────────────────────────────────────────────────
@@ -1570,23 +1630,11 @@ function renderInicio() {
         <div class="mini-label" style="color:var(--verde)">Recebido</div>
         <div class="mini-valor mini-recebido" style="color:var(--verde)">${fmt(recebido)}</div>
       </div>
-      <div class="card mini-card mini-a-receber">
-        <div class="mini-label">A receber</div>
-        <div class="mini-valor">${fmt(aReceber)}</div>
-      </div>
-    </div>
-    <div class="grid-2" style="margin-top:0">
       <div class="card mini-card mini-custos">
         <div class="mini-label">Custos</div>
         <div class="mini-valor">${fmt(custos)}</div>
       </div>
-      ${temLucro ? `
-      <div class="card mini-card mini-lucro">
-        <div class="mini-label">Lucro est. do mês</div>
-        <div class="mini-valor">${fmt(lucro)}</div>
-      </div>` : '<div></div>'}
     </div>
-    ${metaHTML}
     <div class="card estoque-info-card">
       <div>
         <div class="estoque-info-label">Total em estoque</div>
@@ -1858,21 +1906,19 @@ function renderFinanceiro() {
         <div class="fin-label">Recebido</div>
         <div class="fin-valor">${fmt(entradas)}</div>
       </div>
-      <div class="card fin-card" style="padding:16px">
-        <div class="fin-label" style="color:var(--marrom-claro)">A receber</div>
-        <div class="fin-valor" style="color:var(--marrom-claro)">${fmt(aReceber)}</div>
-      </div>
-    </div>
-    <div class="fin-resumo" style="margin-top:0">
       <div class="card fin-card fin-saidas">
         <div class="fin-label">Saídas</div>
         <div class="fin-valor">${fmt(saidas)}</div>
       </div>
-      <div class="card fin-card" style="padding:16px">
-        <div class="fin-label" style="color:var(--musgo-medio)">Saldo recebido</div>
-        <div class="fin-valor ${saldo >= 0 ? 'saldo-positivo' : 'saldo-negativo'}" style="font-size:1.1rem">${fmt(saldo)}</div>
-      </div>
     </div>
+    <div class="card" style="padding:14px 16px;margin-top:0;display:flex;align-items:center;justify-content:space-between">
+      <div style="font-size:0.68rem;font-weight:200;letter-spacing:0.1em;text-transform:uppercase;color:var(--marrom-claro)">Saldo</div>
+      <div class="fin-valor ${saldo >= 0 ? 'saldo-positivo' : 'saldo-negativo'}" style="font-size:1.2rem">${fmt(saldo)}</div>
+    </div>
+    <button class="btn-entrada" id="btn-abrir-entrada">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Registrar Entrada
+    </button>
     <button class="btn-exportar" id="btn-exportar">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
       Exportar dados
@@ -1898,6 +1944,7 @@ function renderFinanceiro() {
     });
   });
 
+  document.getElementById('btn-abrir-entrada')?.addEventListener('click', openAddEntrada);
   document.getElementById('btn-exportar')?.addEventListener('click', () => openModal('modal-export'));
   document.getElementById('btn-abrir-saida')?.addEventListener('click', openAddExpense);
 
@@ -2067,7 +2114,10 @@ function renderDividas() {
             <div class="divida-nome">${sanitize(div.nome)}</div>
             <div class="divida-tipo">${TIPOS_DIVIDA[div.tipo] || div.tipo}</div>
           </div>
-          <button class="btn-excluir-divida" data-did="${div.id}">Excluir</button>
+          <div style="display:flex;gap:6px;align-items:center">
+            <button class="btn-editar-divida" data-did="${div.id}">Editar</button>
+            <button class="btn-excluir-divida" data-did="${div.id}">Excluir</button>
+          </div>
         </div>
         <div class="progress-wrap">
           <div class="progress-labels">
@@ -2112,6 +2162,11 @@ function renderDividas() {
     });
   });
 
+  // Edit debt buttons
+  el.querySelectorAll('.btn-editar-divida').forEach(btn => {
+    btn.addEventListener('click', () => openEditDivida(btn.dataset.did));
+  });
+
   // Delete debt buttons
   el.querySelectorAll('.btn-excluir-divida').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -2129,7 +2184,8 @@ function renderDividas() {
 
 // ── RENDER: CLIENTES ───────────────────────────────────────────────────────────
 function renderClientes() {
-  const el       = document.getElementById('clientes-content');
+  const el = document.getElementById('clientes-content');
+  if (!el) return;
   const clientes = DB.data.ev_clientes || [];
 
   if (!clientes.length) {
@@ -3130,6 +3186,8 @@ function saveSaida() {
 
 // ── DEBT ACTIONS ───────────────────────────────────────────────────────────────
 function openAddDebt() {
+  App.editingDebtId = null;
+  document.getElementById('modal-divida-title').textContent = 'Nova Dívida';
   document.getElementById('div-nome').value = '';
   document.getElementById('div-tipo').value = 'credito_parcelado';
   document.getElementById('div-valor').value = '';
@@ -3139,6 +3197,34 @@ function openAddDebt() {
   document.getElementById('div-vencimento').value = '';
   document.getElementById('div-parcelas').value = '';
   document.getElementById('div-primeira').value = '';
+  ['div-nome-err','div-valor-err','div-vencimento-err','div-parcelas-err','div-primeira-err'].forEach(id => document.getElementById(id).classList.remove('show'));
+  ['div-nome','div-valor','div-vencimento','div-parcelas','div-primeira'].forEach(id => document.getElementById(id)?.classList.remove('err'));
+  openModal('modal-divida');
+}
+
+function openEditDivida(did) {
+  const div = DB.data.ev_dividas.find(d => d.id === did);
+  if (!div) return;
+  App.editingDebtId = did;
+  document.getElementById('modal-divida-title').textContent = 'Editar Dívida';
+  document.getElementById('div-nome').value = div.nome;
+  document.getElementById('div-tipo').value = div.tipo;
+  document.getElementById('div-valor').value = div.valorTotal;
+
+  const parcelado = div.parcelado && div.parcelas.length > 1;
+  document.getElementById(parcelado ? 'div-parcelado' : 'div-unico').checked = true;
+  document.getElementById('div-unico-fields').style.display = parcelado ? 'none' : 'block';
+  document.getElementById('div-parcelado-fields').style.display = parcelado ? 'block' : 'none';
+
+  const naoPargas = (div.parcelas || []).filter(p => !p.pago);
+  if (parcelado) {
+    document.getElementById('div-parcelas').value = div.parcelas.length;
+    const primeiraAberta = naoPargas[0] || div.parcelas[0];
+    document.getElementById('div-primeira').value = primeiraAberta?.vencimento || '';
+  } else {
+    document.getElementById('div-vencimento').value = div.parcelas[0]?.vencimento || '';
+  }
+
   ['div-nome-err','div-valor-err','div-vencimento-err','div-parcelas-err','div-primeira-err'].forEach(id => document.getElementById(id).classList.remove('show'));
   ['div-nome','div-valor','div-vencimento','div-parcelas','div-primeira'].forEach(id => document.getElementById(id)?.classList.remove('err'));
   openModal('modal-divida');
@@ -3192,11 +3278,36 @@ function saveDivida() {
 
   if (!valid) return;
 
-  DB.data.ev_dividas.push({ id: uid(), nome, tipo, valorTotal, parcelado, parcelas, createdAt: new Date().toISOString() });
-  DB.save();
-  closeModal('modal-divida');
-  toast('Dívida cadastrada');
-  renderDividas();
+  if (App.editingDebtId) {
+    const idx = DB.data.ev_dividas.findIndex(d => d.id === App.editingDebtId);
+    if (idx > -1) {
+      const existing = DB.data.ev_dividas[idx];
+      const pagas = (existing.parcelas || []).filter(p => p.pago);
+      // Merge: parcelas já pagas mantêm dados; novas parcelas pelo número gerado
+      const mergedParcelas = parcelas.map(p => {
+        const paga = pagas.find(pp => pp.numero === p.numero);
+        return paga ? paga : p;
+      });
+      // Adicionar pagas que ultrapassem o novo nº de parcelas
+      pagas.forEach(pp => {
+        if (!mergedParcelas.find(p => p.numero === pp.numero)) mergedParcelas.unshift(pp);
+      });
+      mergedParcelas.sort((a, b) => a.numero - b.numero);
+      DB.data.ev_dividas[idx] = { ...existing, nome, tipo, valorTotal, parcelado, parcelas: mergedParcelas };
+    }
+    App.editingDebtId = null;
+    document.getElementById('modal-divida-title').textContent = 'Nova Dívida';
+    DB.save();
+    closeModal('modal-divida');
+    toast('Dívida atualizada');
+    renderDividas();
+  } else {
+    DB.data.ev_dividas.push({ id: uid(), nome, tipo, valorTotal, parcelado, parcelas, createdAt: new Date().toISOString() });
+    DB.save();
+    closeModal('modal-divida');
+    toast('Dívida cadastrada');
+    renderDividas();
+  }
 }
 
 function markInstallmentPaid(debtId, parcelaId) {
@@ -3441,6 +3552,104 @@ function downloadCSV(rows, filename) {
   URL.revokeObjectURL(url);
 }
 
+// ── REGISTRAR ENTRADA ─────────────────────────────────────────────────────────
+function openAddEntrada() {
+  document.getElementById('entrada-desc').value  = '';
+  document.getElementById('entrada-valor').value = '';
+  document.getElementById('entrada-data').value  = todayISO();
+  ['entrada-desc-err','entrada-valor-err','entrada-data-err'].forEach(id => document.getElementById(id).classList.remove('show'));
+  ['entrada-desc','entrada-valor','entrada-data'].forEach(id => document.getElementById(id).classList.remove('err'));
+  openModal('modal-entrada');
+}
+
+document.getElementById('btn-cancel-entrada').addEventListener('click', () => closeModal('modal-entrada'));
+document.getElementById('btn-save-entrada').addEventListener('click', () => {
+  const desc  = document.getElementById('entrada-desc').value.trim();
+  const valor = parseFloat(document.getElementById('entrada-valor').value);
+  const data  = document.getElementById('entrada-data').value;
+  let valid   = true;
+
+  if (!desc)  { document.getElementById('entrada-desc').classList.add('err'); document.getElementById('entrada-desc-err').classList.add('show'); valid = false; }
+  if (!valor || valor <= 0 || isNaN(valor)) { document.getElementById('entrada-valor').classList.add('err'); document.getElementById('entrada-valor-err').classList.add('show'); valid = false; }
+  if (!data)  { document.getElementById('entrada-data').classList.add('err'); document.getElementById('entrada-data-err').classList.add('show'); valid = false; }
+  if (!valid) return;
+
+  DB.data.ev_lancamentos.push({ id: uid(), tipo: 'entrada', descricao: desc, valor, data, status: 'recebido', origem: 'manual', referenciaId: null, createdAt: new Date().toISOString() });
+  DB.save();
+  closeModal('modal-entrada');
+  toast('Entrada registrada');
+  renderFinanceiro();
+  if (App.tab === 'inicio') renderInicio();
+});
+
+// ── CATÁLOGO ───────────────────────────────────────────────────────────────────
+function renderCatalogo() {
+  const grid = document.getElementById('catalogo-grid');
+  const produtos = DB.data.ev_produtos;
+
+  const comEstoque = produtos.filter(p => Object.values(p.tamanhos).reduce((a, b) => a + b, 0) > 0);
+  if (!comEstoque.length) {
+    grid.innerHTML = '<div class="catalogo-empty">Nenhum produto disponível no momento</div>';
+    return;
+  }
+
+  grid.innerHTML = comEstoque.map(p => {
+    const vt = p.variacaoTipo || 'tamanho';
+    let tamDesc = '';
+    if (vt === 'unico') {
+      tamDesc = 'Disponível';
+    } else {
+      const disponiveis = Object.entries(p.tamanhos).filter(([, q]) => q > 0).map(([t]) => t);
+      tamDesc = disponiveis.join(' · ');
+    }
+
+    const fotoHTML = p.foto
+      ? `<img class="cat-foto" src="${p.foto}" alt="${sanitize(p.nome)}">`
+      : `<div class="cat-foto-placeholder"><span>${sanitize(p.nome[0] || 'E')}</span></div>`;
+
+    return `
+      <div class="cat-card">
+        ${fotoHTML}
+        <div class="cat-info">
+          <div class="cat-nome">${sanitize(p.nome)}</div>
+          ${p.cor ? `<div class="cat-cor">${sanitize(p.cor)}</div>` : ''}
+          ${tamDesc ? `<div class="cat-tam">${sanitize(tamDesc)}</div>` : ''}
+          <div class="cat-preco">${fmt(p.preco)}</div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+document.getElementById('btn-abrir-catalogo').addEventListener('click', () => {
+  renderCatalogo();
+  document.getElementById('catalogo-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+});
+
+document.getElementById('btn-sair-catalogo').addEventListener('click', () => {
+  document.getElementById('catalogo-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+});
+
+// ── BACKUP JSON ────────────────────────────────────────────────────────────────
+function exportBackupJSON() {
+  const backup = {};
+  const keys = ['ev_version','ev_produtos','ev_vendas','ev_lancamentos','ev_movimentacoes','ev_dividas','ev_clientes','ev_metas'];
+  keys.forEach(k => {
+    const val = localStorage.getItem(k);
+    if (val !== null) { try { backup[k] = JSON.parse(val); } catch { backup[k] = val; } }
+  });
+  const json = JSON.stringify(backup, null, 2);
+  const blob = new Blob([json], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = 'eloana_backup_' + todayISO() + '.json'; a.click();
+  URL.revokeObjectURL(url);
+  localStorage.setItem('ev_ultimo_lembrete_backup', new Date().toISOString());
+  hideBackupBanner();
+  toast('Backup exportado com sucesso!');
+}
+
 // ── BACKUP BANNER ─────────────────────────────────────────────────────────────
 function checkBackupBanner() {
   const banner  = document.getElementById('backup-banner');
@@ -3473,9 +3682,7 @@ function hideBackupBanner() {
 }
 
 document.getElementById('btn-backup-export').addEventListener('click', () => {
-  localStorage.setItem('ev_ultimo_lembrete_backup', new Date().toISOString());
-  hideBackupBanner();
-  openModal('modal-export');
+  exportBackupJSON();
 });
 
 document.getElementById('btn-backup-lembrar').addEventListener('click', () => {
@@ -3491,7 +3698,6 @@ renderFinanceiro();
 renderDividas();
 setTab('inicio');
 checkBackupBanner();
-checkMetaMes();
 </script>
 </body>
 </html>
