@@ -1,5 +1,5 @@
-const CACHE = 'eloana-v1';
-const ASSETS = ['/', '/index.html', '/icon.svg', '/manifest.json'];
+const CACHE = 'eloana-v2';
+const ASSETS = ['/', '/index.html', '/icon.jpeg', '/manifest.json'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));

@@ -622,24 +622,6 @@
 
     /* INÍCIO: NOVOS MINI CARDS */
     .mini-recebido .mini-valor { color: var(--verde); }
-    .mini-a-receber .mini-label { color: #B07D00; }
-    .mini-a-receber .mini-valor { color: #B07D00; }
-    .mini-lucro .mini-label { color: var(--musgo-medio); }
-    .mini-lucro .mini-valor { color: var(--musgo-medio); }
-
-    /* META MENSAL */
-    .meta-section { margin-top: 14px; }
-    .meta-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-    .meta-section-title { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1rem; color: var(--marrom-claro); }
-    .btn-edit-meta { font-size: 0.7rem; color: var(--marrom-claro); padding: 3px 10px; border-radius: 20px; border: 1px solid var(--linho); background: var(--branco); cursor: pointer; font-weight: 300; transition: background 0.15s; }
-    .btn-edit-meta:hover { background: var(--perola); }
-    .meta-card { padding: 16px; }
-    .meta-progress-bar { height: 8px; background: var(--linho); border-radius: 6px; overflow: hidden; margin: 6px 0 4px; }
-    .meta-progress-fill { height: 100%; background: var(--marrom-claro); border-radius: 6px; transition: width 0.6s ease; }
-    .meta-progress-fill.atingida { background: var(--musgo-medio); }
-    .meta-motivacional { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 0.95rem; color: var(--marrom-medio); margin-top: 6px; }
-    .btn-definir-meta { width: 100%; border: 1.5px dashed var(--marrom-suave); border-radius: 10px; padding: 13px; background: transparent; color: var(--marrom-medio); font-size: 0.88rem; font-weight: 300; display: flex; align-items: center; justify-content: center; gap: 8px; transition: background 0.2s; cursor: pointer; }
-    .btn-definir-meta:hover { background: var(--perola); }
 
     /* CLIENTES TAB */
     .cliente-card { padding: 16px; margin-bottom: 12px; }
@@ -1233,26 +1215,6 @@
   </div>
 </div>
 
-<!-- MODAL: META MENSAL -->
-<div class="modal-overlay" id="modal-meta">
-  <div class="modal-sheet">
-    <div class="modal-handle"></div>
-    <div class="modal-hdr"><div class="modal-title" id="modal-meta-title">Definir Meta do Mês</div></div>
-    <div class="modal-body">
-      <div class="form-group">
-        <label class="form-label" for="meta-valor">Valor da meta (R$)</label>
-        <input class="form-input" type="number" id="meta-valor" min="0.01" step="0.01" placeholder="Ex: 3000,00" inputmode="decimal">
-        <div class="form-err" id="meta-valor-err">Informe um valor válido</div>
-        <div class="form-hint">Meta de receita recebida para o mês</div>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-secondary" id="btn-cancel-meta">Cancelar</button>
-      <button class="btn-primary" id="btn-save-meta">Salvar</button>
-    </div>
-  </div>
-</div>
-
 <!-- MODAL: PAGAMENTO DE FIADO -->
 <div class="modal-overlay" id="modal-pgto-fiado">
   <div class="modal-sheet">
@@ -1544,24 +1506,8 @@ function renderInicio() {
   });
 
   const recebido  = doMes.filter(l => l.tipo === 'entrada' && isRecebido(l)).reduce((s, l) => s + l.valor, 0);
-  const aReceber  = doMes.filter(l => l.tipo === 'entrada' && l.status === 'a_receber').reduce((s, l) => s + l.valor, 0);
   const custos    = doMes.filter(l => l.tipo === 'saida').reduce((s, l) => s + l.valor, 0);
   const saldo     = recebido - custos;
-
-  // Lucro estimado: vendas do mês com precoCusto cadastrado
-  const vendasMes = (DB.data.ev_vendas || []).filter(v => {
-    const d = new Date(v.data + 'T12:00:00');
-    return d.getMonth() === m && d.getFullYear() === y;
-  });
-  const lucro = vendasMes.reduce((s, v) => {
-    const p = DB.data.ev_produtos.find(x => x.id === v.produtoId);
-    if (!p || !p.precoCusto || p.precoCusto <= 0) return s;
-    return s + (v.valorUnitario - p.precoCusto) * v.quantidade;
-  }, 0);
-  const temLucro = vendasMes.some(v => {
-    const p = DB.data.ev_produtos.find(x => x.id === v.produtoId);
-    return p && p.precoCusto > 0;
-  });
 
   const totalPecas = DB.data.ev_produtos.reduce((s, p) => {
     return s + Object.values(p.tamanhos).reduce((a, b) => a + b, 0);
@@ -1575,50 +1521,6 @@ function renderInicio() {
       }
     });
   });
-
-  // Meta do mês
-  const metaKey = `${y}-${String(m + 1).padStart(2, '0')}`;
-  const metaValor = (DB.data.ev_metas || {})[metaKey] || 0;
-  let metaHTML = '';
-  if (!metaValor) {
-    metaHTML = `
-      <div class="meta-section">
-        <div class="meta-header">
-          <div class="meta-section-title">Meta do mês</div>
-        </div>
-        <button class="btn-definir-meta" id="btn-definir-meta">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
-          Definir meta do mês
-        </button>
-      </div>`;
-  } else {
-    const pct = Math.min(100, (recebido / metaValor) * 100);
-    const pctRound = Math.round(pct);
-    let motivacional = 'Vamos começar!';
-    if (pct >= 100) motivacional = 'Meta atingida! Incrível!';
-    else if (pct >= 70) motivacional = 'Quase lá, continue!';
-    else if (pct >= 30) motivacional = 'Bom progresso!';
-    const fillClass = pct >= 100 ? 'meta-progress-fill atingida' : 'meta-progress-fill';
-    metaHTML = `
-      <div class="meta-section">
-        <div class="meta-header">
-          <div class="meta-section-title">Meta do mês</div>
-          <button class="btn-edit-meta" id="btn-edit-meta">Editar</button>
-        </div>
-        <div class="card meta-card">
-          <div style="display:flex;justify-content:space-between;font-size:0.74rem;color:var(--marrom-claro);margin-bottom:2px">
-            <span>${fmt(recebido)} recebido</span>
-            <span style="font-weight:400">${pctRound}%</span>
-          </div>
-          <div class="meta-progress-bar"><div class="${fillClass}" style="width:${pct}%"></div></div>
-          <div style="display:flex;justify-content:space-between;font-size:0.72rem;color:var(--marrom-claro);margin-top:3px">
-            <span>Meta: ${fmt(metaValor)}</span>
-            <span>Falta: ${fmt(Math.max(0, metaValor - recebido))}</span>
-          </div>
-          <div class="meta-motivacional">${motivacional}</div>
-        </div>
-      </div>`;
-  }
 
   document.getElementById('inicio-content').innerHTML = `
     <div class="card saldo-card">
@@ -1662,8 +1564,6 @@ function renderInicio() {
   `;
 
   document.getElementById('btn-quick-venda')?.addEventListener('click', () => openSaleModal(null));
-  document.getElementById('btn-definir-meta')?.addEventListener('click', () => openModalMeta(0));
-  document.getElementById('btn-edit-meta')?.addEventListener('click', () => openModalMeta(metaValor));
 }
 
 // ── RENDER: ESTOQUE ────────────────────────────────────────────────────────────
@@ -2367,65 +2267,6 @@ document.getElementById('btn-save-pgto-fiado').addEventListener('click', () => {
   renderFinanceiro();
   renderInicio();
 });
-
-// ── META MENSAL ────────────────────────────────────────────────────────────────
-function openModalMeta(valorAtual) {
-  document.getElementById('meta-valor').value = valorAtual > 0 ? valorAtual.toFixed(2) : '';
-  document.getElementById('meta-valor').classList.remove('err');
-  document.getElementById('meta-valor-err').classList.remove('show');
-  document.getElementById('modal-meta-title').textContent = valorAtual > 0 ? 'Editar Meta do Mês' : 'Definir Meta do Mês';
-  openModal('modal-meta');
-}
-
-document.getElementById('btn-cancel-meta').addEventListener('click', () => closeModal('modal-meta'));
-document.getElementById('btn-save-meta').addEventListener('click', () => {
-  const valor = parseFloat(document.getElementById('meta-valor').value);
-  if (!valor || valor <= 0 || isNaN(valor)) {
-    document.getElementById('meta-valor').classList.add('err');
-    document.getElementById('meta-valor-err').classList.add('show');
-    return;
-  }
-  const now    = new Date();
-  const metaKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
-  if (!DB.data.ev_metas) DB.data.ev_metas = {};
-  DB.data.ev_metas[metaKey] = valor;
-  DB.save();
-  closeModal('modal-meta');
-  toast('Meta salva!');
-  renderInicio();
-});
-
-function checkMetaMes() {
-  const now     = new Date();
-  const m       = now.getMonth();
-  const y       = now.getFullYear();
-  const metaKey = `${y}-${String(m + 1).padStart(2, '0')}`;
-  const metas   = DB.data.ev_metas || {};
-  if (metas[metaKey]) return; // já tem meta para este mês
-
-  const prevDate = new Date(y, m - 1, 1);
-  const prevKey  = `${prevDate.getFullYear()}-${String(prevDate.getMonth() + 1).padStart(2, '0')}`;
-  const prevMeta = metas[prevKey];
-  if (!prevMeta) return;
-
-  const checkKey = `ev_meta_check_${metaKey}`;
-  if (localStorage.getItem(checkKey)) return;
-  localStorage.setItem(checkKey, '1');
-
-  setTimeout(() => {
-    confirm(
-      'Meta do mês',
-      `Usar ${fmt(prevMeta)} como meta de ${MONTHS_SHORT[m]}/${y}? (mesma do mês anterior)`,
-      () => {
-        if (!DB.data.ev_metas) DB.data.ev_metas = {};
-        DB.data.ev_metas[metaKey] = prevMeta;
-        DB.save();
-        renderInicio();
-        toast('Meta aplicada!');
-      }
-    );
-  }, 800);
-}
 
 // ── PRODUCT ACTIONS ────────────────────────────────────────────────────────────
 let _prodFotoBase64 = null;
