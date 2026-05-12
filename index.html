@@ -16,23 +16,21 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,300;1,300;1,400&family=Jost:wght@200;300;400&display=swap" rel="stylesheet">
 
-  <!-- CONFIGURAÇÃO FIREBASE — substitua pelos seus dados -->
   <script type="module">
     import { initializeApp }
       from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
     import { getFirestore, enableIndexedDbPersistence,
-             collection, doc, setDoc, getDocs,
+             collection, doc, setDoc, getDoc, getDocs,
              onSnapshot, deleteDoc, updateDoc }
       from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
 
-    // CONFIGURAÇÃO FIREBASE — substitua pelos seus dados
     const firebaseConfig = {
-      apiKey:            'COLE_AQUI',
-      authDomain:        'COLE_AQUI',
-      projectId:         'COLE_AQUI',
-      storageBucket:     'COLE_AQUI',
-      messagingSenderId: 'COLE_AQUI',
-      appId:             'COLE_AQUI'
+      apiKey:            'AIzaSyBCs3zfy5x8Mz0wlb5ide3jmegMSMAkDGk',
+      authDomain:        'eloana-velluto.firebaseapp.com',
+      projectId:         'eloana-velluto',
+      storageBucket:     'eloana-velluto.firebasestorage.app',
+      messagingSenderId: '863656061190',
+      appId:             '1:863656061190:web:1c1e9e5693dcc858331687'
     };
 
     const app = initializeApp(firebaseConfig);
@@ -41,7 +39,7 @@
     enableIndexedDbPersistence(db).catch(() => {});
 
     window.db  = db;
-    window._fb = { collection, doc, setDoc, getDocs, onSnapshot, deleteDoc, updateDoc };
+    window._fb = { collection, doc, setDoc, getDoc, getDocs, onSnapshot, deleteDoc, updateDoc };
     window.dispatchEvent(new CustomEvent('firebase-ready'));
   </script>
 
@@ -690,8 +688,7 @@
     }
     .mov-filtro-btn.active { background: var(--marrom-escuro); border-color: var(--marrom-escuro); color: var(--branco); }
 
-    /* CUSTO / MARGEM */
-    .produto-margem { font-size: 0.74rem; color: var(--musgo-medio); margin-top: 3px; font-weight: 300; }
+
 
     /* BOTÃO AJUSTE NO CARD */
     .btn-ajuste-card {
@@ -705,38 +702,11 @@
     .mini-recebido .mini-valor { color: var(--verde); }
 
     /* CLIENTES TAB */
-    .cliente-card { padding: 16px; margin-bottom: 12px; }
-    .cliente-card:nth-child(1) { animation-delay: 0.05s; }
-    .cliente-card:nth-child(2) { animation-delay: 0.10s; }
-    .cliente-card:nth-child(3) { animation-delay: 0.15s; }
-    .cliente-nome-card { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.15rem; font-weight: 300; }
-    .cliente-tel-card { font-size: 0.78rem; color: var(--marrom-claro); margin-top: 2px; }
-    .cliente-obs-card { font-size: 0.78rem; color: var(--marrom-claro); margin-top: 4px; font-style: italic; }
-    .cliente-stats { display: flex; gap: 0; margin-top: 12px; border: 1px solid var(--linho); border-radius: 8px; overflow: hidden; }
-    .cliente-stat { flex: 1; padding: 10px; text-align: center; }
-    .cliente-stat + .cliente-stat { border-left: 1px solid var(--linho); }
-    .cliente-stat-label { font-size: 0.62rem; font-weight: 200; color: var(--marrom-claro); text-transform: uppercase; letter-spacing: 0.08em; }
-    .cliente-stat-val { font-family: 'Cormorant Garamond', serif; font-size: 1rem; font-weight: 300; margin-top: 3px; }
-    .cliente-stat-val.aberto { color: #B07D00; }
-    .cliente-footer { padding: 10px 16px; background: var(--perola); border-top: 1px solid var(--linho); display: flex; gap: 8px; }
-    .btn-cli-hist { flex: 1; font-size: 0.78rem; font-weight: 300; color: var(--marrom-medio); padding: 8px 10px; border-radius: 8px; border: 1px solid var(--linho); background: var(--branco); cursor: pointer; transition: background 0.15s; text-align: center; }
-    .btn-cli-hist:hover { background: var(--linho); }
-    .btn-cli-pgto { flex: 1; font-size: 0.78rem; font-weight: 300; color: var(--branco); padding: 8px 10px; border-radius: 8px; background: var(--marrom-claro); border: none; cursor: pointer; transition: background 0.15s; text-align: center; }
-    .btn-cli-pgto:hover { background: var(--marrom-medio); }
-    .cliente-historico { background: var(--creme); border-top: 1px solid var(--linho); padding: 0 16px; max-height: 0; overflow: hidden; transition: max-height 0.3s ease, padding 0.3s ease; }
-    .cliente-historico.open { max-height: 600px; padding: 12px 16px; }
-    .hist-item { display: flex; justify-content: space-between; align-items: center; padding: 7px 0; border-bottom: 1px solid var(--perola); font-size: 0.84rem; }
-    .hist-item:last-child { border-bottom: none; }
-    .hist-item-left { flex: 1; min-width: 0; }
+
     .hist-prod { font-weight: 300; color: var(--marrom-escuro); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .hist-data { font-size: 0.72rem; color: var(--marrom-claro); margin-top: 2px; }
 
     /* FIADO ITEM NO MODAL PAGAMENTO */
-    .fiado-item { display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 10px; border: 1.5px solid var(--linho); background: var(--creme); margin-bottom: 8px; cursor: pointer; transition: all 0.15s; }
-    .fiado-item.selecionado { border-color: var(--marrom-medio); background: var(--marrom-suave); }
-    .fiado-check { width: 20px; height: 20px; border-radius: 5px; border: 1.5px solid var(--marrom-claro); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.15s; }
-    .fiado-item.selecionado .fiado-check { background: var(--marrom-claro); border-color: var(--marrom-claro); }
-
     /* DESEMPENHO */
     .desemp-toggle { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; cursor: pointer; user-select: none; background: var(--branco); border-radius: 12px; border: 1px solid var(--linho); box-shadow: 0 2px 12px rgba(95,117,73,0.08); margin-top: 16px; }
     .desemp-toggle-label { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1rem; color: var(--marrom-claro); }
@@ -1037,11 +1007,6 @@
         <div class="form-err" id="prod-preco-err">Informe um preço válido</div>
       </div>
       <div class="form-group">
-        <label class="form-label" for="prod-custo">Preço de custo (R$) <span style="font-weight:200;font-size:0.68rem;text-transform:none;letter-spacing:0">(opcional)</span></label>
-        <input class="form-input" type="number" id="prod-custo" min="0" step="0.01" placeholder="0,00">
-        <div class="form-hint">Usado para calcular margem e lucro</div>
-      </div>
-      <div class="form-group">
         <label class="form-label" for="prod-cor">Cor <span style="font-weight:200;font-size:0.68rem;text-transform:none;letter-spacing:0">(opcional)</span></label>
         <input class="form-input" type="text" id="prod-cor" maxlength="50" placeholder="Ex: rosa, preto, nude">
       </div>
@@ -1281,45 +1246,6 @@
 </div>
 
 <!-- MODAL: CLIENTE -->
-<div class="modal-overlay" id="modal-cliente">
-  <div class="modal-sheet">
-    <div class="modal-handle"></div>
-    <div class="modal-hdr"><div class="modal-title">Novo Cliente</div></div>
-    <div class="modal-body">
-      <div class="form-group">
-        <label class="form-label" for="cli-nome">Nome</label>
-        <input class="form-input" type="text" id="cli-nome" maxlength="80" placeholder="Ex: Maria Silva">
-        <div class="form-err" id="cli-nome-err">Informe o nome do cliente</div>
-      </div>
-      <div class="form-group">
-        <label class="form-label" for="cli-tel">Telefone <span style="font-weight:200;font-size:0.68rem;text-transform:none;letter-spacing:0">(opcional)</span></label>
-        <input class="form-input" type="text" id="cli-tel" maxlength="20" placeholder="(11) 99999-9999">
-      </div>
-      <div class="form-group">
-        <label class="form-label" for="cli-obs">Observações <span style="font-weight:200;font-size:0.68rem;text-transform:none;letter-spacing:0">(opcional)</span></label>
-        <textarea class="form-input" id="cli-obs" maxlength="200" rows="3" placeholder="Anote algo sobre o cliente..." style="resize:none"></textarea>
-      </div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-secondary" id="btn-cancel-cliente">Cancelar</button>
-      <button class="btn-primary" id="btn-save-cliente">Salvar</button>
-    </div>
-  </div>
-</div>
-
-<!-- MODAL: PAGAMENTO DE FIADO -->
-<div class="modal-overlay" id="modal-pgto-fiado">
-  <div class="modal-sheet">
-    <div class="modal-handle"></div>
-    <div class="modal-hdr"><div class="modal-title" id="pgto-fiado-title">Receber Pagamento</div></div>
-    <div class="modal-body" id="pgto-fiado-body"></div>
-    <div class="modal-footer">
-      <button class="btn-secondary" id="btn-cancel-pgto-fiado">Cancelar</button>
-      <button class="btn-primary" id="btn-save-pgto-fiado">Confirmar recebimento</button>
-    </div>
-  </div>
-</div>
-
 <!-- MODAL: ENTRADA FINANCEIRA -->
 <div class="modal-overlay" id="modal-entrada">
   <div class="modal-sheet">
@@ -1478,7 +1404,7 @@ const DB = {
   data: {
     ev_version: '1.4',
     ev_produtos: [], ev_vendas: [], ev_lancamentos: [],
-    ev_movimentacoes: [], ev_dividas: [], ev_clientes: [], ev_metas: {}
+    ev_movimentacoes: [], ev_dividas: [], ev_clientes: []
   },
   _db: null,
 
@@ -1552,7 +1478,12 @@ const DB = {
 
 // ── MIGRAÇÃO LOCALSTORAGE → FIRESTORE ─────────────────────────────────────────
 async function migrarLocalStorage() {
-  if (localStorage.getItem('ev_firebase_migrated')) return;
+  const flagRef = _fb_doc(DB._db, 'config', 'migracao');
+  try {
+    const flagSnap = await window._fb.getDoc(flagRef);
+    if (flagSnap.exists() && flagSnap.data()?.migracaoConcluida) return;
+  } catch { return; }
+
   const COLS_MAP = [
     { col: 'produtos',      key: 'ev_produtos' },
     { col: 'vendas',        key: 'ev_vendas' },
@@ -1566,7 +1497,7 @@ async function migrarLocalStorage() {
       if (item?.id) DB._set(col, item.id, item);
     }
   }
-  localStorage.setItem('ev_firebase_migrated', '1');
+  _fb_setDoc(flagRef, { migracaoConcluida: true, migradoEm: new Date().toISOString() }).catch(() => {});
 }
 
 // ── TOAST ──────────────────────────────────────────────────────────────────────
@@ -1778,13 +1709,6 @@ function renderEstoque() {
           <path d="M20.38 3.46L16 2a4 4 0 01-8 0L3.62 3.46a2 2 0 00-1.34 2.23l.58 3.57a1 1 0 00.99.84H5v10a2 2 0 002 2h10a2 2 0 002-2V10h1.15a1 1 0 00.99-.84l.58-3.57a2 2 0 00-1.34-2.23z"/>
         </svg>`;
 
-    let margemHTML = '';
-    if (p.precoCusto > 0) {
-      const margem = ((p.preco - p.precoCusto) / p.preco * 100).toFixed(1);
-      const lucroUnit = p.preco - p.precoCusto;
-      margemHTML = `<div class="produto-margem">Margem: ${margem}% · Lucro: ${fmt(lucroUnit)}/un.</div>`;
-    }
-
     return `
       <div class="card produto-card" style="animation-delay:${(i * 0.07 + 0.04).toFixed(2)}s">
         <div class="produto-foto-wrap">${fotoHTML}</div>
@@ -1792,7 +1716,6 @@ function renderEstoque() {
           <div class="produto-nome">${sanitize(p.nome)}</div>
           ${corHTML}
           <div class="produto-preco">${fmt(p.preco)} / unidade</div>
-          ${margemHTML}
           <div class="tamanhos-lista">${tamanhoHTML}</div>
           ${vt === 'tamanho' ? `<div class="produto-total">Total: <strong>${totalPecas}</strong> peça${totalPecas !== 1 ? 's' : ''}</div>` : ''}
         </div>
@@ -2065,21 +1988,15 @@ function buildDesempenhoHTML(filtered, selM, selY) {
   // Agrupa por produto
   const pmap = {};
   vendasMes.forEach(v => {
-    if (!pmap[v.produtoId]) pmap[v.produtoId] = { nome: v.produtoNome || '?', qty: 0, receita: 0, lucro: 0, temCusto: false };
+    if (!pmap[v.produtoId]) pmap[v.produtoId] = { nome: v.produtoNome || '?', qty: 0, receita: 0 };
     const s = pmap[v.produtoId];
     s.qty     += v.quantidade;
     s.receita += v.valorTotal;
-    const p = DB.data.ev_produtos.find(x => x.id === v.produtoId);
-    if (p && p.precoCusto > 0) {
-      s.lucro   += (v.valorUnitario - p.precoCusto) * v.quantidade;
-      s.temCusto = true;
-    }
   });
 
-  const prods    = Object.values(pmap);
-  const top3qty  = [...prods].sort((a, b) => b.qty     - a.qty    ).slice(0, 3);
-  const top3rec  = [...prods].sort((a, b) => b.receita - a.receita).slice(0, 3);
-  const top3luc  = prods.filter(p => p.temCusto).sort((a, b) => b.lucro - a.lucro).slice(0, 3);
+  const prods   = Object.values(pmap);
+  const top3qty = [...prods].sort((a, b) => b.qty     - a.qty    ).slice(0, 3);
+  const top3rec = [...prods].sort((a, b) => b.receita - a.receita).slice(0, 3);
 
   const ranking = (items, fn) => items.length
     ? items.map((x, i) => `
@@ -2133,9 +2050,6 @@ function buildDesempenhoHTML(filtered, selM, selY) {
     ${ranking(top3qty, x => `${x.qty} un.`)}
     <div class="desemp-secao">Top 3 em receita</div>
     ${ranking(top3rec, x => fmt(x.receita))}
-    ${top3luc.length ? `
-    <div class="desemp-secao">Top 3 em margem de lucro</div>
-    ${ranking(top3luc, x => fmt(x.lucro))}` : ''}
     <div class="desemp-secao">Vendas por forma de pagamento</div>
     ${vendasMes.length ? `<div class="bar-chart">${pagBars}</div>` : `<div class="desemp-vazio">Sem vendas no período</div>`}
     <div class="desemp-secao">Saídas por categoria</div>
@@ -2255,192 +2169,6 @@ function renderDividas() {
   });
 }
 
-// ── RENDER: CLIENTES ───────────────────────────────────────────────────────────
-function renderClientes() {
-  const el = document.getElementById('clientes-content');
-  if (!el) return;
-  const clientes = DB.data.ev_clientes || [];
-
-  if (!clientes.length) {
-    el.innerHTML = `
-      <div class="empty-state">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
-        </svg>
-        <p>Nenhum cliente cadastrado</p>
-        <small>Toque em + para adicionar</small>
-      </div>`;
-    return;
-  }
-
-  el.innerHTML = clientes.map((c, i) => {
-    const fiados      = (DB.data.ev_lancamentos || []).filter(l => l.clienteId === c.id && l.tipo === 'entrada' && l.status === 'a_receber');
-    const emAberto    = fiados.reduce((s, l) => s + l.valor, 0);
-    const totalCompras = (DB.data.ev_vendas || []).filter(v => v.clienteId === c.id).reduce((s, v) => s + v.valorTotal, 0);
-
-    return `
-      <div class="card cliente-card" style="animation-delay:${(i * 0.07 + 0.04).toFixed(2)}s">
-        <div class="cliente-nome-card">${sanitize(c.nome)}</div>
-        ${c.telefone ? `<div class="cliente-tel-card">${sanitize(c.telefone)}</div>` : ''}
-        ${c.observacoes ? `<div class="cliente-obs-card">${sanitize(c.observacoes)}</div>` : ''}
-        <div class="cliente-stats">
-          <div class="cliente-stat">
-            <div class="cliente-stat-label">Em aberto</div>
-            <div class="cliente-stat-val aberto">${fmt(emAberto)}</div>
-          </div>
-          <div class="cliente-stat">
-            <div class="cliente-stat-label">Total compras</div>
-            <div class="cliente-stat-val">${fmt(totalCompras)}</div>
-          </div>
-        </div>
-        <div class="cliente-historico" id="hist-${c.id}">
-          ${renderHistoricoCliente(c.id)}
-        </div>
-        <div class="cliente-footer">
-          <button class="btn-cli-hist" data-cid="${c.id}">Ver histórico</button>
-          ${emAberto > 0 ? `<button class="btn-cli-pgto" data-cid="${c.id}">Receber pagamento</button>` : ''}
-        </div>
-      </div>`;
-  }).join('');
-
-  el.querySelectorAll('.btn-cli-hist').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const hist = document.getElementById(`hist-${btn.dataset.cid}`);
-      if (!hist) return;
-      const isOpen = hist.classList.toggle('open');
-      btn.textContent = isOpen ? 'Fechar histórico' : 'Ver histórico';
-    });
-  });
-
-  el.querySelectorAll('.btn-cli-pgto').forEach(btn => {
-    btn.addEventListener('click', () => openPagamentoFiado(btn.dataset.cid));
-  });
-}
-
-function renderHistoricoCliente(clienteId) {
-  const vendas = (DB.data.ev_vendas || [])
-    .filter(v => v.clienteId === clienteId)
-    .sort((a, b) => b.data.localeCompare(a.data));
-
-  if (!vendas.length) return `<div style="font-size:0.82rem;color:var(--marrom-claro);font-style:italic;padding:4px 0">Nenhuma compra registrada</div>`;
-
-  return vendas.map(v => {
-    const lancsPorVenda = (DB.data.ev_lancamentos || []).filter(l => l.referenciaId === v.id);
-    const pendente      = lancsPorVenda.some(l => l.status === 'a_receber');
-    return `
-      <div class="hist-item">
-        <div class="hist-item-left">
-          <div class="hist-prod">${sanitize(v.produtoNome)}${v.tamanho && v.tamanho !== 'Único' ? ' · ' + sanitize(v.tamanho) : ''}</div>
-          <div class="hist-data">${fmtDate(v.data)} · ${v.quantidade}un.</div>
-        </div>
-        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
-          <span class="badge ${pendente ? 'badge-pendente' : 'badge-pago'}">${pendente ? 'A receber' : 'Recebido'}</span>
-          <span style="font-family:'Cormorant Garamond',serif;font-size:0.95rem">${fmt(v.valorTotal)}</span>
-        </div>
-      </div>`;
-  }).join('');
-}
-
-// ── CLIENTE ACTIONS ────────────────────────────────────────────────────────────
-function openAddCliente() {
-  document.getElementById('cli-nome').value = '';
-  document.getElementById('cli-tel').value  = '';
-  document.getElementById('cli-obs').value  = '';
-  document.getElementById('cli-nome').classList.remove('err');
-  document.getElementById('cli-nome-err').classList.remove('show');
-  openModal('modal-cliente');
-}
-
-document.getElementById('btn-cancel-cliente').addEventListener('click', () => closeModal('modal-cliente'));
-document.getElementById('btn-save-cliente').addEventListener('click', () => {
-  const nome = document.getElementById('cli-nome').value.trim();
-  if (!nome) {
-    document.getElementById('cli-nome').classList.add('err');
-    document.getElementById('cli-nome-err').classList.add('show');
-    return;
-  }
-  const telefone    = document.getElementById('cli-tel').value.trim();
-  const observacoes = document.getElementById('cli-obs').value.trim();
-  DB.data.ev_clientes.push({ id: uid(), nome, telefone, observacoes, createdAt: new Date().toISOString() });
-  localStorage.setItem('ev_clientes', JSON.stringify(DB.data.ev_clientes));
-  closeModal('modal-cliente');
-  toast('Cliente cadastrado!');
-  renderClientes();
-});
-
-// ── PAGAMENTO DE FIADO ─────────────────────────────────────────────────────────
-let _pgtoClienteId   = null;
-let _pgtoSelecionados = new Set();
-
-function openPagamentoFiado(clienteId) {
-  const cliente = (DB.data.ev_clientes || []).find(c => c.id === clienteId);
-  if (!cliente) return;
-  _pgtoClienteId    = clienteId;
-  _pgtoSelecionados = new Set();
-
-  const pendentes = (DB.data.ev_lancamentos || []).filter(l =>
-    l.clienteId === clienteId && l.tipo === 'entrada' && l.status === 'a_receber'
-  );
-
-  document.getElementById('pgto-fiado-title').textContent = `Fiados — ${cliente.nome}`;
-  const body = document.getElementById('pgto-fiado-body');
-
-  if (!pendentes.length) {
-    body.innerHTML = `<div class="sem-dados">Nenhum fiado em aberto para este cliente.</div>`;
-  } else {
-    body.innerHTML = `
-      <p style="font-size:0.82rem;color:var(--marrom-claro);margin-bottom:12px;font-weight:300">Selecione os fiados que foram pagos</p>
-      ${pendentes.map(l => `
-        <div class="fiado-item" data-lid="${l.id}">
-          <div class="fiado-check">
-            <svg class="fiado-check-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" style="display:none"><polyline points="20,6 9,17 4,12"/></svg>
-          </div>
-          <div style="flex:1;min-width:0">
-            <div style="font-size:0.86rem;font-weight:300;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${sanitize(l.descricao)}</div>
-            <div style="font-size:0.72rem;color:var(--marrom-claro);margin-top:2px">${fmtDate(l.data)}</div>
-          </div>
-          <div style="font-family:'Cormorant Garamond',serif;font-size:1.05rem;font-weight:300;color:var(--marrom-medio);flex-shrink:0">${fmt(l.valor)}</div>
-        </div>`).join('')}`;
-
-    body.querySelectorAll('.fiado-item').forEach(item => {
-      item.addEventListener('click', () => {
-        const lid = item.dataset.lid;
-        const isSelected = _pgtoSelecionados.has(lid);
-        if (isSelected) {
-          _pgtoSelecionados.delete(lid);
-          item.classList.remove('selecionado');
-          item.querySelector('.fiado-check-icon').style.display = 'none';
-        } else {
-          _pgtoSelecionados.add(lid);
-          item.classList.add('selecionado');
-          item.querySelector('.fiado-check-icon').style.display = 'block';
-        }
-      });
-    });
-  }
-
-  openModal('modal-pgto-fiado');
-}
-
-document.getElementById('btn-cancel-pgto-fiado').addEventListener('click', () => closeModal('modal-pgto-fiado'));
-document.getElementById('btn-save-pgto-fiado').addEventListener('click', () => {
-  if (!_pgtoSelecionados.size) { toast('Selecione pelo menos um fiado', 'error'); return; }
-  _pgtoSelecionados.forEach(lid => {
-    const l = DB.data.ev_lancamentos.find(x => x.id === lid);
-    if (l && l.status === 'a_receber') {
-      l.status           = 'recebido';
-      l.marcadoRecebido  = true;
-      l.dataPagamento    = todayISO();
-      DB._set('lancamentos', lid, l);
-    }
-  });
-  closeModal('modal-pgto-fiado');
-  toast('Pagamento registrado!');
-  renderClientes();
-  renderFinanceiro();
-  renderInicio();
-});
-
 // ── PRODUCT ACTIONS ────────────────────────────────────────────────────────────
 let _prodFotoBase64 = null;
 
@@ -2450,7 +2178,6 @@ function openAddProduct() {
   document.getElementById('modal-produto-title').textContent = 'Novo Produto';
   document.getElementById('prod-nome').value = '';
   document.getElementById('prod-preco').value = '';
-  document.getElementById('prod-custo').value = '';
   document.getElementById('prod-cor').value = '';
   ['P','M','G','GG'].forEach(s => { document.getElementById(`tam-${s}`).checked = false; });
   document.getElementById('prod-qty-group').innerHTML = '';
@@ -2471,7 +2198,6 @@ function openEditProduct(id) {
   document.getElementById('modal-produto-title').textContent = 'Editar Produto';
   document.getElementById('prod-nome').value = p.nome;
   document.getElementById('prod-preco').value = p.preco;
-  document.getElementById('prod-custo').value = p.precoCusto > 0 ? p.precoCusto : '';
   document.getElementById('prod-cor').value = p.cor || '';
 
   const vt = p.variacaoTipo || 'tamanho';
@@ -2603,7 +2329,6 @@ function saveProduto() {
   const nome         = document.getElementById('prod-nome').value.trim();
   const preco        = parseFloat(document.getElementById('prod-preco').value);
   const cor          = document.getElementById('prod-cor').value.trim();
-  const precoCusto   = parseFloat(document.getElementById('prod-custo').value) || 0;
   const variacaoTipo = App.variacaoTipo || 'tamanho';
   const sizes        = variacaoTipo === 'tamanho'
     ? ['P','M','G','GG'].filter(s => document.getElementById(`tam-${s}`).checked)
@@ -2641,7 +2366,7 @@ function saveProduto() {
     if (idx > -1) {
       DB.data.ev_produtos[idx] = {
         ...DB.data.ev_produtos[idx],
-        nome, preco, precoCusto, cor, variacaoTipo, tamanhos,
+        nome, preco, cor, variacaoTipo, tamanhos,
         foto: _prodFotoBase64
       };
       DB._set('produtos', DB.data.ev_produtos[idx].id, DB.data.ev_produtos[idx]);
@@ -2649,7 +2374,7 @@ function saveProduto() {
     }
     toast('Produto atualizado');
   } else {
-    const novoProd = { id: uid(), nome, preco, precoCusto, cor, variacaoTipo, tamanhos, foto: _prodFotoBase64, createdAt: new Date().toISOString() };
+    const novoProd = { id: uid(), nome, preco, cor, variacaoTipo, tamanhos, foto: _prodFotoBase64, createdAt: new Date().toISOString() };
     DB.data.ev_produtos.push(novoProd);
     DB._set('produtos', novoProd.id, novoProd);
     Object.entries(tamanhos).forEach(([tam, qty]) => {
@@ -3672,7 +3397,6 @@ function exportBackupJSON() {
     ev_movimentacoes: DB.data.ev_movimentacoes,
     ev_dividas:       DB.data.ev_dividas,
     ev_clientes:      DB.data.ev_clientes,
-    ev_metas:         DB.data.ev_metas,
   };
   const json = JSON.stringify(backup, null, 2);
   const blob = new Blob([json], { type: 'application/json' });
