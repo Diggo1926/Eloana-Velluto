@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+<link rel="icon" type="image/png" href="logo.png">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="mobile-web-app-capable" content="yes">
@@ -14,6 +15,60 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,300;1,300;1,400&family=Jost:wght@200;300;400&display=swap" rel="stylesheet">
+
+  <!-- CONFIGURAÇÃO FIREBASE — substitua pelos seus dados -->
+  <script type="module">
+    import { initializeApp }
+      from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { getFirestore, enableIndexedDbPersistence,
+             collection, doc, setDoc, getDocs,
+             onSnapshot, deleteDoc, updateDoc }
+      from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+    // CONFIGURAÇÃO FIREBASE — substitua pelos seus dados
+    const firebaseConfig = {
+      apiKey:            'COLE_AQUI',
+      authDomain:        'COLE_AQUI',
+      projectId:         'COLE_AQUI',
+      storageBucket:     'COLE_AQUI',
+      messagingSenderId: 'COLE_AQUI',
+      appId:             'COLE_AQUI'
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db  = getFirestore(app);
+
+    enableIndexedDbPersistence(db).catch(() => {});
+
+    window.db  = db;
+    window._fb = { collection, doc, setDoc, getDocs, onSnapshot, deleteDoc, updateDoc };
+    window.dispatchEvent(new CustomEvent('firebase-ready'));
+  </script>
+
+  <style>
+    @keyframes spin { to { transform: rotate(360deg); } }
+    #app-loading {
+      position: fixed; inset: 0; background: var(--creme);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; z-index: 9999;
+    }
+    #app-loading .loading-brand {
+      font-family: 'Great Vibes', cursive; font-size: 2.4rem;
+      color: var(--verde-escuro); margin-bottom: 20px;
+    }
+    #app-loading .loading-spinner {
+      width: 36px; height: 36px;
+      border: 2px solid var(--perola); border-top-color: var(--verde-escuro);
+      border-radius: 50%; animation: spin 0.85s linear infinite;
+    }
+    #offline-banner {
+      display: none; position: fixed; top: 0; left: 0; right: 0;
+      background: #795548; color: #fff; text-align: center;
+      font-size: 0.74rem; padding: 5px 12px; z-index: 9990;
+      font-family: 'Jost', sans-serif; font-weight: 300; letter-spacing: 0.05em;
+    }
+  </style>
+
   <style>
     :root {
       /* Nova identidade visual Eloana Velluto */
@@ -824,6 +879,15 @@
 </head>
 <body>
 
+<!-- LOADING SCREEN -->
+<div id="app-loading">
+  <div class="loading-brand">Eloana Velluto</div>
+  <div class="loading-spinner"></div>
+</div>
+
+<!-- OFFLINE BANNER -->
+<div id="offline-banner">Sem conexão — exibindo dados em cache</div>
+
 <!-- HEADER -->
 <header class="app-header">
   <img src="logo.png" class="header-logo" alt="Eloana Velluto"
@@ -1304,10 +1368,10 @@
 'use strict';
 
 // ── GOOGLE SHEETS INTEGRATION ──────────────────────────────────────────────────
-const SHEETS_WEBHOOK_URL = "COLE_AQUI_A_URL_DO_APPS_SCRIPT";
+const SHEETS_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbyM-vkzEFrwWMdXbDCNLBgQgCSnJA0gX3T7fwxNQ4KDY2W3TyA-6Sge69QOnob-mkY1zQ/exec';
 
 function sincronizarComSheets(tipo, dados) {
-  if (!SHEETS_WEBHOOK_URL || SHEETS_WEBHOOK_URL === 'COLE_AQUI_A_URL_DO_APPS_SCRIPT') return;
+  if (!SHEETS_WEBHOOK_URL) return;
   try {
     fetch(SHEETS_WEBHOOK_URL, {
       method: 'POST',
@@ -1372,85 +1436,138 @@ const TIPOS_DIVIDA = {
   outro: 'Outro'
 };
 
+// ── FIREBASE HELPERS ───────────────────────────────────────────────────────────
+// Funções do SDK modular expostas pelo script de módulo no <head>
+let _fb_col, _fb_doc, _fb_setDoc, _fb_getDocs, _fb_onSnapshot, _fb_deleteDoc, _fb_updateDoc;
+
+function _initFbFunctions() {
+  const fb = window._fb || {};
+  _fb_col       = fb.collection;
+  _fb_doc       = fb.doc;
+  _fb_setDoc    = fb.setDoc;
+  _fb_getDocs   = fb.getDocs;
+  _fb_onSnapshot = fb.onSnapshot;
+  _fb_deleteDoc = fb.deleteDoc;
+  _fb_updateDoc = fb.updateDoc;
+}
+
+function _fbReady() {
+  return new Promise(resolve => {
+    if (window.db) { resolve(window.db); return; }
+    window.addEventListener('firebase-ready', () => resolve(window.db), { once: true });
+  });
+}
+
+function updateOfflineBanner() {
+  const banner = document.getElementById('offline-banner');
+  if (!banner) return;
+  banner.style.display = navigator.onLine ? 'none' : 'block';
+}
+
+function reRenderTab(changedCol) {
+  switch (App.tab) {
+    case 'inicio':     renderInicio(); break;
+    case 'estoque':    if (['produtos','movimentacoes'].includes(changedCol)) renderEstoque(); break;
+    case 'financeiro': if (changedCol === 'lancamentos') renderFinanceiro(); break;
+    case 'dividas':    if (changedCol === 'dividas') renderDividas(); break;
+  }
+}
+
 // ── STORAGE ────────────────────────────────────────────────────────────────────
 const DB = {
-  data: null,
-
-  init() {
-    const ver = localStorage.getItem('ev_version');
-    // PASSO 0: verificar produtos antes de qualquer alteração
-    console.log('[EV] ev_produtos preservados:', JSON.parse(localStorage.getItem('ev_produtos') || '[]'));
-    if (!ver) {
-      this._createInitial();
-    } else {
-      this._load();
-    }
+  data: {
+    ev_version: '1.4',
+    ev_produtos: [], ev_vendas: [], ev_lancamentos: [],
+    ev_movimentacoes: [], ev_dividas: [], ev_clientes: [], ev_metas: {}
   },
+  _db: null,
 
-  _createInitial() {
-    const debtId = uid();
-    const p1 = uid(), p2 = uid(), p3 = uid();
-    this.data = {
-      ev_version: '1.4',
-      ev_produtos: [],
-      ev_vendas: [],
-      ev_lancamentos: [],
-      ev_movimentacoes: [],
-      ev_dividas: [{
-        id: debtId,
-        nome: 'Estoque inicial — cartão',
-        tipo: 'credito_parcelado',
-        valorTotal: 386.00,
-        parcelado: true,
-        parcelas: [
-          { id: p1, numero: 1, valor: 128.70, vencimento: '2026-05-15', pago: false, dataPagamento: null, lancamentoId: null },
-          { id: p2, numero: 2, valor: 128.70, vencimento: '2026-06-15', pago: false, dataPagamento: null, lancamentoId: null },
-          { id: p3, numero: 3, valor: 128.60, vencimento: '2026-07-15', pago: false, dataPagamento: null, lancamentoId: null }
-        ],
-        createdAt: new Date().toISOString()
-      }],
-      ev_clientes: [],
-      ev_metas: {}
-    };
-    this._save();
-  },
+  async init() {
+    this._db = await _fbReady();
+    _initFbFunctions();
 
-  _load() {
+    window.addEventListener('online',  updateOfflineBanner);
+    window.addEventListener('offline', updateOfflineBanner);
+
+    // Carrega ev_clientes do localStorage (não está no Firestore)
     try {
-      this.data = {
-        ev_version:       localStorage.getItem('ev_version') || '1.0',
-        ev_produtos:      JSON.parse(localStorage.getItem('ev_produtos') || '[]'),
-        ev_vendas:        JSON.parse(localStorage.getItem('ev_vendas') || '[]'),
-        ev_lancamentos:   JSON.parse(localStorage.getItem('ev_lancamentos') || '[]'),
-        ev_movimentacoes: JSON.parse(localStorage.getItem('ev_movimentacoes') || '[]'),
-        ev_dividas:       JSON.parse(localStorage.getItem('ev_dividas') || '[]'),
-        ev_clientes:      JSON.parse(localStorage.getItem('ev_clientes') || '[]'),
-        ev_metas:         JSON.parse(localStorage.getItem('ev_metas') || '{}')
-      };
-    } catch (e) {
-      this._createInitial();
-    }
+      this.data.ev_clientes = JSON.parse(localStorage.getItem('ev_clientes') || '[]');
+    } catch { this.data.ev_clientes = []; }
+
+    // Carrega dados e configura escuta em tempo real
+    await this._setupListeners();
+
+    // Migração única do localStorage para Firestore
+    await migrarLocalStorage();
   },
 
-  _save() {
-    try {
-      localStorage.setItem('ev_version',       this.data.ev_version);
-      localStorage.setItem('ev_produtos',      JSON.stringify(this.data.ev_produtos));
-      localStorage.setItem('ev_vendas',        JSON.stringify(this.data.ev_vendas));
-      localStorage.setItem('ev_lancamentos',   JSON.stringify(this.data.ev_lancamentos));
-      localStorage.setItem('ev_movimentacoes', JSON.stringify(this.data.ev_movimentacoes));
-      localStorage.setItem('ev_dividas',       JSON.stringify(this.data.ev_dividas));
-      localStorage.setItem('ev_clientes',      JSON.stringify(this.data.ev_clientes));
-      localStorage.setItem('ev_metas',         JSON.stringify(this.data.ev_metas));
-    } catch (e) {
-      if (e.name === 'QuotaExceededError') {
-        toast('Armazenamento cheio. Remova fotos para liberar espaço.', 'error');
-      }
-    }
+  _setupListeners() {
+    const COLS = [
+      { col: 'produtos',        key: 'ev_produtos' },
+      { col: 'vendas',          key: 'ev_vendas' },
+      { col: 'lancamentos',     key: 'ev_lancamentos' },
+      { col: 'movimentacoes',   key: 'ev_movimentacoes' },
+      { col: 'dividas',         key: 'ev_dividas' },
+    ];
+    let firstLoaded = 0;
+
+    return new Promise(resolve => {
+      COLS.forEach(({ col, key }) => {
+        let isFirst = true;
+        _fb_onSnapshot(
+          _fb_col(this._db, col),
+          snap => {
+            this.data[key] = snap.docs.map(d => d.data());
+            if (isFirst) {
+              isFirst = false;
+              firstLoaded++;
+              if (firstLoaded === COLS.length) resolve();
+            } else {
+              reRenderTab(col);
+            }
+          },
+          err => {
+            console.warn('[EV] onSnapshot error:', col, err);
+            if (isFirst) { isFirst = false; firstLoaded++; if (firstLoaded === COLS.length) resolve(); }
+          }
+        );
+      });
+    });
   },
 
-  save() { this._save(); }
+  // Escreve documento individual no Firestore (fire-and-forget)
+  _set(col, id, data) {
+    if (!this._db || !_fb_setDoc) return;
+    _fb_setDoc(_fb_doc(this._db, col, id), data).catch(e => console.warn('[EV] write error:', col, id, e));
+  },
+
+  // Remove documento individual do Firestore (fire-and-forget)
+  _delete(col, id) {
+    if (!this._db || !_fb_deleteDoc) return;
+    _fb_deleteDoc(_fb_doc(this._db, col, id)).catch(e => console.warn('[EV] delete error:', col, id, e));
+  },
+
+  save() { /* escritas acontecem individualmente via _set/_delete */ }
 };
+
+// ── MIGRAÇÃO LOCALSTORAGE → FIRESTORE ─────────────────────────────────────────
+async function migrarLocalStorage() {
+  if (localStorage.getItem('ev_firebase_migrated')) return;
+  const COLS_MAP = [
+    { col: 'produtos',      key: 'ev_produtos' },
+    { col: 'vendas',        key: 'ev_vendas' },
+    { col: 'lancamentos',   key: 'ev_lancamentos' },
+    { col: 'movimentacoes', key: 'ev_movimentacoes' },
+    { col: 'dividas',       key: 'ev_dividas' },
+  ];
+  for (const { col, key } of COLS_MAP) {
+    const items = JSON.parse(localStorage.getItem(key) || '[]');
+    for (const item of items) {
+      if (item?.id) DB._set(col, item.id, item);
+    }
+  }
+  localStorage.setItem('ev_firebase_migrated', '1');
+}
 
 // ── TOAST ──────────────────────────────────────────────────────────────────────
 function toast(msg, type = 'success', duration = 3200) {
@@ -1741,7 +1858,7 @@ function renderEstoque() {
       if (!p) return;
       confirm('Excluir produto', `Deseja excluir "${p.nome}"? Esta ação não pode ser desfeita.`, () => {
         DB.data.ev_produtos = DB.data.ev_produtos.filter(x => x.id !== p.id);
-        DB.save();
+        DB._delete('produtos', p.id);
         renderEstoque();
         toast('Produto excluído');
       });
@@ -1777,7 +1894,7 @@ function updateQty(pid, tam, delta) {
   if (newVal < 0) return;
   p.tamanhos[tam] = newVal;
   logMovimento(pid, tam, delta > 0 ? 'entrada' : 'saida', Math.abs(delta), 'Ajuste rápido pelo card');
-  DB.save();
+  DB._set('produtos', p.id, p);
   const el = document.getElementById(`qty-${pid}-${tam}`);
   if (el) el.textContent = newVal;
   // update total
@@ -1915,7 +2032,7 @@ function renderFinanceiro() {
       if (!l || l.status !== 'a_receber') return;
       l.status = 'recebido';
       l.marcadoRecebido = true;
-      DB.save();
+      DB._set('lancamentos', l.id, l);
       renderFinanceiro();
       renderInicio();
       toast('Marcado como recebido');
@@ -2130,7 +2247,7 @@ function renderDividas() {
       if (!div) return;
       confirm('Excluir dívida', `Deseja excluir "${div.nome}"?`, () => {
         DB.data.ev_dividas = DB.data.ev_dividas.filter(d => d.id !== div.id);
-        DB.save();
+        DB._delete('dividas', div.id);
         renderDividas();
         toast('Dívida excluída');
       });
@@ -2245,7 +2362,7 @@ document.getElementById('btn-save-cliente').addEventListener('click', () => {
   const telefone    = document.getElementById('cli-tel').value.trim();
   const observacoes = document.getElementById('cli-obs').value.trim();
   DB.data.ev_clientes.push({ id: uid(), nome, telefone, observacoes, createdAt: new Date().toISOString() });
-  DB.save();
+  localStorage.setItem('ev_clientes', JSON.stringify(DB.data.ev_clientes));
   closeModal('modal-cliente');
   toast('Cliente cadastrado!');
   renderClientes();
@@ -2314,9 +2431,9 @@ document.getElementById('btn-save-pgto-fiado').addEventListener('click', () => {
       l.status           = 'recebido';
       l.marcadoRecebido  = true;
       l.dataPagamento    = todayISO();
+      DB._set('lancamentos', lid, l);
     }
   });
-  DB.save();
   closeModal('modal-pgto-fiado');
   toast('Pagamento registrado!');
   renderClientes();
@@ -2527,12 +2644,14 @@ function saveProduto() {
         nome, preco, precoCusto, cor, variacaoTipo, tamanhos,
         foto: _prodFotoBase64
       };
+      DB._set('produtos', DB.data.ev_produtos[idx].id, DB.data.ev_produtos[idx]);
       sincronizarComSheets('produto', { ...DB.data.ev_produtos[idx], foto: undefined });
     }
     toast('Produto atualizado');
   } else {
     const novoProd = { id: uid(), nome, preco, precoCusto, cor, variacaoTipo, tamanhos, foto: _prodFotoBase64, createdAt: new Date().toISOString() };
     DB.data.ev_produtos.push(novoProd);
+    DB._set('produtos', novoProd.id, novoProd);
     Object.entries(tamanhos).forEach(([tam, qty]) => {
       if (qty > 0) logMovimento(novoProd.id, tam, 'entrada', qty, 'Cadastro inicial');
     });
@@ -2540,7 +2659,6 @@ function saveProduto() {
     toast('Produto cadastrado');
   }
 
-  DB.save();
   closeModal('modal-produto');
   renderEstoque();
 }
@@ -2549,7 +2667,7 @@ function saveProduto() {
 
 function logMovimento(produtoId, tamanho, tipo, quantidade, motivo) {
   const p = DB.data.ev_produtos.find(x => x.id === produtoId);
-  DB.data.ev_movimentacoes.push({
+  const mov = {
     id: uid(),
     produtoId,
     produtoNome: p?.nome || '?',
@@ -2559,7 +2677,9 @@ function logMovimento(produtoId, tamanho, tipo, quantidade, motivo) {
     quantidade,
     motivo: motivo || '',
     dataHora: new Date().toISOString()
-  });
+  };
+  DB.data.ev_movimentacoes.push(mov);
+  DB._set('movimentacoes', mov.id, mov);
 }
 
 function renderMovimentacoes(filtro) {
@@ -2655,7 +2775,7 @@ document.getElementById('btn-save-ajuste').addEventListener('click', () => {
 
   p.tamanhos[tam] = novoQty;
   logMovimento(pid, tam, 'ajuste', qty, motivo);
-  DB.save();
+  DB._set('produtos', p.id, p);
   closeModal('modal-ajuste');
   toast('Estoque ajustado');
   renderEstoque();
@@ -2960,6 +3080,7 @@ document.getElementById('btn-venda-next').addEventListener('click', () => {
           const novoTel  = (document.getElementById('vs-novo-cli-tel')?.value || '').trim();
           const novoCli  = { id: uid(), nome: novoNome, telefone: novoTel, observacoes: '', createdAt: new Date().toISOString() };
           DB.data.ev_clientes.push(novoCli);
+          localStorage.setItem('ev_clientes', JSON.stringify(DB.data.ev_clientes));
           state.clienteId   = novoCli.id;
           state.nomeCliente = novoNome;
         } else if (cliSel.value) {
@@ -3040,8 +3161,11 @@ function confirmVenda() {
     });
   }
 
-  DB.save();
-  sincronizarComSheets('venda', DB.data.ev_vendas[DB.data.ev_vendas.length - 1]);
+  const savedVenda = DB.data.ev_vendas[DB.data.ev_vendas.length - 1];
+  DB._set('vendas', savedVenda.id, savedVenda);
+  DB._set('produtos', p.id, p);
+  DB.data.ev_lancamentos.filter(l => l.referenciaId === vendaId).forEach(l => DB._set('lancamentos', l.id, l));
+  sincronizarComSheets('venda', savedVenda);
   closeModal('modal-venda');
   toast(`Venda registrada · ${fmt(valorTotal)}`);
 
@@ -3078,7 +3202,7 @@ function saveSaida() {
   const categoria = document.getElementById('saida-categoria')?.value || 'outros';
   const novoLanc = { id: uid(), tipo: 'saida', descricao: desc, valor, data, categoria, origem: 'manual', referenciaId: null, createdAt: new Date().toISOString() };
   DB.data.ev_lancamentos.push(novoLanc);
-  DB.save();
+  DB._set('lancamentos', novoLanc.id, novoLanc);
   sincronizarComSheets('lancamento', { tipoLanc: 'saida', ...novoLanc });
   closeModal('modal-saida');
   toast('Saída registrada');
@@ -3194,19 +3318,19 @@ function saveDivida() {
       });
       mergedParcelas.sort((a, b) => a.numero - b.numero);
       DB.data.ev_dividas[idx] = { ...existing, nome, tipo, valorTotal, parcelado, parcelas: mergedParcelas };
+      DB._set('dividas', DB.data.ev_dividas[idx].id, DB.data.ev_dividas[idx]);
       sincronizarComSheets('divida', DB.data.ev_dividas[idx]);
     }
     App.editingDebtId = null;
     document.getElementById('modal-divida-title').textContent = 'Nova Dívida';
-    DB.save();
     closeModal('modal-divida');
     toast('Dívida atualizada');
     renderDividas();
   } else {
     const novaDivida = { id: uid(), nome, tipo, valorTotal, parcelado, parcelas, createdAt: new Date().toISOString() };
     DB.data.ev_dividas.push(novaDivida);
+    DB._set('dividas', novaDivida.id, novaDivida);
     sincronizarComSheets('divida', novaDivida);
-    DB.save();
     closeModal('modal-divida');
     toast('Dívida cadastrada');
     renderDividas();
@@ -3223,10 +3347,12 @@ function markInstallmentPaid(debtId, parcelaId) {
 
   const descricao = `Parcela ${parcela.numero}/${div.parcelas.length} — ${div.nome}`;
   const lancId = uid();
-  DB.data.ev_lancamentos.push({ id: lancId, tipo: 'saida', descricao, valor: parcela.valor, data: todayISO(), origem: 'divida', referenciaId: parcelaId, createdAt: new Date().toISOString() });
+  const novoLancParcela = { id: lancId, tipo: 'saida', descricao, valor: parcela.valor, data: todayISO(), origem: 'divida', referenciaId: parcelaId, createdAt: new Date().toISOString() };
+  DB.data.ev_lancamentos.push(novoLancParcela);
   parcela.lancamentoId = lancId;
 
-  DB.save();
+  DB._set('dividas', div.id, div);
+  DB._set('lancamentos', lancId, novoLancParcela);
   toast('Parcela marcada como paga');
   renderDividas();
   if (App.tab === 'inicio') renderInicio();
@@ -3479,7 +3605,7 @@ document.getElementById('btn-save-entrada').addEventListener('click', () => {
 
   const entradaLanc = { id: uid(), tipo: 'entrada', descricao: desc, valor, data, status: 'recebido', origem: 'manual', referenciaId: null, createdAt: new Date().toISOString() };
   DB.data.ev_lancamentos.push(entradaLanc);
-  DB.save();
+  DB._set('lancamentos', entradaLanc.id, entradaLanc);
   sincronizarComSheets('lancamento', { tipoLanc: 'entrada', ...entradaLanc });
   closeModal('modal-entrada');
   toast('Entrada registrada');
@@ -3538,12 +3664,16 @@ document.getElementById('btn-sair-catalogo').addEventListener('click', () => {
 
 // ── BACKUP JSON ────────────────────────────────────────────────────────────────
 function exportBackupJSON() {
-  const backup = {};
-  const keys = ['ev_version','ev_produtos','ev_vendas','ev_lancamentos','ev_movimentacoes','ev_dividas','ev_clientes','ev_metas'];
-  keys.forEach(k => {
-    const val = localStorage.getItem(k);
-    if (val !== null) { try { backup[k] = JSON.parse(val); } catch { backup[k] = val; } }
-  });
+  const backup = {
+    ev_version:       DB.data.ev_version,
+    ev_produtos:      DB.data.ev_produtos,
+    ev_vendas:        DB.data.ev_vendas,
+    ev_lancamentos:   DB.data.ev_lancamentos,
+    ev_movimentacoes: DB.data.ev_movimentacoes,
+    ev_dividas:       DB.data.ev_dividas,
+    ev_clientes:      DB.data.ev_clientes,
+    ev_metas:         DB.data.ev_metas,
+  };
   const json = JSON.stringify(backup, null, 2);
   const blob = new Blob([json], { type: 'application/json' });
   const url  = URL.createObjectURL(blob);
@@ -3596,23 +3726,29 @@ document.getElementById('btn-backup-lembrar').addEventListener('click', () => {
 });
 
 // ── INIT ───────────────────────────────────────────────────────────────────────
-DB.init();
-renderInicio();
-renderEstoque();
-renderFinanceiro();
-renderDividas();
-setTab('inicio');
-checkBackupBanner();
+(async () => {
+  try {
+    await DB.init();
+  } catch (e) {
+    console.error('[EV] Firebase init error:', e);
+  }
+  document.getElementById('app-loading').style.display = 'none';
+  renderInicio();
+  renderEstoque();
+  renderFinanceiro();
+  renderDividas();
+  setTab('inicio');
+  checkBackupBanner();
+  updateOfflineBanner();
 
-// Rota ?export=true — dispara download de backup ao acessar a URL
-if (new URLSearchParams(window.location.search).get('export') === 'true') {
-  setTimeout(exportBackupJSON, 600);
-}
+  if (new URLSearchParams(window.location.search).get('export') === 'true') {
+    setTimeout(exportBackupJSON, 600);
+  }
 
-// Registrar service worker
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').catch(() => {});
-}
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
+})();
 </script>
 </body>
 </html>
