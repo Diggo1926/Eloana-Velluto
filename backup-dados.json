@@ -1,0 +1,15 @@
+{
+  "_nota": "Backup de estrutura do sistema Eloana Velluto. Os dados reais estão no localStorage do navegador. Para exportar os dados reais use o botão Backup no app ou acesse ?export=true na URL.",
+  "_data": "2026-05-11",
+  "_instrucao": "Para obter o backup completo dos dados: abra o app no celular, toque em 'Backup' na barra de navegação. O arquivo JSON baixado contém todos os produtos, vendas, lançamentos e dívidas.",
+  "_schema": {
+    "ev_version": "1.4",
+    "ev_produtos": [],
+    "ev_vendas": [],
+    "ev_lancamentos": [],
+    "ev_movimentacoes": [],
+    "ev_dividas": [],
+    "ev_clientes": [],
+    "ev_metas": {}
+  }
+}
