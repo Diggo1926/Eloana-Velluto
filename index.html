@@ -19,7 +19,7 @@
   <script type="module">
     import { initializeApp }
       from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-    import { getFirestore, enableIndexedDbPersistence,
+    import { initializeFirestore, persistentLocalCache,
              collection, doc, setDoc, getDoc, getDocs,
              onSnapshot, deleteDoc, updateDoc }
       from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
@@ -34,13 +34,14 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const db  = getFirestore(app);
-
-    enableIndexedDbPersistence(db).catch(() => {});
+    const db  = initializeFirestore(app, {
+      localCache: persistentLocalCache()
+    });
 
     window.db  = db;
     window._fb = { collection, doc, setDoc, getDoc, getDocs, onSnapshot, deleteDoc, updateDoc };
     window.dispatchEvent(new CustomEvent('firebase-ready'));
+    console.log('[EV] Firebase pronto — projeto:', firebaseConfig.projectId);
   </script>
 
   <style>
@@ -1443,17 +1444,27 @@ const DB = {
         _fb_onSnapshot(
           _fb_col(this._db, col),
           snap => {
-            this.data[key] = snap.docs.map(d => d.data());
+            this.data[key] = snap.docs.map(d => {
+              const data = d.data();
+              // Re-anexa foto do localStorage (fotos não vão para o Firestore)
+              if (col === 'produtos') {
+                const foto = localStorage.getItem(`ev_foto_${data.id}`);
+                if (foto) data.foto = foto;
+              }
+              return data;
+            });
             if (isFirst) {
               isFirst = false;
               firstLoaded++;
+              console.log(`[EV] onSnapshot inicial: ${col} (${snap.docs.length} docs)`);
               if (firstLoaded === COLS.length) resolve();
             } else {
+              console.log(`[EV] onSnapshot update: ${col} (${snap.docs.length} docs)`);
               reRenderTab(col);
             }
           },
           err => {
-            console.warn('[EV] onSnapshot error:', col, err);
+            console.error('[EV] onSnapshot error:', col, err);
             if (isFirst) { isFirst = false; firstLoaded++; if (firstLoaded === COLS.length) resolve(); }
           }
         );
@@ -1461,16 +1472,38 @@ const DB = {
     });
   },
 
-  // Escreve documento individual no Firestore (fire-and-forget)
+  // Escreve documento no Firestore. Fotos de produtos ficam no localStorage.
   _set(col, id, data) {
-    if (!this._db || !_fb_setDoc) return;
-    _fb_setDoc(_fb_doc(this._db, col, id), data).catch(e => console.warn('[EV] write error:', col, id, e));
+    if (!this._db || !_fb_setDoc) {
+      console.error('[EV] _set chamado antes do Firebase estar pronto!', col, id);
+      return;
+    }
+    let saveData = data;
+    if (col === 'produtos') {
+      // Foto fica no localStorage para não estourar o limite de 1MB do Firestore
+      if (data.foto) {
+        localStorage.setItem(`ev_foto_${id}`, data.foto);
+      } else {
+        localStorage.removeItem(`ev_foto_${id}`);
+      }
+      saveData = Object.assign({}, data);
+      delete saveData.foto;
+    }
+    _fb_setDoc(_fb_doc(this._db, col, id), saveData)
+      .then(() => console.log(`[EV] ✓ salvo no Firestore: ${col}/${id}`))
+      .catch(e => console.error(`[EV] ✗ erro ao salvar: ${col}/${id}`, e));
   },
 
-  // Remove documento individual do Firestore (fire-and-forget)
+  // Remove documento do Firestore
   _delete(col, id) {
-    if (!this._db || !_fb_deleteDoc) return;
-    _fb_deleteDoc(_fb_doc(this._db, col, id)).catch(e => console.warn('[EV] delete error:', col, id, e));
+    if (!this._db || !_fb_deleteDoc) {
+      console.error('[EV] _delete chamado antes do Firebase estar pronto!', col, id);
+      return;
+    }
+    if (col === 'produtos') localStorage.removeItem(`ev_foto_${id}`);
+    _fb_deleteDoc(_fb_doc(this._db, col, id))
+      .then(() => console.log(`[EV] ✓ deletado do Firestore: ${col}/${id}`))
+      .catch(e => console.error(`[EV] ✗ erro ao deletar: ${col}/${id}`, e));
   },
 
   save() { /* escritas acontecem individualmente via _set/_delete */ }
@@ -1491,13 +1524,17 @@ async function migrarLocalStorage() {
     { col: 'movimentacoes', key: 'ev_movimentacoes' },
     { col: 'dividas',       key: 'ev_dividas' },
   ];
+  let total = 0;
   for (const { col, key } of COLS_MAP) {
     const items = JSON.parse(localStorage.getItem(key) || '[]');
     for (const item of items) {
-      if (item?.id) DB._set(col, item.id, item);
+      if (item?.id) { DB._set(col, item.id, item); total++; }
     }
   }
-  _fb_setDoc(flagRef, { migracaoConcluida: true, migradoEm: new Date().toISOString() }).catch(() => {});
+  console.log(`[EV] Migração: ${total} documentos enviados para Firestore`);
+  _fb_setDoc(flagRef, { migracaoConcluida: true, migradoEm: new Date().toISOString() })
+    .then(() => console.log('[EV] Flag de migração salva no Firestore'))
+    .catch(e => console.error('[EV] Erro ao salvar flag de migração:', e));
 }
 
 // ── TOAST ──────────────────────────────────────────────────────────────────────
@@ -3451,8 +3488,13 @@ document.getElementById('btn-backup-lembrar').addEventListener('click', () => {
 
 // ── INIT ───────────────────────────────────────────────────────────────────────
 (async () => {
+  console.log('[EV] Iniciando app...');
   try {
     await DB.init();
+    console.log('[EV] Firebase conectado. Produtos:', DB.data.ev_produtos.length,
+      '| Vendas:', DB.data.ev_vendas.length,
+      '| Lançamentos:', DB.data.ev_lancamentos.length,
+      '| Dívidas:', DB.data.ev_dividas.length);
   } catch (e) {
     console.error('[EV] Firebase init error:', e);
   }
