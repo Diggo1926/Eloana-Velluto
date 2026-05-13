@@ -1,15 +1,9 @@
 import os
 import json
 import logging
-import bcrypt
 import psycopg2
 import psycopg2.extras
-from datetime import timedelta, datetime
 from flask import Flask, request, jsonify, g
-from flask_jwt_extended import (
-    JWTManager, create_access_token, create_refresh_token,
-    jwt_required, get_jwt_identity,
-)
 from flask_cors import CORS
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -26,9 +20,6 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 
 # ── CONFIGURAÇÃO ───────────────────────────────────────────────────────────────
-app.config['JWT_SECRET_KEY'] = os.environ['JWT_SECRET_KEY']
-app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=1)
-app.config['JWT_REFRESH_TOKEN_EXPIRES'] = timedelta(days=30)
 app.config['MAX_CONTENT_LENGTH'] = 12 * 1024 * 1024  # 12MB (foto base64)
 
 ENV = os.environ.get('FLASK_ENV', 'development')
@@ -40,14 +31,9 @@ CORS(app, origins=[ALLOWED_ORIGIN, 'http://localhost', 'http://127.0.0.1'],
 limiter = Limiter(
     get_remote_address,
     app=app,
-    default_limits=['300 per day', '60 per hour'],
+    default_limits=['500 per day', '120 per hour'],
     storage_uri='memory://'
 )
-
-jwt = JWTManager(app)
-
-# Controle de tentativas de login (por IP)
-_login_attempts: dict = {}
 
 
 # ── BANCO DE DADOS ─────────────────────────────────────────────────────────────
@@ -84,26 +70,22 @@ def security_headers(response):
     return response
 
 
-# ── ERROS GENÉRICOS (sem stack trace) ─────────────────────────────────────────
+# ── ERROS GENÉRICOS ────────────────────────────────────────────────────────────
 @app.errorhandler(404)
 def not_found(_):
     return jsonify({'mensagem': 'Recurso não encontrado'}), 404
-
 
 @app.errorhandler(405)
 def method_not_allowed(_):
     return jsonify({'mensagem': 'Método não permitido'}), 405
 
-
 @app.errorhandler(413)
 def too_large(_):
     return jsonify({'mensagem': 'Requisição muito grande'}), 413
 
-
 @app.errorhandler(429)
 def too_many(_):
     return jsonify({'mensagem': 'Muitas requisições. Tente mais tarde.'}), 429
-
 
 @app.errorhandler(500)
 def internal_error(e):
@@ -150,7 +132,7 @@ def _json_body():
     return data
 
 
-# ── SERIALIZAÇÃO camelCase → snake_case ────────────────────────────────────────
+# ── SERIALIZAÇÃO ───────────────────────────────────────────────────────────────
 def _prod_to_api(row):
     return {
         'id': row['id'],
@@ -242,69 +224,8 @@ def health():
     return jsonify({'status': 'ok'})
 
 
-# ── AUTH ───────────────────────────────────────────────────────────────────────
-@app.route('/api/auth/login', methods=['POST'])
-@limiter.limit('10 per minute')
-def login():
-    ip = get_remote_address()
-    entry = _login_attempts.get(ip, {'count': 0, 'locked_until': None})
-
-    if entry['locked_until'] and datetime.utcnow() < entry['locked_until']:
-        mins = max(1, int((entry['locked_until'] - datetime.utcnow()).total_seconds() / 60))
-        return jsonify({'mensagem': f'IP bloqueado. Tente em {mins} min.'}), 429
-
-    try:
-        data = _json_body()
-        usuario = _str(data.get('usuario'), 80, required=True, field='usuario')
-        senha = str(data.get('senha', ''))
-        if not senha:
-            raise ValueError('senha é obrigatória')
-    except ValueError as e:
-        return jsonify({'mensagem': str(e)}), 400
-
-    admin_user = os.environ.get('ADMIN_USER', '')
-    admin_hash = os.environ.get('ADMIN_PASSWORD_HASH', '').encode()
-
-    ok = (
-        usuario == admin_user
-        and bool(admin_hash)
-        and bcrypt.checkpw(senha.encode(), admin_hash)
-    )
-
-    if not ok:
-        count = entry['count'] + 1
-        locked = None
-        if count >= 5:
-            locked = datetime.utcnow() + timedelta(minutes=15)
-            count = 0
-        _login_attempts[ip] = {'count': count, 'locked_until': locked}
-        logger.warning('Login falhou: ip=%s', ip)
-        return jsonify({'mensagem': 'Usuário ou senha incorretos'}), 401
-
-    _login_attempts.pop(ip, None)
-    logger.info('Login bem-sucedido: ip=%s', ip)
-    return jsonify({
-        'access_token': create_access_token(identity=usuario),
-        'refresh_token': create_refresh_token(identity=usuario),
-    }), 200
-
-
-@app.route('/api/auth/refresh', methods=['POST'])
-@jwt_required(refresh=True)
-def refresh_token():
-    identity = get_jwt_identity()
-    return jsonify({'access_token': create_access_token(identity=identity)}), 200
-
-
-@app.route('/api/auth/logout', methods=['POST'])
-@jwt_required()
-def logout():
-    return jsonify({'mensagem': 'Logout realizado'}), 200
-
-
 # ── PRODUTOS ───────────────────────────────────────────────────────────────────
 @app.route('/api/produtos', methods=['GET'])
-@jwt_required()
 @limiter.limit('120 per minute')
 def get_produtos():
     db = get_db()
@@ -316,7 +237,6 @@ def get_produtos():
 
 
 @app.route('/api/produtos', methods=['POST'])
-@jwt_required()
 @limiter.limit('60 per minute')
 def upsert_produto():
     try:
@@ -357,7 +277,6 @@ def upsert_produto():
 
 
 @app.route('/api/produtos/<pid>', methods=['PUT'])
-@jwt_required()
 @limiter.limit('60 per minute')
 def update_produto(pid):
     try:
@@ -390,7 +309,6 @@ def update_produto(pid):
 
 
 @app.route('/api/produtos/<pid>', methods=['DELETE'])
-@jwt_required()
 @limiter.limit('30 per minute')
 def delete_produto(pid):
     db = get_db()
@@ -408,7 +326,6 @@ def delete_produto(pid):
 
 # ── VENDAS ─────────────────────────────────────────────────────────────────────
 @app.route('/api/vendas', methods=['GET'])
-@jwt_required()
 @limiter.limit('120 per minute')
 def get_vendas():
     db = get_db()
@@ -420,7 +337,6 @@ def get_vendas():
 
 
 @app.route('/api/vendas', methods=['POST'])
-@jwt_required()
 @limiter.limit('60 per minute')
 def upsert_venda():
     try:
@@ -472,7 +388,6 @@ def upsert_venda():
 
 # ── LANÇAMENTOS ────────────────────────────────────────────────────────────────
 @app.route('/api/lancamentos', methods=['GET'])
-@jwt_required()
 @limiter.limit('120 per minute')
 def get_lancamentos():
     db = get_db()
@@ -484,7 +399,6 @@ def get_lancamentos():
 
 
 @app.route('/api/lancamentos', methods=['POST'])
-@jwt_required()
 @limiter.limit('60 per minute')
 def upsert_lancamento():
     try:
@@ -532,7 +446,6 @@ def upsert_lancamento():
 
 # ── DÍVIDAS ────────────────────────────────────────────────────────────────────
 @app.route('/api/dividas', methods=['GET'])
-@jwt_required()
 @limiter.limit('120 per minute')
 def get_dividas():
     db = get_db()
@@ -547,12 +460,10 @@ def get_dividas():
     for p in parcelas:
         parcelas_map.setdefault(p['divida_id'], []).append(p)
 
-    result = [_div_to_api(d, parcelas_map.get(d['id'], [])) for d in dividas]
-    return jsonify(result)
+    return jsonify([_div_to_api(d, parcelas_map.get(d['id'], [])) for d in dividas])
 
 
 @app.route('/api/dividas', methods=['POST'])
-@jwt_required()
 @limiter.limit('30 per minute')
 def upsert_divida():
     try:
@@ -582,17 +493,14 @@ def upsert_divida():
              nome, tipo, valor_total, parcelado)
         )
 
-        # Upsert parcelas: mantém parcelas pagas, substitui não pagas
         cur.execute('SELECT id FROM parcelas WHERE divida_id=%s AND pago=TRUE', (did,))
         pagas_ids = {r['id'] for r in cur.fetchall()}
-
-        # Remove parcelas não pagas antigas
         cur.execute('DELETE FROM parcelas WHERE divida_id=%s AND pago=FALSE', (did,))
 
         for p in parcelas:
             pid = _str(p.get('id'), 36, required=True, field='parcela.id')
             if pid in pagas_ids:
-                continue  # não toca em parcelas já pagas
+                continue
             numero = _int(p.get('numero'), 'numero', 1)
             valor = _float(p.get('valor'), 'parcela.valor')
             venc = _str(p.get('vencimento'), 10, required=True, field='vencimento')
@@ -623,7 +531,6 @@ def upsert_divida():
 
 
 @app.route('/api/dividas/<did>', methods=['PUT'])
-@jwt_required()
 @limiter.limit('30 per minute')
 def update_divida(did):
     try:
@@ -652,7 +559,6 @@ def update_divida(did):
 
 
 @app.route('/api/dividas/<did>/parcela/<pid>', methods=['PUT'])
-@jwt_required()
 @limiter.limit('30 per minute')
 def update_parcela(did, pid):
     try:
@@ -681,7 +587,6 @@ def update_parcela(did, pid):
 
 
 @app.route('/api/dividas/<did>', methods=['DELETE'])
-@jwt_required()
 @limiter.limit('20 per minute')
 def delete_divida(did):
     db = get_db()
@@ -699,7 +604,6 @@ def delete_divida(did):
 
 # ── MOVIMENTAÇÕES ──────────────────────────────────────────────────────────────
 @app.route('/api/movimentacoes', methods=['GET'])
-@jwt_required()
 @limiter.limit('120 per minute')
 def get_movimentacoes():
     db = get_db()
@@ -711,7 +615,6 @@ def get_movimentacoes():
 
 
 @app.route('/api/movimentacoes', methods=['POST'])
-@jwt_required()
 @limiter.limit('60 per minute')
 def upsert_movimentacao():
     try:

@@ -820,86 +820,9 @@
     .cat-preco { font-family: 'Cormorant Garamond', serif; font-weight: 400; font-size: 1rem; color: var(--marrom-escuro); margin-top: 6px; }
     .catalogo-empty { grid-column: 1/-1; text-align: center; padding: 56px 24px; color: var(--marrom-claro); font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.1rem; }
 
-    /* LOGIN */
-    .login-overlay {
-      position: fixed; inset: 0; z-index: 10000;
-      background: var(--verde-escuro);
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      padding: 32px 24px;
-    }
-    .login-overlay.hidden { display: none; }
-    .login-logo {
-      width: 72px; height: 72px; border-radius: 50%;
-      object-fit: contain; margin-bottom: 8px;
-    }
-    .login-brand {
-      font-family: 'Great Vibes', cursive;
-      color: var(--branco); font-size: 2.6rem; line-height: 1;
-    }
-    .login-sub {
-      font-family: 'Cormorant Garamond', serif; font-style: italic;
-      color: rgba(255,255,255,0.55); font-size: 0.7rem;
-      letter-spacing: 0.22em; text-transform: uppercase; margin-top: 4px; margin-bottom: 36px;
-    }
-    .login-card {
-      background: var(--branco); border-radius: 20px;
-      padding: 28px 24px; width: 100%; max-width: 360px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.22);
-    }
-    .login-card .form-label { color: var(--marrom-claro); }
-    .login-card .form-input { background: var(--creme); }
-    .login-err {
-      font-size: 0.8rem; color: var(--vermelho);
-      text-align: center; margin-top: 8px;
-      min-height: 20px; font-weight: 300;
-    }
-    .btn-login {
-      width: 100%; background: var(--verde-escuro); color: var(--branco);
-      border-radius: 12px; padding: 14px;
-      font-size: 0.95rem; font-weight: 300; letter-spacing: 0.06em;
-      margin-top: 8px; transition: background 0.2s; cursor: pointer;
-      border: none;
-    }
-    .btn-login:hover { background: var(--salvia); }
-    .btn-login:disabled { opacity: 0.6; cursor: not-allowed; }
-
-    /* BOTÃO LOGOUT NO NAV */
-    .btn-logout-nav {
-      min-width: 72px; max-width: 90px; flex-shrink: 0; flex: 0 0 auto;
-      display: flex; flex-direction: column; align-items: center;
-      justify-content: center; gap: 3px;
-      color: #aaa; font-size: 0.6rem; font-weight: 300;
-      letter-spacing: 0.03em; cursor: pointer; transition: color 0.2s;
-      border: none; background: none; padding: 0;
-    }
-    .btn-logout-nav:hover { color: var(--vermelho); }
-    .btn-logout-nav svg { width: 20px; height: 20px; }
   </style>
 </head>
 <body>
-
-<!-- LOGIN SCREEN -->
-<div class="login-overlay" id="login-overlay">
-  <img src="logo.png" class="login-logo" alt="Eloana Velluto"
-       onerror="this.style.display='none'">
-  <div class="login-brand">Eloana Velluto</div>
-  <div class="login-sub">Lingerie &amp; Baby Dolls</div>
-  <div class="login-card">
-    <div class="form-group">
-      <label class="form-label" for="login-usuario">Usuário</label>
-      <input class="form-input" type="text" id="login-usuario"
-             autocomplete="username" maxlength="80" placeholder="Usuário">
-    </div>
-    <div class="form-group" style="margin-bottom:4px">
-      <label class="form-label" for="login-senha">Senha</label>
-      <input class="form-input" type="password" id="login-senha"
-             autocomplete="current-password" maxlength="100" placeholder="Senha">
-    </div>
-    <div class="login-err" id="login-err"></div>
-    <button class="btn-login" id="btn-entrar">Entrar</button>
-  </div>
-</div>
 
 <!-- LOADING SCREEN -->
 <div id="app-loading">
@@ -1038,14 +961,6 @@
     </svg>
     Backup
   </div>
-  <button class="btn-logout-nav" id="btn-logout" title="Sair">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
-      <polyline points="16,17 21,12 16,7"/>
-      <line x1="21" y1="12" x2="9" y2="12"/>
-    </svg>
-    Sair
-  </button>
 </nav>
 
 <!-- MODAL: PRODUTO -->
@@ -1361,97 +1276,14 @@ const API_BASE = (() => {
   return window._API_BASE || 'https://SEU-BACKEND.railway.app';
 })();
 
-// ── AUTH ───────────────────────────────────────────────────────────────────────
-const Auth = {
-  token: null,
-
-  load() {
-    this.token = sessionStorage.getItem('ev_jwt') || null;
-  },
-
-  save(access, refresh) {
-    this.token = access;
-    sessionStorage.setItem('ev_jwt', access);
-    if (refresh) sessionStorage.setItem('ev_refresh', refresh);
-  },
-
-  clear() {
-    this.token = null;
-    sessionStorage.removeItem('ev_jwt');
-    sessionStorage.removeItem('ev_refresh');
-  },
-
-  async login(usuario, senha) {
-    const res = await fetch(API_BASE + '/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ usuario, senha })
-    });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error(data.mensagem || 'Credenciais inválidas');
-    this.save(data.access_token, data.refresh_token);
-  },
-
-  async refresh() {
-    const rt = sessionStorage.getItem('ev_refresh');
-    if (!rt) return false;
-    try {
-      const res = await fetch(API_BASE + '/api/auth/refresh', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + rt
-        }
-      });
-      if (!res.ok) return false;
-      const data = await res.json();
-      this.token = data.access_token;
-      sessionStorage.setItem('ev_jwt', this.token);
-      return true;
-    } catch { return false; }
-  },
-
-  async logout() {
-    try {
-      await apiFetch('/api/auth/logout', { method: 'POST' });
-    } catch {}
-    this.clear();
-    showLogin();
-  }
-};
-
 async function apiFetch(path, opts = {}) {
   const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
-  if (Auth.token) headers['Authorization'] = 'Bearer ' + Auth.token;
-
-  let res = await fetch(API_BASE + path, { ...opts, headers });
-
-  if (res.status === 401 && Auth.token) {
-    const ok = await Auth.refresh();
-    if (ok) {
-      headers['Authorization'] = 'Bearer ' + Auth.token;
-      res = await fetch(API_BASE + path, { ...opts, headers });
-    } else {
-      Auth.clear();
-      showLogin();
-      throw new Error('Sessão expirada. Faça login novamente.');
-    }
-  }
-
+  const res = await fetch(API_BASE + path, { ...opts, headers });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
     throw new Error(err.mensagem || `Erro ${res.status}`);
   }
   return res.json();
-}
-
-function showLogin() {
-  document.getElementById('login-overlay').classList.remove('hidden');
-  document.getElementById('app-loading').style.display = 'none';
-}
-
-function showApp() {
-  document.getElementById('login-overlay').classList.add('hidden');
 }
 
 // Google Sheets — removido (substituído pelo backend)
@@ -3522,41 +3354,9 @@ document.getElementById('btn-backup-lembrar').addEventListener('click', () => {
   hideBackupBanner();
 });
 
-// ── LOGIN HANDLER ──────────────────────────────────────────────────────────────
-document.getElementById('btn-entrar').addEventListener('click', doLogin);
-document.getElementById('login-senha').addEventListener('keydown', e => {
-  if (e.key === 'Enter') doLogin();
-});
-document.getElementById('login-usuario').addEventListener('keydown', e => {
-  if (e.key === 'Enter') document.getElementById('login-senha').focus();
-});
-document.getElementById('btn-logout').addEventListener('click', () => Auth.logout());
-
-async function doLogin() {
-  const btn   = document.getElementById('btn-entrar');
-  const errEl = document.getElementById('login-err');
-  const user  = document.getElementById('login-usuario').value.trim();
-  const pass  = document.getElementById('login-senha').value;
-
-  if (!user || !pass) { errEl.textContent = 'Informe usuário e senha'; return; }
-  errEl.textContent = '';
-  btn.disabled = true;
-  btn.textContent = 'Entrando...';
-
-  try {
-    await Auth.login(user, pass);
-    await launchApp();
-  } catch (e) {
-    errEl.textContent = e.message || 'Erro ao fazer login';
-    document.getElementById('login-senha').value = '';
-    btn.disabled = false;
-    btn.textContent = 'Entrar';
-  }
-}
-
-async function launchApp() {
+// ── INIT ───────────────────────────────────────────────────────────────────────
+(async () => {
   document.getElementById('app-loading').style.display = 'flex';
-  showApp();
   try {
     await DB.init();
   } catch (e) {
@@ -3578,23 +3378,6 @@ async function launchApp() {
 
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').catch(() => {});
-  }
-}
-
-// ── INIT ───────────────────────────────────────────────────────────────────────
-(async () => {
-  Auth.load();
-  if (!Auth.token) {
-    showLogin();
-    return;
-  }
-  // Tenta usar o token existente; se expirado, o apiFetch vai renovar via refresh
-  try {
-    await launchApp();
-  } catch (e) {
-    console.error('[EV] Sessão inválida:', e);
-    Auth.clear();
-    showLogin();
   }
 })();
 </script>
