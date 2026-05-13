@@ -1,8 +1,8 @@
 import os
 import json
 import logging
-import psycopg2
-import psycopg2.extras
+import psycopg
+from psycopg.rows import dict_row
 from flask import Flask, request, jsonify, g
 from flask_cors import CORS
 from flask_limiter import Limiter
@@ -41,11 +41,7 @@ def get_db():
     if 'db' not in g:
         db_url = os.environ['DATABASE_URL']
         ssl = 'require' if ENV == 'production' else 'prefer'
-        g.db = psycopg2.connect(
-            db_url,
-            sslmode=ssl,
-            cursor_factory=psycopg2.extras.RealDictCursor
-        )
+        g.db = psycopg.connect(db_url, sslmode=ssl, row_factory=dict_row)
     return g.db
 
 
