@@ -1272,8 +1272,7 @@
 const API_BASE = (() => {
   const h = window.location.hostname;
   if (h === 'localhost' || h === '127.0.0.1') return 'http://localhost:5000';
-  // Troque pela URL do seu backend no Railway após o deploy
-  return window._API_BASE || 'https://SEU-BACKEND.railway.app';
+  return 'https://eloana-velluto-production.up.railway.app';
 })();
 
 async function apiFetch(path, opts = {}) {
