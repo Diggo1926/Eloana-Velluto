@@ -16,33 +16,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,300;1,300;1,400&family=Jost:wght@200;300;400&display=swap" rel="stylesheet">
 
-  <script type="module">
-    import { initializeApp }
-      from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-    import { initializeFirestore, persistentLocalCache,
-             collection, doc, setDoc, getDoc, getDocs,
-             onSnapshot, deleteDoc, updateDoc }
-      from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
-
-    const firebaseConfig = {
-      apiKey:            'AIzaSyBCs3zfy5x8Mz0wlb5ide3jmegMSMAkDGk',
-      authDomain:        'eloana-velluto.firebaseapp.com',
-      projectId:         'eloana-velluto',
-      storageBucket:     'eloana-velluto.firebasestorage.app',
-      messagingSenderId: '863656061190',
-      appId:             '1:863656061190:web:1c1e9e5693dcc858331687'
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db  = initializeFirestore(app, {
-      localCache: persistentLocalCache()
-    });
-
-    window.db  = db;
-    window._fb = { collection, doc, setDoc, getDoc, getDocs, onSnapshot, deleteDoc, updateDoc };
-    window.dispatchEvent(new CustomEvent('firebase-ready'));
-    console.log('[EV] Firebase pronto — projeto:', firebaseConfig.projectId);
-  </script>
 
   <style>
     @keyframes spin { to { transform: rotate(360deg); } }
@@ -846,9 +819,87 @@
     .cat-tam { font-size: 0.7rem; color: var(--marrom-claro); margin-top: 4px; letter-spacing: 0.04em; }
     .cat-preco { font-family: 'Cormorant Garamond', serif; font-weight: 400; font-size: 1rem; color: var(--marrom-escuro); margin-top: 6px; }
     .catalogo-empty { grid-column: 1/-1; text-align: center; padding: 56px 24px; color: var(--marrom-claro); font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.1rem; }
+
+    /* LOGIN */
+    .login-overlay {
+      position: fixed; inset: 0; z-index: 10000;
+      background: var(--verde-escuro);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 32px 24px;
+    }
+    .login-overlay.hidden { display: none; }
+    .login-logo {
+      width: 72px; height: 72px; border-radius: 50%;
+      object-fit: contain; margin-bottom: 8px;
+    }
+    .login-brand {
+      font-family: 'Great Vibes', cursive;
+      color: var(--branco); font-size: 2.6rem; line-height: 1;
+    }
+    .login-sub {
+      font-family: 'Cormorant Garamond', serif; font-style: italic;
+      color: rgba(255,255,255,0.55); font-size: 0.7rem;
+      letter-spacing: 0.22em; text-transform: uppercase; margin-top: 4px; margin-bottom: 36px;
+    }
+    .login-card {
+      background: var(--branco); border-radius: 20px;
+      padding: 28px 24px; width: 100%; max-width: 360px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.22);
+    }
+    .login-card .form-label { color: var(--marrom-claro); }
+    .login-card .form-input { background: var(--creme); }
+    .login-err {
+      font-size: 0.8rem; color: var(--vermelho);
+      text-align: center; margin-top: 8px;
+      min-height: 20px; font-weight: 300;
+    }
+    .btn-login {
+      width: 100%; background: var(--verde-escuro); color: var(--branco);
+      border-radius: 12px; padding: 14px;
+      font-size: 0.95rem; font-weight: 300; letter-spacing: 0.06em;
+      margin-top: 8px; transition: background 0.2s; cursor: pointer;
+      border: none;
+    }
+    .btn-login:hover { background: var(--salvia); }
+    .btn-login:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    /* BOTÃO LOGOUT NO NAV */
+    .btn-logout-nav {
+      min-width: 72px; max-width: 90px; flex-shrink: 0; flex: 0 0 auto;
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 3px;
+      color: #aaa; font-size: 0.6rem; font-weight: 300;
+      letter-spacing: 0.03em; cursor: pointer; transition: color 0.2s;
+      border: none; background: none; padding: 0;
+    }
+    .btn-logout-nav:hover { color: var(--vermelho); }
+    .btn-logout-nav svg { width: 20px; height: 20px; }
   </style>
 </head>
 <body>
+
+<!-- LOGIN SCREEN -->
+<div class="login-overlay" id="login-overlay">
+  <img src="logo.png" class="login-logo" alt="Eloana Velluto"
+       onerror="this.style.display='none'">
+  <div class="login-brand">Eloana Velluto</div>
+  <div class="login-sub">Lingerie &amp; Baby Dolls</div>
+  <div class="login-card">
+    <div class="form-group">
+      <label class="form-label" for="login-usuario">Usuário</label>
+      <input class="form-input" type="text" id="login-usuario"
+             autocomplete="username" maxlength="80" placeholder="Usuário">
+    </div>
+    <div class="form-group" style="margin-bottom:4px">
+      <label class="form-label" for="login-senha">Senha</label>
+      <input class="form-input" type="password" id="login-senha"
+             autocomplete="current-password" maxlength="100" placeholder="Senha">
+    </div>
+    <div class="login-err" id="login-err"></div>
+    <button class="btn-login" id="btn-entrar">Entrar</button>
+  </div>
+</div>
 
 <!-- LOADING SCREEN -->
 <div id="app-loading">
@@ -987,6 +1038,14 @@
     </svg>
     Backup
   </div>
+  <button class="btn-logout-nav" id="btn-logout" title="Sair">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+      <polyline points="16,17 21,12 16,7"/>
+      <line x1="21" y1="12" x2="9" y2="12"/>
+    </svg>
+    Sair
+  </button>
 </nav>
 
 <!-- MODAL: PRODUTO -->
@@ -1294,20 +1353,109 @@
 <script>
 'use strict';
 
-// ── GOOGLE SHEETS INTEGRATION ──────────────────────────────────────────────────
-const SHEETS_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbyM-vkzEFrwWMdXbDCNLBgQgCSnJA0gX3T7fwxNQ4KDY2W3TyA-6Sge69QOnob-mkY1zQ/exec';
+// ── API CONFIG ─────────────────────────────────────────────────────────────────
+const API_BASE = (() => {
+  const h = window.location.hostname;
+  if (h === 'localhost' || h === '127.0.0.1') return 'http://localhost:5000';
+  // Troque pela URL do seu backend no Railway após o deploy
+  return window._API_BASE || 'https://SEU-BACKEND.railway.app';
+})();
 
-function sincronizarComSheets(tipo, dados) {
-  if (!SHEETS_WEBHOOK_URL) return;
-  try {
-    fetch(SHEETS_WEBHOOK_URL, {
+// ── AUTH ───────────────────────────────────────────────────────────────────────
+const Auth = {
+  token: null,
+
+  load() {
+    this.token = sessionStorage.getItem('ev_jwt') || null;
+  },
+
+  save(access, refresh) {
+    this.token = access;
+    sessionStorage.setItem('ev_jwt', access);
+    if (refresh) sessionStorage.setItem('ev_refresh', refresh);
+  },
+
+  clear() {
+    this.token = null;
+    sessionStorage.removeItem('ev_jwt');
+    sessionStorage.removeItem('ev_refresh');
+  },
+
+  async login(usuario, senha) {
+    const res = await fetch(API_BASE + '/api/auth/login', {
       method: 'POST',
-      mode: 'no-cors',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ tipo, ...dados })
-    }).catch(() => {});
-  } catch (_) {}
+      body: JSON.stringify({ usuario, senha })
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.mensagem || 'Credenciais inválidas');
+    this.save(data.access_token, data.refresh_token);
+  },
+
+  async refresh() {
+    const rt = sessionStorage.getItem('ev_refresh');
+    if (!rt) return false;
+    try {
+      const res = await fetch(API_BASE + '/api/auth/refresh', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + rt
+        }
+      });
+      if (!res.ok) return false;
+      const data = await res.json();
+      this.token = data.access_token;
+      sessionStorage.setItem('ev_jwt', this.token);
+      return true;
+    } catch { return false; }
+  },
+
+  async logout() {
+    try {
+      await apiFetch('/api/auth/logout', { method: 'POST' });
+    } catch {}
+    this.clear();
+    showLogin();
+  }
+};
+
+async function apiFetch(path, opts = {}) {
+  const headers = { 'Content-Type': 'application/json', ...(opts.headers || {}) };
+  if (Auth.token) headers['Authorization'] = 'Bearer ' + Auth.token;
+
+  let res = await fetch(API_BASE + path, { ...opts, headers });
+
+  if (res.status === 401 && Auth.token) {
+    const ok = await Auth.refresh();
+    if (ok) {
+      headers['Authorization'] = 'Bearer ' + Auth.token;
+      res = await fetch(API_BASE + path, { ...opts, headers });
+    } else {
+      Auth.clear();
+      showLogin();
+      throw new Error('Sessão expirada. Faça login novamente.');
+    }
+  }
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.mensagem || `Erro ${res.status}`);
+  }
+  return res.json();
 }
+
+function showLogin() {
+  document.getElementById('login-overlay').classList.remove('hidden');
+  document.getElementById('app-loading').style.display = 'none';
+}
+
+function showApp() {
+  document.getElementById('login-overlay').classList.add('hidden');
+}
+
+// Google Sheets — removido (substituído pelo backend)
+function sincronizarComSheets() {}
 
 // ── UTILITIES ──────────────────────────────────────────────────────────────────
 function uid() {
@@ -1363,179 +1511,67 @@ const TIPOS_DIVIDA = {
   outro: 'Outro'
 };
 
-// ── FIREBASE HELPERS ───────────────────────────────────────────────────────────
-// Funções do SDK modular expostas pelo script de módulo no <head>
-let _fb_col, _fb_doc, _fb_setDoc, _fb_getDocs, _fb_onSnapshot, _fb_deleteDoc, _fb_updateDoc;
-
-function _initFbFunctions() {
-  const fb = window._fb || {};
-  _fb_col       = fb.collection;
-  _fb_doc       = fb.doc;
-  _fb_setDoc    = fb.setDoc;
-  _fb_getDocs   = fb.getDocs;
-  _fb_onSnapshot = fb.onSnapshot;
-  _fb_deleteDoc = fb.deleteDoc;
-  _fb_updateDoc = fb.updateDoc;
-}
-
-function _fbReady() {
-  return new Promise(resolve => {
-    if (window.db) { resolve(window.db); return; }
-    window.addEventListener('firebase-ready', () => resolve(window.db), { once: true });
-  });
-}
-
+// ── STORAGE ────────────────────────────────────────────────────────────────────
 function updateOfflineBanner() {
   const banner = document.getElementById('offline-banner');
   if (!banner) return;
   banner.style.display = navigator.onLine ? 'none' : 'block';
 }
 
-function reRenderTab(changedCol) {
-  switch (App.tab) {
-    case 'inicio':     renderInicio(); break;
-    case 'estoque':    if (['produtos','movimentacoes'].includes(changedCol)) renderEstoque(); break;
-    case 'financeiro': if (changedCol === 'lancamentos') renderFinanceiro(); break;
-    case 'dividas':    if (changedCol === 'dividas') renderDividas(); break;
-  }
-}
-
-// ── STORAGE ────────────────────────────────────────────────────────────────────
 const DB = {
   data: {
-    ev_version: '1.4',
+    ev_version: '2.0',
     ev_produtos: [], ev_vendas: [], ev_lancamentos: [],
     ev_movimentacoes: [], ev_dividas: [], ev_clientes: []
   },
-  _db: null,
 
   async init() {
-    this._db = await _fbReady();
-    _initFbFunctions();
-
     window.addEventListener('online',  updateOfflineBanner);
     window.addEventListener('offline', updateOfflineBanner);
 
-    // Carrega ev_clientes do localStorage (não está no Firestore)
     try {
       this.data.ev_clientes = JSON.parse(localStorage.getItem('ev_clientes') || '[]');
     } catch { this.data.ev_clientes = []; }
 
-    // Carrega dados e configura escuta em tempo real
-    await this._setupListeners();
+    const [produtos, vendas, lancamentos, dividas, movimentacoes] = await Promise.all([
+      apiFetch('/api/produtos'),
+      apiFetch('/api/vendas'),
+      apiFetch('/api/lancamentos'),
+      apiFetch('/api/dividas'),
+      apiFetch('/api/movimentacoes'),
+    ]);
 
-    // Migração única do localStorage para Firestore
-    await migrarLocalStorage();
+    this.data.ev_produtos      = produtos;
+    this.data.ev_vendas        = vendas;
+    this.data.ev_lancamentos   = lancamentos;
+    this.data.ev_dividas       = dividas;
+    this.data.ev_movimentacoes = movimentacoes;
+
+    console.log('[EV] Dados carregados: produtos=%d vendas=%d lançamentos=%d dívidas=%d',
+      produtos.length, vendas.length, lancamentos.length, dividas.length);
   },
 
-  _setupListeners() {
-    const COLS = [
-      { col: 'produtos',        key: 'ev_produtos' },
-      { col: 'vendas',          key: 'ev_vendas' },
-      { col: 'lancamentos',     key: 'ev_lancamentos' },
-      { col: 'movimentacoes',   key: 'ev_movimentacoes' },
-      { col: 'dividas',         key: 'ev_dividas' },
-    ];
-    let firstLoaded = 0;
-
-    return new Promise(resolve => {
-      COLS.forEach(({ col, key }) => {
-        let isFirst = true;
-        _fb_onSnapshot(
-          _fb_col(this._db, col),
-          snap => {
-            this.data[key] = snap.docs.map(d => {
-              const data = d.data();
-              // Re-anexa foto do localStorage (fotos não vão para o Firestore)
-              if (col === 'produtos') {
-                const foto = localStorage.getItem(`ev_foto_${data.id}`);
-                if (foto) data.foto = foto;
-              }
-              return data;
-            });
-            if (isFirst) {
-              isFirst = false;
-              firstLoaded++;
-              console.log(`[EV] onSnapshot inicial: ${col} (${snap.docs.length} docs)`);
-              if (firstLoaded === COLS.length) resolve();
-            } else {
-              console.log(`[EV] onSnapshot update: ${col} (${snap.docs.length} docs)`);
-              reRenderTab(col);
-            }
-          },
-          err => {
-            console.error('[EV] onSnapshot error:', col, err);
-            if (isFirst) { isFirst = false; firstLoaded++; if (firstLoaded === COLS.length) resolve(); }
-          }
-        );
-      });
-    });
-  },
-
-  // Escreve documento no Firestore. Fotos de produtos ficam no localStorage.
   _set(col, id, data) {
-    if (!this._db || !_fb_setDoc) {
-      console.error('[EV] _set chamado antes do Firebase estar pronto!', col, id);
-      return;
-    }
-    let saveData = data;
-    if (col === 'produtos') {
-      // Foto fica no localStorage para não estourar o limite de 1MB do Firestore
-      if (data.foto) {
-        localStorage.setItem(`ev_foto_${id}`, data.foto);
-      } else {
-        localStorage.removeItem(`ev_foto_${id}`);
-      }
-      saveData = Object.assign({}, data);
-      delete saveData.foto;
-    }
-    _fb_setDoc(_fb_doc(this._db, col, id), saveData)
-      .then(() => console.log(`[EV] ✓ salvo no Firestore: ${col}/${id}`))
-      .catch(e => console.error(`[EV] ✗ erro ao salvar: ${col}/${id}`, e));
+    const endpoint = col === 'movimentacoes' ? '/api/movimentacoes' : `/api/${col}`;
+    apiFetch(endpoint, { method: 'POST', body: JSON.stringify(data) })
+      .then(() => console.log(`[EV] ✓ salvo: ${col}/${id}`))
+      .catch(e => {
+        console.error(`[EV] ✗ erro ao salvar: ${col}/${id}`, e.message);
+        toast('Erro ao salvar dados no servidor', 'error');
+      });
   },
 
-  // Remove documento do Firestore
   _delete(col, id) {
-    if (!this._db || !_fb_deleteDoc) {
-      console.error('[EV] _delete chamado antes do Firebase estar pronto!', col, id);
-      return;
-    }
-    if (col === 'produtos') localStorage.removeItem(`ev_foto_${id}`);
-    _fb_deleteDoc(_fb_doc(this._db, col, id))
-      .then(() => console.log(`[EV] ✓ deletado do Firestore: ${col}/${id}`))
-      .catch(e => console.error(`[EV] ✗ erro ao deletar: ${col}/${id}`, e));
+    apiFetch(`/api/${col}/${id}`, { method: 'DELETE' })
+      .then(() => console.log(`[EV] ✓ excluído: ${col}/${id}`))
+      .catch(e => {
+        console.error(`[EV] ✗ erro ao excluir: ${col}/${id}`, e.message);
+        toast('Erro ao excluir no servidor', 'error');
+      });
   },
 
-  save() { /* escritas acontecem individualmente via _set/_delete */ }
+  save() {}
 };
-
-// ── MIGRAÇÃO LOCALSTORAGE → FIRESTORE ─────────────────────────────────────────
-async function migrarLocalStorage() {
-  const flagRef = _fb_doc(DB._db, 'config', 'migracao');
-  try {
-    const flagSnap = await window._fb.getDoc(flagRef);
-    if (flagSnap.exists() && flagSnap.data()?.migracaoConcluida) return;
-  } catch { return; }
-
-  const COLS_MAP = [
-    { col: 'produtos',      key: 'ev_produtos' },
-    { col: 'vendas',        key: 'ev_vendas' },
-    { col: 'lancamentos',   key: 'ev_lancamentos' },
-    { col: 'movimentacoes', key: 'ev_movimentacoes' },
-    { col: 'dividas',       key: 'ev_dividas' },
-  ];
-  let total = 0;
-  for (const { col, key } of COLS_MAP) {
-    const items = JSON.parse(localStorage.getItem(key) || '[]');
-    for (const item of items) {
-      if (item?.id) { DB._set(col, item.id, item); total++; }
-    }
-  }
-  console.log(`[EV] Migração: ${total} documentos enviados para Firestore`);
-  _fb_setDoc(flagRef, { migracaoConcluida: true, migradoEm: new Date().toISOString() })
-    .then(() => console.log('[EV] Flag de migração salva no Firestore'))
-    .catch(e => console.error('[EV] Erro ao salvar flag de migração:', e));
-}
 
 // ── TOAST ──────────────────────────────────────────────────────────────────────
 function toast(msg, type = 'success', duration = 3200) {
@@ -3486,17 +3522,46 @@ document.getElementById('btn-backup-lembrar').addEventListener('click', () => {
   hideBackupBanner();
 });
 
-// ── INIT ───────────────────────────────────────────────────────────────────────
-(async () => {
-  console.log('[EV] Iniciando app...');
+// ── LOGIN HANDLER ──────────────────────────────────────────────────────────────
+document.getElementById('btn-entrar').addEventListener('click', doLogin);
+document.getElementById('login-senha').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+document.getElementById('login-usuario').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('login-senha').focus();
+});
+document.getElementById('btn-logout').addEventListener('click', () => Auth.logout());
+
+async function doLogin() {
+  const btn   = document.getElementById('btn-entrar');
+  const errEl = document.getElementById('login-err');
+  const user  = document.getElementById('login-usuario').value.trim();
+  const pass  = document.getElementById('login-senha').value;
+
+  if (!user || !pass) { errEl.textContent = 'Informe usuário e senha'; return; }
+  errEl.textContent = '';
+  btn.disabled = true;
+  btn.textContent = 'Entrando...';
+
+  try {
+    await Auth.login(user, pass);
+    await launchApp();
+  } catch (e) {
+    errEl.textContent = e.message || 'Erro ao fazer login';
+    document.getElementById('login-senha').value = '';
+    btn.disabled = false;
+    btn.textContent = 'Entrar';
+  }
+}
+
+async function launchApp() {
+  document.getElementById('app-loading').style.display = 'flex';
+  showApp();
   try {
     await DB.init();
-    console.log('[EV] Firebase conectado. Produtos:', DB.data.ev_produtos.length,
-      '| Vendas:', DB.data.ev_vendas.length,
-      '| Lançamentos:', DB.data.ev_lancamentos.length,
-      '| Dívidas:', DB.data.ev_dividas.length);
   } catch (e) {
-    console.error('[EV] Firebase init error:', e);
+    console.error('[EV] Erro ao carregar dados:', e);
+    toast('Erro ao carregar dados do servidor. Verifique a conexão.', 'error', 5000);
   }
   document.getElementById('app-loading').style.display = 'none';
   renderInicio();
@@ -3513,6 +3578,23 @@ document.getElementById('btn-backup-lembrar').addEventListener('click', () => {
 
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
+}
+
+// ── INIT ───────────────────────────────────────────────────────────────────────
+(async () => {
+  Auth.load();
+  if (!Auth.token) {
+    showLogin();
+    return;
+  }
+  // Tenta usar o token existente; se expirado, o apiFetch vai renovar via refresh
+  try {
+    await launchApp();
+  } catch (e) {
+    console.error('[EV] Sessão inválida:', e);
+    Auth.clear();
+    showLogin();
   }
 })();
 </script>
