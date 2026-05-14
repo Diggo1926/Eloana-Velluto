@@ -25,8 +25,13 @@ app.config['MAX_CONTENT_LENGTH'] = 12 * 1024 * 1024  # 12MB (foto base64)
 ENV = os.environ.get('FLASK_ENV', 'development')
 ALLOWED_ORIGIN = os.environ.get('ALLOWED_ORIGIN', 'http://localhost')
 
-CORS(app, origins=[ALLOWED_ORIGIN, 'http://localhost', 'http://127.0.0.1'],
-     supports_credentials=True)
+CORS(app, origins=[
+    ALLOWED_ORIGIN,
+    'https://eloana-velluto.vercel.app',
+    'http://localhost',
+    'http://localhost:5000',
+    'http://127.0.0.1',
+])
 
 limiter = Limiter(
     get_remote_address,
