@@ -548,30 +548,6 @@
     .export-opcao-title { font-size: 0.9rem; font-weight: 400; color: var(--marrom-escuro); }
     .export-opcao-desc { font-size: 0.74rem; font-weight: 200; color: var(--marrom-claro); margin-top: 2px; line-height: 1.4; }
 
-    /* BACKUP BANNER */
-    .backup-banner {
-      display: none; position: fixed;
-      top: calc(var(--header-h) + var(--lace-h)); left: 0; right: 0;
-      background: var(--perola); border-left: 3px solid var(--marrom-claro);
-      padding: 9px 14px; z-index: 97;
-      align-items: center; gap: 10px; flex-wrap: nowrap;
-    }
-    .backup-banner.show { display: flex; }
-    .backup-banner-msg { flex: 1; font-size: 0.76rem; font-weight: 300; color: var(--marrom-escuro); min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .backup-banner-btns { display: flex; gap: 10px; flex-shrink: 0; align-items: center; }
-    .btn-backup-export {
-      font-size: 0.74rem; font-weight: 400; padding: 5px 12px;
-      background: var(--marrom-claro); color: var(--branco);
-      border-radius: 6px; transition: background 0.2s; cursor: pointer; flex-shrink: 0;
-    }
-    .btn-backup-export:hover { background: var(--marrom-medio); }
-    .btn-backup-lembrar {
-      font-size: 0.74rem; font-weight: 300; padding: 0;
-      color: var(--marrom-claro); text-decoration: underline;
-      cursor: pointer; background: none; flex-shrink: 0;
-    }
-    .btn-backup-lembrar:hover { color: var(--marrom-medio); }
-
     /* VENDA MULTI-STEP */
     .venda-steps { display: flex; align-items: center; gap: 0; margin-top: 10px; }
     .venda-step {
@@ -905,14 +881,6 @@
   </g>
 </svg>
 
-<!-- BACKUP BANNER -->
-<div class="backup-banner" id="backup-banner">
-  <span class="backup-banner-msg" id="backup-msg">Exporte seus dados para não perder nada.</span>
-  <div class="backup-banner-btns">
-    <button class="btn-backup-export" id="btn-backup-export">Exportar agora</button>
-    <button class="btn-backup-lembrar" id="btn-backup-lembrar">Depois</button>
-  </div>
-</div>
 
 <!-- MAIN CONTENT -->
 <main class="app-main">
@@ -954,12 +922,6 @@
       <rect x="5" y="2" width="14" height="20" rx="2"/><line x1="9" y1="7" x2="15" y2="7"/><line x1="9" y1="11" x2="15" y2="11"/><line x1="9" y1="15" x2="12" y2="15"/>
     </svg>
     Dívidas
-  </div>
-  <div class="nav-tab" id="nav-backup" onclick="exportBackupJSON()">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7,10 12,15 17,10"/><line x1="12" y1="15" x2="12" y2="3"/>
-    </svg>
-    Backup
   </div>
 </nav>
 
@@ -3291,68 +3253,6 @@ document.getElementById('btn-sair-catalogo').addEventListener('click', () => {
   document.body.style.overflow = '';
 });
 
-// ── BACKUP JSON ────────────────────────────────────────────────────────────────
-function exportBackupJSON() {
-  const backup = {
-    ev_version:       DB.data.ev_version,
-    ev_produtos:      DB.data.ev_produtos,
-    ev_vendas:        DB.data.ev_vendas,
-    ev_lancamentos:   DB.data.ev_lancamentos,
-    ev_movimentacoes: DB.data.ev_movimentacoes,
-    ev_dividas:       DB.data.ev_dividas,
-    ev_clientes:      DB.data.ev_clientes,
-  };
-  const json = JSON.stringify(backup, null, 2);
-  const blob = new Blob([json], { type: 'application/json' });
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href = url; a.download = 'eloana_backup_' + todayISO() + '.json'; a.click();
-  URL.revokeObjectURL(url);
-  localStorage.setItem('ev_ultimo_lembrete_backup', new Date().toISOString());
-  hideBackupBanner();
-  toast('Backup exportado com sucesso!');
-}
-
-// ── BACKUP BANNER ─────────────────────────────────────────────────────────────
-function checkBackupBanner() {
-  const banner  = document.getElementById('backup-banner');
-  const msg     = document.getElementById('backup-msg');
-  const lastStr = localStorage.getItem('ev_ultimo_lembrete_backup');
-
-  let show = false;
-  if (!lastStr) {
-    msg.textContent = 'Você ainda não fez backup dos seus dados. Exporte agora para não perder nada.';
-    show = true;
-  } else {
-    const days = Math.floor((Date.now() - new Date(lastStr).getTime()) / 86400000);
-    if (days >= 7) {
-      msg.textContent = `Seu último backup foi há ${days} dia${days !== 1 ? 's' : ''}. Exporte seus dados para não perder nada.`;
-      show = true;
-    }
-  }
-
-  if (show) {
-    banner.classList.add('show');
-    requestAnimationFrame(() => {
-      document.documentElement.style.setProperty('--banner-h', banner.offsetHeight + 'px');
-    });
-  }
-}
-
-function hideBackupBanner() {
-  document.getElementById('backup-banner').classList.remove('show');
-  document.documentElement.style.setProperty('--banner-h', '0px');
-}
-
-document.getElementById('btn-backup-export').addEventListener('click', () => {
-  exportBackupJSON();
-});
-
-document.getElementById('btn-backup-lembrar').addEventListener('click', () => {
-  localStorage.setItem('ev_ultimo_lembrete_backup', new Date().toISOString());
-  hideBackupBanner();
-});
-
 // ── INIT ───────────────────────────────────────────────────────────────────────
 (async () => {
   document.getElementById('app-loading').style.display = 'flex';
@@ -3368,12 +3268,7 @@ document.getElementById('btn-backup-lembrar').addEventListener('click', () => {
   renderFinanceiro();
   renderDividas();
   setTab('inicio');
-  checkBackupBanner();
   updateOfflineBanner();
-
-  if (new URLSearchParams(window.location.search).get('export') === 'true') {
-    setTimeout(exportBackupJSON, 600);
-  }
 
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').catch(() => {});
