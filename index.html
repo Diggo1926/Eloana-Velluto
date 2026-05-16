@@ -682,22 +682,17 @@
     .bar-val { font-size: 0.74rem; font-weight: 300; color: var(--marrom-claro); min-width: 68px; text-align: right; }
     .desemp-vazio { font-size: 0.84rem; color: var(--marrom-claro); font-style: italic; font-family: 'Cormorant Garamond', serif; padding: 6px 0; }
 
-    /* NAVEGAÇÃO 6 ABAS — SCROLL HORIZONTAL */
+    /* NAVEGAÇÃO 4 ABAS — DISTRIBUIÇÃO EQUILIBRADA */
     .app-nav {
-      overflow-x: auto; overflow-y: hidden;
-      scroll-snap-type: x mandatory;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none; -ms-overflow-style: none;
-      justify-content: flex-start;
+      overflow: visible;
+      justify-content: center;
     }
-    .app-nav::-webkit-scrollbar { display: none; }
     .nav-tab {
-      min-width: 72px; max-width: 90px;
-      scroll-snap-align: start; flex-shrink: 0; flex: 0 0 auto;
+      flex: 1; flex-shrink: 0; max-width: 25%;
       font-size: 0.6rem; letter-spacing: 0.03em;
     }
     .nav-tab svg { width: 20px; height: 20px; }
-    .nav-tab.active::before { left: 10%; right: 10%; }
+    .nav-tab.active::before { left: 15%; right: 15%; }
 
     /* ENCOMENDAS */
     .enc-filtros { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
