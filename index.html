@@ -225,11 +225,11 @@
     .produto-card:nth-child(4) { animation-delay: 0.20s; }
     .produto-card:nth-child(5) { animation-delay: 0.25s; }
     .produto-foto-wrap {
-      width: 100%; height: 160px; overflow: hidden;
-      border-radius: 12px 12px 0 0; background: var(--perola);
+      width: 100%; height: 200px; overflow: hidden;
+      border-radius: 12px 12px 0 0; background: #F2EDE4;
       display: flex; align-items: center; justify-content: center;
     }
-    .produto-foto-wrap img { width: 100%; height: 100%; object-fit: cover; }
+    .produto-foto-wrap img { width: 100%; height: 100%; object-fit: contain; }
     .produto-info { padding: 16px; }
     .produto-nome { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 1.2rem; font-weight: 300; }
     .produto-preco { font-size: 0.82rem; color: var(--marrom-claro); margin-top: 2px; }
@@ -685,10 +685,12 @@
     /* NAVEGAÇÃO 4 ABAS — DISTRIBUIÇÃO EQUILIBRADA */
     .app-nav {
       overflow: visible;
-      justify-content: center;
+      display: flex;
+      justify-content: space-around;
+      padding: 0;
     }
     .nav-tab {
-      flex: 1; flex-shrink: 0; max-width: 25%;
+      flex: 1; flex-shrink: 0; min-width: 0; max-width: 25%;
       font-size: 0.6rem; letter-spacing: 0.03em;
     }
     .nav-tab svg { width: 20px; height: 20px; }
@@ -969,14 +971,14 @@
       <div class="form-group">
         <label class="form-label">Foto do produto</label>
         <div class="foto-area" id="foto-area" onclick="document.getElementById('prod-foto-input').click()">
-          <input type="file" id="prod-foto-input" accept="image/jpeg,image/png">
+          <input type="file" id="prod-foto-input" accept="image/jpeg,image/png,image/webp" style="display:none">
           <img class="foto-preview" id="prod-foto-preview" style="display:none">
           <div id="foto-placeholder">
             <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="#D4B8A0" stroke-width="1.5" stroke-linecap="round" style="margin:0 auto 8px">
               <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
               <polyline points="21,15 16,10 5,21"/>
             </svg>
-            <div class="foto-label">Toque para adicionar foto<br><small style="font-size:0.72rem;color:#B8A090">JPEG ou PNG · máx. 5MB</small></div>
+            <div class="foto-label">Toque para adicionar foto<br><small style="font-size:0.72rem;color:#B8A090">JPEG, PNG ou WEBP · máx. 5MB</small></div>
           </div>
         </div>
         <div class="form-err" id="prod-foto-err"></div>
@@ -2131,34 +2133,57 @@ function clearProdErrors() {
 document.getElementById('prod-foto-input').addEventListener('change', async e => {
   const file = e.target.files[0];
   if (!file) return;
-  const result = await validateAndProcessImage(file);
+
+  const fotoArea    = document.getElementById('foto-area');
+  const placeholder = document.getElementById('foto-placeholder');
+  const preview     = document.getElementById('prod-foto-preview');
+  const errEl       = document.getElementById('prod-foto-err');
+
+  const placeholderOriginal = placeholder.innerHTML;
+  placeholder.innerHTML = '<div style="padding:8px 0;font-size:0.84rem;color:var(--marrom-claro)">Processando imagem…</div>';
+  fotoArea.style.pointerEvents = 'none';
+  preview.style.display = 'none';
+  placeholder.style.display = 'block';
+  errEl.classList.remove('show');
+
+  let result;
+  try {
+    result = await validateAndProcessImage(file);
+  } catch {
+    result = { error: 'Erro ao processar imagem. Tente novamente.' };
+  }
+
+  fotoArea.style.pointerEvents = '';
+  placeholder.innerHTML = placeholderOriginal;
+
   if (result.error) {
-    const errEl = document.getElementById('prod-foto-err');
     errEl.textContent = result.error;
     errEl.classList.add('show');
     e.target.value = '';
     return;
   }
-  document.getElementById('prod-foto-err').classList.remove('show');
+
   _prodFotoBase64 = result.base64;
-  document.getElementById('prod-foto-preview').src = result.base64;
-  document.getElementById('prod-foto-preview').style.display = 'block';
-  document.getElementById('foto-placeholder').style.display = 'none';
+  preview.src = result.base64;
+  preview.style.display = 'block';
+  placeholder.style.display = 'none';
 });
 
 async function validateAndProcessImage(file) {
   if (file.size > 5 * 1024 * 1024) return { error: 'Arquivo muito grande. Máximo 5MB.' };
-  if (!['image/jpeg','image/png'].includes(file.type)) return { error: 'Apenas JPEG e PNG são aceitos.' };
+  if (!['image/jpeg','image/png','image/webp'].includes(file.type))
+    return { error: 'Apenas JPEG, PNG e WEBP são aceitos.' };
 
-  // Verify real MIME type via magic bytes
-  const buf = await file.slice(0, 4).arrayBuffer();
+  const buf   = await file.slice(0, 12).arrayBuffer();
   const bytes = new Uint8Array(buf);
   const isJPEG = bytes[0] === 0xFF && bytes[1] === 0xD8;
   const isPNG  = bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4E && bytes[3] === 0x47;
-  if (!isJPEG && !isPNG) return { error: 'Arquivo inválido. Apenas JPEG e PNG reais são aceitos.' };
+  const isWEBP = bytes[0] === 0x52 && bytes[1] === 0x49 && bytes[2] === 0x46 && bytes[3] === 0x46 &&
+                 bytes[8] === 0x57 && bytes[9] === 0x45 && bytes[10] === 0x42 && bytes[11] === 0x50;
+  if (!isJPEG && !isPNG && !isWEBP) return { error: 'Arquivo inválido. Apenas JPEG, PNG e WEBP reais são aceitos.' };
 
-  // Compress via canvas
   const base64 = await compressImage(file);
+  if (!base64) return { error: 'Não foi possível processar a imagem. Tente novamente.' };
   if (base64.length > 2 * 1024 * 1024) return { error: 'Imagem muito grande após compressão. Tente uma menor.' };
   return { base64 };
 }
